@@ -53,16 +53,17 @@ let debounce: ReturnType<typeof setTimeout> | null = null;
 
 /** Recalcula si los datos relevantes para la simulación han cambiado. */
 export function requestSimulation(doc: ProjectDoc, opts: { force?: boolean; immediate?: boolean; save?: boolean } = {}) {
-  const scenarioId = doc.project.activeScenarioId;
-  const iterations = doc.project.settings.simulation.iterations;
-  const fp = simulationFingerprint(doc, scenarioId, iterations);
-  const st = useSim.getState();
-  if (!opts.force && fp === st.fingerprint && st.status !== 'error') {
-    if (opts.save && st.result) void persistRun(doc, st.result);
-    return;
-  }
   if (debounce) clearTimeout(debounce);
+  // la huella se calcula dentro del rebote: arrastrar no cuesta un JSON.stringify por fotograma
   const run = async () => {
+    const scenarioId = doc.project.activeScenarioId;
+    const iterations = doc.project.settings.simulation.iterations;
+    const fp = simulationFingerprint(doc, scenarioId, iterations);
+    const st = useSim.getState();
+    if (!opts.force && fp === st.fingerprint && st.status !== 'error') {
+      if (opts.save && st.result) void persistRun(doc, st.result);
+      return;
+    }
     const id = ++reqSeq;
     useSim.setState({ status: 'running' });
     try {

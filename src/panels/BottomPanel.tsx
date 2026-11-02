@@ -76,7 +76,9 @@ function Kpi({ label, value, sub, tone, testId }: { label: string; value: string
 }
 
 function SimulationTab() {
-  const doc = useProject((s) => s.doc)!;
+  const unitDim = useProject((s) => s.doc?.dimensions.quantity?.unit);
+  const iterationsSetting = useProject((s) => s.doc?.project.settings.simulation.iterations ?? 12);
+  const getDoc = () => useProject.getState().doc!;
   const r = useSim((s) => s.result);
   const cursor = useSim((s) => s.cursor);
   const step = useSim((s) => s.step);
@@ -85,10 +87,10 @@ function SimulationTab() {
   const live = useSim((s) => s.live);
   const view = useUI((s) => s.view);
   const it = r?.iterations[cursor];
-  const unit = doc.dimensions.quantity?.unit || 'u.';
+  const unit = unitDim || 'u.';
   const playPause = () => { if (view === 'mental') setView('simulation'); useSim.setState({ play: play === 'playing' ? 'paused' : 'playing', step: -1, ...(play === 'stopped' || (r && cursor >= r.iterationCount - 1) ? { cursor: 0 } : {}) }); };
   const stop = () => useSim.setState({ play: 'stopped', cursor: 0, step: -1 });
-  const reset = () => { useSim.setState({ play: 'stopped', cursor: 0, step: -1 }); requestSimulation(doc, { force: true, immediate: true }); };
+  const reset = () => { useSim.setState({ play: 'stopped', cursor: 0, step: -1 }); requestSimulation(getDoc(), { force: true, immediate: true }); };
   const nextStep = () => {
     if (!r) return;
     if (view === 'mental') setView('simulation');
@@ -97,7 +99,7 @@ function SimulationTab() {
     else useSim.setState({ step: -1, cursor: Math.min(r.iterationCount - 1, s.cursor + 1) });
   };
   const stepNode = r && step >= 0 ? r.order[step] : null;
-  const stepEvents = it && stepNode ? it.events.filter((e) => e.nodeId === stepNode || (e.edgeId && doc.edges[e.edgeId.replace('~rev', '')]?.sourceNodeId === stepNode)) : [];
+  const stepEvents = it && stepNode ? it.events.filter((e) => e.nodeId === stepNode || (e.edgeId && getDoc().edges[e.edgeId.replace('~rev', '')]?.sourceNodeId === stepNode)) : [];
   const approx = (r?.approximations.length ?? 0) + (r?.hypotheses.length ?? 0);
   const generated = it?.ledger.generated[PRIMARY] ?? 0;
   const result = it ? qty(it.result) : 0;
@@ -120,7 +122,7 @@ function SimulationTab() {
           <IconButton label="Siguiente iteración" side="top" disabled={!r || cursor >= r.iterationCount - 1} onClick={() => useSim.setState({ cursor: cursor + 1, step: -1 })} data-testid="sim-next"><ChevronsRight className="size-4" /></IconButton>
           <IconButton label="Paso a paso (elemento a elemento)" side="top" onClick={nextStep} active={step >= 0} data-testid="sim-step"><Footprints className="size-4" /></IconButton>
           <div className="mx-1 h-5 w-px bg-line" />
-          <IconButton label="Guardar esta ejecución" side="top" onClick={() => { requestSimulation(doc, { save: true, immediate: true }); useUI.getState().notify('Ejecución guardada en el historial', 'success'); }} data-testid="sim-save"><Save className="size-4" /></IconButton>
+          <IconButton label="Guardar esta ejecución" side="top" onClick={() => { requestSimulation(getDoc(), { save: true, immediate: true }); useUI.getState().notify('Ejecución guardada en el historial', 'success'); }} data-testid="sim-save"><Save className="size-4" /></IconButton>
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-3">
           Ritmo visual
@@ -128,13 +130,13 @@ function SimulationTab() {
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-3">
           Iteraciones
-          <NumberInput className="w-16" value={doc.project.settings.simulation.iterations} min={1} max={500} onChange={(v) => A.apply((d) => ({ ...d, project: { ...d.project, settings: { ...d.project.settings, simulation: { iterations: Math.round(v) } } } }))} data-testid="sim-iterations" />
+          <NumberInput className="w-16" value={iterationsSetting} min={1} max={500} onChange={(v) => A.apply((d) => ({ ...d, project: { ...d.project, settings: { ...d.project.settings, simulation: { iterations: Math.round(v) } } } }))} data-testid="sim-iterations" />
           <Tip label="Experimentación manual: recalcula al instante cuando cambias un parámetro" side="top">
             <button type="button" onClick={() => useSim.setState({ live: !live })} className={cx('inline-flex items-center gap-1 rounded-md px-1.5 py-0.5', live ? 'bg-accent-soft text-accent-text' : 'bg-surface-2')} aria-pressed={live}>
               <Radio className="size-3" />En vivo
             </button>
           </Tip>
-          {!live && <Button size="xs" variant="subtle" onClick={() => requestSimulation(doc, { force: true, immediate: true })}>Calcular</Button>}
+          {!live && <Button size="xs" variant="subtle" onClick={() => requestSimulation(getDoc(), { force: true, immediate: true })}>Calcular</Button>}
         </div>
         <p className="max-w-[300px] text-[10.5px] leading-snug text-ink-3">El ritmo solo cambia la animación; el resultado matemático es siempre el mismo.</p>
       </div>
@@ -160,7 +162,7 @@ function SimulationTab() {
         )}
         {stepNode && (
           <div className="rounded-xl border border-line bg-surface-2/60 px-3 py-2 text-[12px]" data-testid="step-info">
-            <div className="mb-1 font-semibold text-ink">Paso {step + 1}/{r!.order.length}: «{doc.nodes[stepNode]?.title}»</div>
+            <div className="mb-1 font-semibold text-ink">Paso {step + 1}/{r!.order.length}: «{getDoc().nodes[stepNode]?.title}»</div>
             {stepEvents.length ? stepEvents.slice(0, 6).map((e, i) => <div key={i} className="text-ink-2">· {e.message}</div>) : <div className="text-ink-3">Sin cambios en este elemento.</div>}
           </div>
         )}

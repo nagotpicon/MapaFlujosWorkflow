@@ -1,5 +1,5 @@
 /** Inspector contextual: burbuja, conexión, selección múltiple o proyecto. */
-import { useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { Layers, Plus, RefreshCcw, Ruler, Settings2, Sigma, Trash2, Users } from 'lucide-react';
 import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
@@ -146,7 +146,8 @@ function ProjectPanel() {
 }
 
 export function Inspector() {
-  const doc = useProject((s) => s.doc);
+  // prioridad baja: durante un arrastre el lienzo va primero
+  const doc = useDeferredValue(useProject((s) => s.doc));
   const sel = useUI((s) => s.selection);
   const eff = useMemo(() => (doc ? effectiveDoc(doc, doc.project.activeScenarioId) : null), [doc]);
   if (!doc || !eff) return null;

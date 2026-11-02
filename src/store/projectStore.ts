@@ -106,7 +106,12 @@ const AUTO_SNAPSHOT_MS = 5 * 60_000;
 export async function flushSave(): Promise<void> {
   if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
   const { doc } = useProject.getState();
-  if (!doc || doc === lastSaved) return;
+  if (!doc) return;
+  if (doc === lastSaved) {
+    // p.ej. deshacer + rehacer antes de escribir: ya está guardado
+    if (useProject.getState().saveState !== 'saved') useProject.setState({ saveState: 'saved' });
+    return;
+  }
   useProject.setState({ saveState: 'saving' });
   try {
     await repo.saveProject(doc);
@@ -134,7 +139,12 @@ export function startAutosave(): () => void {
       void repo.setSetting('lastProjectId', s.doc.project.id);
       return;
     }
-    if (s.doc === prev.doc || s.doc === lastSaved) return;
+    if (s.doc === prev.doc) return;
+    if (s.doc === lastSaved) {
+      if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+      if (s.saveState !== 'saved') useProject.setState({ saveState: 'saved' });
+      return;
+    }
     if (s.saveState !== 'pending') useProject.setState({ saveState: 'pending' });
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => void flushSave(), 450);

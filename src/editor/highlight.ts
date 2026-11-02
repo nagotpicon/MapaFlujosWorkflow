@@ -17,9 +17,12 @@ export interface Highlight {
   inactiveEdges: Set<string>;
   trace: TraceResult | null;
   maxFlow: number;
+  /** conexiones que pueden llevar partículas (presupuesto de animación) */
+  particles: Set<string>;
 }
 
-const EMPTY: Highlight = { active: false, nodes: new Set(), edges: new Set(), inactiveEdges: new Set(), trace: null, maxFlow: 1 };
+const EMPTY: Highlight = { active: false, nodes: new Set(), edges: new Set(), inactiveEdges: new Set(), trace: null, maxFlow: 1, particles: new Set() };
+const PARTICLE_BUDGET = 40;
 export const HighlightContext = createContext<Highlight>(EMPTY);
 export const useHighlight = () => useContext(HighlightContext);
 
@@ -35,16 +38,20 @@ export function useComputeHighlight(): Highlight {
   const result = useSim((s) => s.result);
   const cursor = useSim((s) => s.cursor);
 
-  const maxFlow = useMemo(() => {
+  const dragging = useProject((s) => !!s.txn);
+  const { maxFlow, particles } = useMemo(() => {
     const it = result?.iterations[cursor];
-    if (!it) return 1;
+    if (!it) return { maxFlow: 1, particles: new Set<string>() };
     let m = 1e-9;
-    for (const es of Object.values(it.edges)) m = Math.max(m, qty(es.delivered));
-    return m;
-  }, [result, cursor]);
+    const flows: [string, number][] = [];
+    for (const [id, es] of Object.entries(it.edges)) { const q = qty(es.delivered); m = Math.max(m, q); if (q > 0) flows.push([id, q]); }
+    // durante un arrastre no se animan partículas; fuera de él, solo las de mayor caudal
+    const top = dragging ? [] : flows.sort((a, b) => b[1] - a[1]).slice(0, PARTICLE_BUDGET).map(([id]) => id);
+    return { maxFlow: m, particles: new Set(top) };
+  }, [result, cursor, dragging]);
 
   return useMemo(() => {
-    if (!doc) return { ...EMPTY, maxFlow };
+    if (!doc) return { ...EMPTY, maxFlow, particles };
     let nodes: Set<string> | null = null;
     let edges: Set<string> | null = null;
     let inactive = new Set<string>();
@@ -72,9 +79,9 @@ export function useComputeHighlight(): Highlight {
       nodes = intersect(nodes, near);
       edges = edges ? new Set([...edges].filter((x) => es.has(x))) : es;
     }
-    if (!nodes && !edges) return { ...EMPTY, maxFlow };
+    if (!nodes && !edges) return { ...EMPTY, maxFlow, particles };
     const ns = nodes ?? new Set(Object.keys(doc.nodes));
     if (!edges) edges = new Set(Object.values(doc.edges).filter((e) => ns.has(e.sourceNodeId) && ns.has(e.targetNodeId)).map((e) => e.id));
-    return { active: true, nodes: ns, edges, inactiveEdges: inactive, trace: trRes, maxFlow };
-  }, [doc, q, tags, bfil, tr, focus, result, maxFlow]);
+    return { active: true, nodes: ns, edges, inactiveEdges: inactive, trace: trRes, maxFlow, particles };
+  }, [doc, q, tags, bfil, tr, focus, result, maxFlow, particles]);
 }

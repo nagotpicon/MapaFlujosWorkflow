@@ -104,7 +104,7 @@ export const MapEdgeView = memo(function MapEdgeView(props: P) {
   const markerStart = edge.direction === 'both' ? `url(#mdf-arrow-start-${markerKey(color)})` : undefined;
 
   const speed = Math.max(0.15, st?.delivered.int.speed ?? 1);
-  const showParticles = animate && particlesOn && flowViews && isFlow && active && q > 1e-6 && !dimmed;
+  const showParticles = animate && particlesOn && flowViews && isFlow && active && q > 1e-6 && !dimmed && hl.particles.has(id);
   const nParticles = showParticles ? Math.max(1, Math.min(4, Math.round(1 + 3 * Math.sqrt(q / Math.max(1e-9, hl.maxFlow))))) : 0;
   const dur = 2.8 / speed;
   const lostAmt = st?.lost ?? 0;
@@ -114,7 +114,7 @@ export const MapEdgeView = memo(function MapEdgeView(props: P) {
       {glow && <path d={path} fill="none" stroke={color} strokeOpacity={0.18 * ((potential ?? 0.5) + 0.2)} strokeWidth={width + 8} strokeLinecap="round" style={{ filter: 'blur(3px)' }} />}
       <BaseEdge id={id} path={path} interactionWidth={18} markerEnd={markerEnd} markerStart={markerStart}
         style={{ stroke: color, strokeWidth: width, strokeOpacity: opacity, strokeDasharray: dash, strokeLinecap: 'round',
-          animation: animate && view === 'simulation' && isFlow && active && !showParticles ? `mdf-dash ${1.2 / speed}s linear infinite` : undefined }} />
+          animation: animate && view === 'simulation' && isFlow && active && !showParticles && hl.particles.size > 0 ? `mdf-dash ${1.2 / speed}s linear infinite` : undefined }} />
       {showParticles && Array.from({ length: nParticles }).map((_, i) => (
         <circle key={i} r={Math.min(4, 1.8 + width / 5)} fill={color} opacity={0.9}>
           <animateMotion dur={`${dur}s`} repeatCount="indefinite" path={path} begin={`${(i * dur) / nParticles}s`} />

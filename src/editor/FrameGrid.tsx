@@ -46,7 +46,7 @@ export function FrameGrid({ showHeat }: { showHeat: boolean }) {
         const row = f.support.enabled ? z.row : 0;
         const y = f.support.enabled ? (maxRow - row) * H : 0;
         return <rect key={`${z.column}:${z.row}`} x={(z.column - 1) * W + 3} y={y + 3} width={W - 6} height={(f.support.enabled ? H : height) - 6} rx={14}
-          fill={HEAT[rd.state]} opacity={0.08 + Math.abs(rd.temperature) * 0.14} />;
+          fill={HEAT[rd.state]} opacity={0.04 + Math.abs(rd.temperature) * 0.09} />;
       })}
       {cols.map((c) => (
         <g key={c}>
