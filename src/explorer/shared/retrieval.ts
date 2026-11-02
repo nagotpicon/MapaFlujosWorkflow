@@ -73,17 +73,25 @@ export function toSnippets(chunks: Searchable[]): KnowledgeSnippet[] {
 
 /** Resumen heurístico (sin IA): extrae líneas que parecen objetivos, plazos, recursos… */
 export function heuristicPlanSummary(text: string): PlanSummary {
-  const lines = text.split(/\n|(?<=\.)\s+/).map((l) => l.trim()).filter((l) => l.length > 8 && l.length < 260);
-  const pick = (re: RegExp, n = 6) => [...new Set(lines.filter((l) => re.test(l)))].slice(0, n);
+  // líneas con la sección a la que pertenecen
+  const rows: { line: string; section: string }[] = [];
+  let section = '';
+  for (const raw of text.split('\n')) {
+    const l = raw.trim();
+    if (!l) continue;
+    if (/^#{1,6}\s/.test(l) || /^\[Hoja: /.test(l) || (l.length < 60 && l === l.toUpperCase() && /[A-ZÁÉÍÓÚÑ]{3}/.test(l))) { section = l.replace(/^#+\s*/, ''); continue; }
+    for (const part of l.split(/(?<=\.)\s+/)) if (part.length > 8 && part.length < 260) rows.push({ line: part, section });
+  }
+  const pick = (re: RegExp, n = 6) => [...new Set(rows.filter((r) => re.test(r.line) || re.test(r.section)).map((r) => r.line))].slice(0, n);
   return {
     objectives: pick(/objetivo|finalidad|prop[oó]sito|queremos|pretend/i),
     goals: pick(/meta|alcanzar|conseguir|\d+\s*(%|clientes|ventas|euros|€|usuarios|alumnos)/i),
-    deadlines: pick(/plazo|fecha|antes de|trimestre|mes(es)?\b|semana|\b20\d\d\b|enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre/i),
+    deadlines: pick(/plazo|fecha|antes de|trimestre|\bmes(es)?\b|semana|\b20\d\d\b|enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre/i),
     resources: pick(/presupuesto|recurso|equipo|personal|herramienta|inversi[oó]n|horas/i),
-    constraints: pick(/limitaci|restricci|no podemos|riesgo|depende|normativ|permiso/i),
+    constraints: pick(/limitaci|restricci|no podemos|depende|normativ|permiso/i),
     kpis: pick(/kpi|indicador|m[eé]trica|medir|tasa|ratio|conversi[oó]n/i),
     strategy: pick(/estrategia|l[ií]nea|canal|acci[oó]n|plan de/i),
-    risks: pick(/riesgo|amenaza|problema|dificultad/i, 4),
-    summary: lines.slice(0, 3).join(' ').slice(0, 400),
+    risks: pick(/riesgo|amenaza|problema|dificultad|competencia/i, 4),
+    summary: rows.slice(0, 3).map((r) => r.line).join(' ').slice(0, 400),
   };
 }

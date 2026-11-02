@@ -5,7 +5,7 @@ import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
 import { verdictToMarkdown } from '../engine/verdict';
 import { Badge, Button } from '../ui/primitives';
-import { download, renderMapImage } from '../app/io';
+import { download, renderMapImage, slug } from '../app/io';
 import { useMonitorData } from './Monitor';
 import { explorerStatus, polishVerdict } from '../explorer/client';
 
@@ -17,7 +17,7 @@ export function VerdictPanel() {
   if (!data) return <div className="flex h-60 items-center justify-center text-ink-3"><Loader2 className="size-5 animate-spin" /></div>;
   const v = data.verdict;
   const md = verdictToMarkdown(doc, v);
-  const name = doc.project.name.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase();
+  const name = slug(doc.project.name);
   const exportPdf = async () => {
     const { jsPDF } = await import('jspdf');
     const pdf = new jsPDF({ unit: 'pt', format: 'a4' });

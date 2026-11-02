@@ -154,10 +154,7 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
       <ShapeBg shape={shape} color={bg} border={selected ? 'var(--accent)' : bd} dashed={vs.borderStyle === 'dashed' ? '6 4' : vs.borderStyle === 'dotted' ? '1.5 3' : undefined} />
       <NodeResizer isVisible={selected && !raw.locked} minWidth={100} minHeight={40} color="var(--accent)"
         onResizeStart={() => useProject.getState().begin()}
-        onResizeEnd={(_, p) => {
-          useProject.getState().apply((d) => op.updateNode(op.moveNodes(d, { [id]: { x: p.x, y: p.y } }), id, { dimensions: { width: Math.round(p.width), height: Math.round(p.height) } }));
-          useProject.getState().end();
-        }} />
+        onResizeEnd={() => useProject.getState().end()} />
       {showHeat && heat && heat.state !== 'idle' && (
         <div className="absolute -left-[3px] top-2 bottom-2 w-[4px] rounded-full" style={{ background: heatColor }} title={`${HEAT_LABEL[heat.state]}: ${heat.causes.join(' · ')}`} aria-label={`Termómetro: ${HEAT_LABEL[heat.state]}`} />
       )}
@@ -233,7 +230,7 @@ export const GroupNodeView = memo(function GroupNodeView({ id, selected }: P) {
       }}>
       <NodeResizer isVisible={selected && !node.collapsed && !node.locked} minWidth={160} minHeight={80} color="var(--accent)"
         onResizeStart={() => useProject.getState().begin()}
-        onResizeEnd={(_, p) => { useProject.getState().apply((d) => op.updateNode(op.moveNodes(d, { [id]: { x: p.x, y: p.y } }), id, { dimensions: { width: Math.round(p.width), height: Math.round(p.height) } })); useProject.getState().end(); }} />
+        onResizeEnd={() => useProject.getState().end()} />
       <div className="flex items-center gap-1.5 px-2.5 pt-2">
         <button type="button" className="nodrag rounded p-0.5 text-ink-3 hover:bg-surface-2 hover:text-ink" onClick={toggle} aria-label={node.collapsed ? 'Desplegar grupo' : 'Plegar grupo'} data-testid="group-toggle">
           {node.collapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
@@ -256,7 +253,7 @@ export const NoteNodeView = memo(function NoteNodeView({ id, selected }: P) {
       className={cx('mdf-pop relative size-full min-h-[60px] min-w-[150px] rounded-lg border px-3 py-2 text-[12.5px] leading-snug text-ink shadow-sm', isComment && 'rounded-bl-sm')}
       style={{ background: 'var(--n-amber-bg)', borderColor: selected ? 'var(--accent)' : 'var(--n-amber-bd)', opacity: hl.active && !hl.nodes.has(id) ? 0.3 : 1, maxWidth: node.dimensions ? undefined : 260 }}>
       <NodeResizer isVisible={selected && !node.locked} minWidth={120} minHeight={50} color="var(--accent)"
-        onResizeEnd={(_, p) => useProject.getState().apply((d) => op.updateNode(op.moveNodes(d, { [id]: { x: p.x, y: p.y } }), id, { dimensions: { width: Math.round(p.width), height: Math.round(p.height) } }))} />
+        onResizeStart={() => useProject.getState().begin()} onResizeEnd={() => useProject.getState().end()} />
       {isComment && <MessageSquare className="mb-1 size-3.5 text-cond" />}
       <InlineTitle node={node} multiline className="whitespace-pre-wrap" />
       <Handles />

@@ -119,7 +119,6 @@ export function useFlowElements(isolate: Set<string> | null) {
         hidden,
         deletable: false,
         reconnectable: true,
-        zIndex: e.type === 'flow' ? 1 : 0,
       };
       const entry = { src: e, key, edge };
       next.set(e.id, entry);

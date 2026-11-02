@@ -35,9 +35,8 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
-/** Limitador sencillo por IP (ventana de 60 s). */
-const hits = new Map<string, number[]>();
-function rateLimited(ip: string, limit: number): boolean {
+/** Limitador sencillo por IP (ventana de 60 s), uno por instancia del servidor. */
+function rateLimited(hits: Map<string, number[]>, ip: string, limit: number): boolean {
   const now = Date.now();
   const list = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
   list.push(now);
@@ -60,11 +59,12 @@ export async function generateValidated<T>(provider: Provider, schema: z.ZodType
   throw new ProviderError('El proveedor devolvió una estructura no válida tras varios intentos. No se ha incorporado nada al mapa.', 502);
 }
 
-export interface ApiOptions { env: Env; log?: (msg: string) => void }
+export interface ApiOptions { env: Env; log?: (msg: string) => void; /** solo pruebas: proveedor simulado */ provider?: Provider }
 
-export function createApiHandler({ env, log = (m) => console.error(m) }: ApiOptions) {
-  const cfg = resolveProvider(env);
+export function createApiHandler({ env, log = (m) => console.error(m), provider: injected }: ApiOptions) {
+  const cfg = injected ? { provider: injected, name: injected.id, configured: true, reason: '' } : resolveProvider(env);
   const limit = Number(env.EXPLORER_RATE_LIMIT ?? 40);
+  const hits = new Map<string, number[]>();
 
   return async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolean> {
     const url = new URL(req.url ?? '/', 'http://localhost');
@@ -83,7 +83,7 @@ export function createApiHandler({ env, log = (m) => console.error(m) }: ApiOpti
         return true;
       }
       if (req.method !== 'POST') { send(res, 405, { error: 'Método no permitido' }); return true; }
-      if (rateLimited(ip, limit)) { send(res, 429, { error: 'Demasiadas peticiones. Espera un minuto.' }); return true; }
+      if (rateLimited(hits, ip, limit)) { send(res, 429, { error: 'Demasiadas peticiones. Espera un minuto.' }); return true; }
       const body = await readJson(req);
 
       if (url.pathname === '/api/documents/extract') {

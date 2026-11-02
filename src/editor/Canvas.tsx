@@ -35,6 +35,8 @@ export function Canvas({ resolvedTheme }: { resolvedTheme: 'light' | 'dark' }) {
   const isolate = useMemo(() => (trace?.isolate && highlight.trace ? new Set(highlight.trace.nodeIds) : null), [trace?.isolate, highlight.trace]);
   const { nodes, edges } = useFlowElements(isolate);
   const [menu, setMenu] = useState<MenuState | null>(null);
+  // encuadre inicial solo si el mapa ya tiene contenido (en un mapa vacío no debe moverse al crear)
+  const [initialFit] = useState(() => Object.keys(useProject.getState().doc?.nodes ?? {}).length > 0);
   const wrapper = useRef<HTMLDivElement>(null);
   const frame = doc?.project.settings.frame;
   const extraColors = useMemo(() => [...new Set(Object.values(doc?.edges ?? {}).map((e) => e.visualStyle.color).filter((c): c is string => !!c))], [doc?.edges]);
@@ -55,19 +57,26 @@ export function Canvas({ resolvedTheme }: { resolvedTheme: 'light' | 'dark' }) {
   const onNodesChange = useCallback((changes: NodeChange<Node<RFNodeData>>[]) => {
     const pos: Record<string, { x: number; y: number }> = {};
     const sizes: Record<string, { width: number; height: number }> = {};
+    const resized: Record<string, { width: number; height: number }> = {};
     let selChanged = false;
     const sel = new Set(useUI.getState().selection.nodes);
     for (const c of changes) {
       if (c.type === 'position' && c.position) pos[c.id] = c.position;
       else if (c.type === 'dimensions' && c.dimensions) {
-        if (c.resizing === undefined || !c.resizing) sizes[c.id] = { width: c.dimensions.width, height: c.dimensions.height };
-        else sizes[c.id] = { width: c.dimensions.width, height: c.dimensions.height };
+        sizes[c.id] = { width: c.dimensions.width, height: c.dimensions.height };
+        if (c.setAttributes) resized[c.id] = { width: Math.round(c.dimensions.width), height: Math.round(c.dimensions.height) };
       } else if (c.type === 'select') {
         selChanged = true;
         if (c.selected) sel.add(c.id); else sel.delete(c.id);
       }
     }
-    if (Object.keys(pos).length) useProject.getState().apply((d) => op.moveNodes(d, pos));
+    if (Object.keys(pos).length || Object.keys(resized).length) {
+      useProject.getState().apply((d) => {
+        let out = Object.keys(pos).length ? op.moveNodes(d, pos) : d;
+        for (const [id, dim] of Object.entries(resized)) if (out.nodes[id]) out = { ...out, nodes: { ...out.nodes, [id]: { ...out.nodes[id], dimensions: dim } } };
+        return out;
+      });
+    }
     if (Object.keys(sizes).length) useUI.getState().setSizes(sizes);
     if (selChanged) useUI.setState((s) => ({ selection: { ...s.selection, nodes: [...sel] } }));
   }, []);
@@ -180,12 +189,11 @@ export function Canvas({ resolvedTheme }: { resolvedTheme: 'light' | 'dark' }) {
           zoomOnDoubleClick={false}
           minZoom={0.08}
           maxZoom={2.5}
-          fitView
+          fitView={initialFit}
           fitViewOptions={{ padding: 0.15, maxZoom: 1.1 }}
           colorMode={resolvedTheme}
           attributionPosition="top-right"
           onlyRenderVisibleElements={nodes.length > 250}
-          elevateEdgesOnSelect
           reconnectRadius={14}
         >
           {frame?.mode === 'grid'

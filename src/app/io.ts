@@ -9,7 +9,7 @@ import * as A from './actions';
 let rfInstance: ReactFlowInstance | null = null;
 export function setRF(rf: ReactFlowInstance) { rfInstance = rf; }
 
-const slug = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 60) || 'mapa';
+export const slug = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 60) || 'mapa';
 const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
 
 export function download(data: Blob | string, filename: string, type = 'application/octet-stream') {

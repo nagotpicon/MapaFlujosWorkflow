@@ -173,6 +173,8 @@ body {
 .react-flow__edge-path { transition: stroke-width 260ms ease, stroke 260ms ease, opacity 260ms ease; }
 .react-flow__edge.selected .mdf-edge-hit { stroke: color-mix(in srgb, var(--accent) 22%, transparent); }
 .react-flow__connectionline path { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 4; }
+.react-flow__resize-control { z-index: 6; }
+.react-flow__handle { z-index: 7; }
 .react-flow__resize-control.handle { width: 8px; height: 8px; border-radius: 3px; background: var(--surface); border: 1.5px solid var(--accent); }
 .react-flow__resize-control.line { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
 

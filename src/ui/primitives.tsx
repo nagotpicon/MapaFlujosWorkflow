@@ -103,7 +103,7 @@ export const Menu = {
   Trigger: RMenu.Trigger,
   Content: ({ children, align = 'start', side = 'bottom' }: { children: ReactNode; align?: 'start' | 'end' | 'center'; side?: 'bottom' | 'top' | 'right' | 'left' }) => (
     <RMenu.Portal>
-      <RMenu.Content align={align} side={side} sideOffset={6} collisionPadding={12} className="z-[75] min-w-52 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in">
+      <RMenu.Content align={align} side={side} sideOffset={6} collisionPadding={12} className="z-[75] max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-52 overflow-y-auto rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in">
         {children}
       </RMenu.Content>
     </RMenu.Portal>
@@ -126,7 +126,7 @@ export const Menu = {
   ),
   SubContent: ({ children }: { children: ReactNode }) => (
     <RMenu.Portal>
-      <RMenu.SubContent sideOffset={4} className="z-[76] min-w-48 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in">{children}</RMenu.SubContent>
+      <RMenu.SubContent sideOffset={4} className="z-[76] max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto min-w-48 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in">{children}</RMenu.SubContent>
     </RMenu.Portal>
   ),
 };

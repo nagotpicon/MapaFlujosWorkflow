@@ -31,9 +31,9 @@ export async function openProject(doc: ProjectDoc, repairs: string[] = []) {
   useProject.getState().load(doc, repairs);
   useSim.setState({ result: null, fingerprint: null, cursor: 0, step: -1, play: 'stopped', heat: null, diagnostics: [] });
   useUI.setState({ selection: { nodes: [], edges: [] }, overlay: null, trace: null, focusNodeId: null, sizes: {} });
+  if (Object.keys(doc.nodes).length) setTimeout(() => fit(), 80);
   await repo.saveProject(doc);
   await repo.setSetting('lastProjectId', doc.project.id);
-  setTimeout(() => fit(), 80);
 }
 
 export async function newProject(name = 'Proyecto sin título') {
