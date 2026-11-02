@@ -1,0 +1,225 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+/* ------------------------------------------------------------------
+   MAPA DE FLUJOS — sistema visual
+   Dos temas diseñados expresamente (no invertidos). Misma identidad:
+   tinta grafito + cobalto de flujo + semántica de color contenida.
+   ------------------------------------------------------------------ */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f6f3;
+  --canvas: #fafaf8;
+  --grid-dot: #dcdad4;
+  --surface: #ffffff;
+  --surface-2: #f2f2ee;
+  --surface-3: #e9e8e3;
+  --overlay: rgba(28, 27, 25, 0.28);
+  --border: #e5e3dd;
+  --border-strong: #cfccc4;
+  --text: #1b1b19;
+  --text-2: #57554f;
+  --text-3: #8b8880;
+  --accent: #3f51e6;
+  --accent-soft: #eceefe;
+  --accent-text: #2f3fc4;
+  --on-accent: #ffffff;
+  --focus: #3f51e6;
+  --shadow-sm: 0 1px 2px rgba(20, 18, 14, 0.05);
+  --shadow-md: 0 4px 16px -4px rgba(20, 18, 14, 0.10), 0 1px 3px rgba(20, 18, 14, 0.05);
+  --shadow-lg: 0 18px 48px -12px rgba(20, 18, 14, 0.18), 0 2px 6px rgba(20, 18, 14, 0.05);
+
+  --flow: #2a78d6;
+  --gain: #0f9f74;
+  --loss: #d9464c;
+  --condition: #c98306;
+  --transform: #7c4ce6;
+  --concept: #9a978f;
+
+  --heat-cold: #4f8ff7;
+  --heat-rhythm: #18a874;
+  --heat-warm: #f59e0b;
+  --heat-hot: #e5484d;
+
+  /* paleta de nodos: fondo / borde / acento */
+  --n-slate-bg: #ffffff;   --n-slate-bd: #dedcd6;  --n-slate-ac: #6b6a64;
+  --n-blue-bg: #f1f5ff;    --n-blue-bd: #cddcfd;   --n-blue-ac: #2f6ff0;
+  --n-emerald-bg: #eefaf4; --n-emerald-bd: #c4ebd8; --n-emerald-ac: #0f9f74;
+  --n-rose-bg: #fff2f2;    --n-rose-bd: #f6cfd0;   --n-rose-ac: #d9464c;
+  --n-amber-bg: #fff8ea;   --n-amber-bd: #f3dfb0;  --n-amber-ac: #c98306;
+  --n-violet-bg: #f6f2ff;  --n-violet-bd: #dfd3fb; --n-violet-ac: #7c4ce6;
+  --n-cyan-bg: #eefbfd;    --n-cyan-bd: #c3eaf1;   --n-cyan-ac: #0e94ad;
+  --n-pink-bg: #fff1f8;    --n-pink-bd: #f6cde3;   --n-pink-ac: #cf3b8b;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121316;
+  --canvas: #16171b;
+  --grid-dot: #2a2c33;
+  --surface: #1c1e23;
+  --surface-2: #23252b;
+  --surface-3: #2b2e35;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --border: #2c2f36;
+  --border-strong: #3b3f48;
+  --text: #e9eaee;
+  --text-2: #a7aab4;
+  --text-3: #767a86;
+  --accent: #8090ff;
+  --accent-soft: #252a4a;
+  --accent-text: #aab5ff;
+  --on-accent: #0f1020;
+  --focus: #8f9cff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px -6px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 22px 56px -14px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  --flow: #3f8de8;
+  --gain: #1fa877;
+  --loss: #e66767;
+  --condition: #c98500;
+  --transform: #9085e9;
+  --concept: #6f7380;
+
+  --heat-cold: #6ea7ff;
+  --heat-rhythm: #3ccf9a;
+  --heat-warm: #f5b545;
+  --heat-hot: #ff6b70;
+
+  --n-slate-bg: #202228;   --n-slate-bd: #353841;  --n-slate-ac: #a7aab4;
+  --n-blue-bg: #1b2335;    --n-blue-bd: #2f4370;   --n-blue-ac: #6aa1ff;
+  --n-emerald-bg: #17271f; --n-emerald-bd: #255640; --n-emerald-ac: #3ccf9a;
+  --n-rose-bg: #2a1c1f;    --n-rose-bd: #5c3036;   --n-rose-ac: #ff7a7e;
+  --n-amber-bg: #29231a;   --n-amber-bd: #5a4520;  --n-amber-ac: #f2b84b;
+  --n-violet-bg: #221d33;  --n-violet-bd: #45366f;  --n-violet-ac: #a98bff;
+  --n-cyan-bg: #172528;    --n-cyan-bd: #24515a;   --n-cyan-ac: #4fc9de;
+  --n-pink-bg: #2a1b25;    --n-pink-bd: #5a2f4a;   --n-pink-ac: #f07ab8;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-ink-3: var(--text-3);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-flow: var(--flow);
+  --color-gain: var(--gain);
+  --color-loss: var(--loss);
+  --color-cond: var(--condition);
+  --color-transform: var(--transform);
+  --color-concept: var(--concept);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --shadow-soft: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+.tabular { font-variant-numeric: tabular-nums; }
+
+*:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+::selection { background: var(--accent-soft); }
+
+/* barras de desplazamiento discretas */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+/* ------------------------------------------------------------------ */
+/* React Flow                                                          */
+/* ------------------------------------------------------------------ */
+.react-flow { --xy-background-color: var(--canvas); background: var(--canvas); }
+.react-flow__attribution { background: transparent !important; opacity: 0.55; font-size: 9px; }
+.react-flow__attribution a { color: var(--text-3) !important; }
+.react-flow__minimap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.react-flow__minimap-mask { fill: var(--overlay); fill-opacity: 0.35; }
+.react-flow__selection, .react-flow__nodesselection-rect {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 6px;
+}
+.react-flow__node { font-family: var(--font-sans); }
+.react-flow__node.selectable:focus-visible { outline: none; }
+.react-flow__edge-path { transition: stroke-width 260ms ease, stroke 260ms ease, opacity 260ms ease; }
+.react-flow__edge.selected .mdf-edge-hit { stroke: color-mix(in srgb, var(--accent) 22%, transparent); }
+.react-flow__connectionline path { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 4; }
+.react-flow__resize-control.handle { width: 8px; height: 8px; border-radius: 3px; background: var(--surface); border: 1.5px solid var(--accent); }
+.react-flow__resize-control.line { border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+
+.mdf-handle {
+  width: 10px !important; height: 10px !important;
+  border-radius: 999px !important;
+  background: var(--surface) !important;
+  border: 1.5px solid var(--border-strong) !important;
+  opacity: 0;
+  transition: opacity 140ms ease, transform 140ms ease, border-color 140ms ease;
+}
+.react-flow__node:hover .mdf-handle,
+.react-flow__node.selected .mdf-handle,
+.connecting .mdf-handle { opacity: 1; }
+.mdf-handle:hover { border-color: var(--accent) !important; transform: scale(1.25); }
+
+/* aparición de nodos */
+@keyframes mdf-pop { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+.mdf-pop { animation: mdf-pop 220ms cubic-bezier(.2,.8,.2,1); }
+
+@keyframes mdf-dash { to { stroke-dashoffset: -24; } }
+@keyframes mdf-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes mdf-glow { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--pulse, var(--flow)) 0%, transparent); } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--pulse, var(--flow)) 18%, transparent); } }
+@keyframes mdf-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes mdf-slide-in-r { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+@keyframes mdf-slide-in-b { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.mdf-fade-in { animation: mdf-fade-in 200ms ease both; }
+.mdf-slide-r { animation: mdf-slide-in-r 220ms cubic-bezier(.2,.8,.2,1) both; }
+.mdf-slide-b { animation: mdf-slide-in-b 220ms cubic-bezier(.2,.8,.2,1) both; }
+.mdf-glow { animation: mdf-glow 1.8s ease-in-out infinite; }
+
+.mdf-no-motion *, .mdf-no-motion *::before, .mdf-no-motion *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .mdf-pop, .mdf-fade-in, .mdf-slide-r, .mdf-slide-b, .mdf-glow { animation: none; }
+}
+
+/* entradas numéricas sin flechas */
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+/* deslizador */
+input[type="range"].mdf-range { -webkit-appearance: none; appearance: none; height: 18px; background: transparent; width: 100%; }
+input[type="range"].mdf-range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: var(--surface-3); }
+input[type="range"].mdf-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 999px; background: var(--surface); border: 2px solid var(--accent); box-shadow: var(--shadow-sm); }
+input[type="range"].mdf-range::-moz-range-track { height: 4px; border-radius: 4px; background: var(--surface-3); }
+input[type="range"].mdf-range::-moz-range-thumb { width: 12px; height: 12px; border-radius: 999px; background: var(--surface); border: 2px solid var(--accent); }
+
+@media print {
+  .no-print { display: none !important; }
+}

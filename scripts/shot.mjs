@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const base = process.argv[2] ?? 'http://localhost:5173';
+const out = '/tmp/claude-0/shots';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const errors = [];
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`${m.type()}: ${m.text()}`); });
+page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+await page.goto(base);
+await page.waitForTimeout(1500);
+await page.screenshot({ path: `${out}/01-start.png` });
+await page.getByTestId('open-demo').click();
+await page.waitForTimeout(2500);
+await page.screenshot({ path: `${out}/02-demo-flow.png` });
+console.log(errors.slice(0, 30).join('\n'));
+await browser.close();

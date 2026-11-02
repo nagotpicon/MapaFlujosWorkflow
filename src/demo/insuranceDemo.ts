@@ -44,8 +44,8 @@ export function buildInsuranceDemo(): ProjectDoc {
   const clasif = N('bubble', 'Clasificación de llamadas', 260, 260, { layerIds: [lFlow.id], visualStyle: { icon: 'Filter', color: 'violet' } as never, description: 'Separa llamadas útiles de no útiles.' });
   const fClasif = b.behavior(clasif, 'filter', { passRatio: 0.65 }, { ranges: { passRatio: { favorable: 0.72, unfavorable: 0.55 } } });
 
-  const utiles = N('bubble', 'Llamadas útiles', 520, 180, { layerIds: [lFlow.id], visualStyle: { icon: 'CheckCircle2', color: 'blue' } as never });
-  const noUtiles = N('bubble', 'Llamadas no útiles', 520, 420, { layerIds: [lFlow.id], visualStyle: { icon: 'XCircle', color: 'rose' } as never, description: 'Fuera de perfil, incompletas o mal clasificadas.' });
+  const utiles = N('bubble', 'Llamadas útiles', 520, 180, { layerIds: [lFlow.id], visualStyle: { icon: 'CircleCheck', color: 'blue' } as never });
+  const noUtiles = N('bubble', 'Llamadas no útiles', 520, 420, { layerIds: [lFlow.id], visualStyle: { icon: 'CircleX', color: 'rose' } as never, description: 'Fuera de perfil, incompletas o mal clasificadas.' });
   b.set(noUtiles, 'weight', { importance: weighted(3), influence: weighted(-4), impact: null });
   b.behavior(noUtiles, 'reducer', { ratio: 0.5 }, { label: 'Parte irrecuperable (fuera de perfil)' });
 

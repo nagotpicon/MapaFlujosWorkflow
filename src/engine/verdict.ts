@@ -36,6 +36,7 @@ export function buildVerdict(doc: ProjectDoc, m: MonitorData, scenarioName: stri
   const topF = m.frictions.filter((f) => f.impact > 1e-6);
   const topD = m.drivers.filter((d) => d.impact > 1e-6);
   const bottleneck = m.neuralgic.find((d) => d.kind === 'bottleneck');
+  const bnName = bottleneck ? (doc.nodes[bottleneck.nodeIds[0]]?.title ?? bottleneck.title) : '';
   const hyp = k.hypotheses + k.approximations;
 
   let headline: string;
@@ -52,8 +53,8 @@ export function buildVerdict(doc: ProjectDoc, m: MonitorData, scenarioName: stri
   } else {
     point = `Te lo digo como es: de cada 100 que entran, te llegan unos ${c(per100)} al final.`;
     if (topF[0]) point += ` Lo que más te está frenando es «${topF[0].title}»: si lo resolvieras ganarías unas ${c(topF[0].impact)} ${unit} más (${cp(topF[0].impactPct)}).`;
-    else if (bottleneck) point += ` Tu tapón está en «${bottleneck.title.replace(/^Cuello de botella: /, '').replace(/[«»]/g, '')}».`;
-    if (bottleneck && topF[0] && !bottleneck.nodeIds.includes(topF[0].nodeId)) point += ` Y no te olvides del tapón: ${bottleneck.title.toLowerCase()}.`;
+    else if (bottleneck) point += ` Tu tapón está en «${bnName}».`;
+    if (bottleneck && topF[0] && !bottleneck.nodeIds.includes(topF[0].nodeId)) point += ` Y ojo con el tapón: «${bnName}» va saturado.`;
   }
 
   const brakes = topF.slice(0, 3).map((f) => `«${f.title}» te cuesta unas ${c(f.impact)} ${unit} (${cp(f.impactPct)} del resultado). ${f.reason}.${f.hypothesis ? ' Ojo: esto está puesto a ojo.' : ''}`);
@@ -67,7 +68,7 @@ export function buildVerdict(doc: ProjectDoc, m: MonitorData, scenarioName: stri
 
   let tomorrow: string;
   if (bottleneck && topF[0] && bottleneck.nodeIds.includes(topF[0].nodeId)) tomorrow = `Yo mañana me centraría en «${topF[0].title}». Es tu tapón y además lo que más resultado te devuelve.`;
-  else if (bottleneck) tomorrow = `Yo mañana miraría cómo ampliar ${bottleneck.title.replace(/^Cuello de botella: /, '').toLowerCase()} antes de buscar más entrada, porque lo que traigas de más se va a quedar ahí atascado.`;
+  else if (bottleneck) tomorrow = `Yo mañana miraría cómo ampliar «${bnName}» antes de buscar más entrada, porque lo que traigas de más se va a quedar ahí atascado.`;
   else if (topF[0]) tomorrow = `Yo mañana atacaría «${topF[0].title}» con una prueba pequeña, de bajo coste, para ver si de verdad pesa lo que crees.`;
   else tomorrow = 'Yo mañana haría una prueba pequeña para confirmar los números que más pesan en el mapa; ahora mismo no veo un freno claro.';
   if (hyp > 0 && topF[0]?.hypothesis) tomorrow += ' Y antes de gastar un euro, comprueba ese dato, que lo tienes como hipótesis.';
