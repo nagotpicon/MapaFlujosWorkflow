@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, FileUp, Plus, Sparkles, Trash2, Layers3 } from 'lucide-react';
+import { ArrowRight, FileUp, Plus, Sparkles, Layers3 } from 'lucide-react';
 import * as repo from '../persistence/repository';
-import { Button, IconButton } from '../ui/primitives';
+import { Button, ConfirmDeleteButton } from '../ui/primitives';
 import * as A from './actions';
 import { importFromFile } from './io';
 import { Logo } from './TopBar';
@@ -26,7 +26,7 @@ export function ProjectList({ onOpen }: { onOpen?: () => void }) {
             </div>
             <ArrowRight className="size-4 text-ink-3 opacity-0 group-hover:opacity-100" />
           </button>
-          <IconButton label="Eliminar proyecto" variant="danger" onClick={async () => { if (confirm(`¿Eliminar «${p.name}» y todas sus versiones? No se puede deshacer.`)) { await repo.deleteProject(p.id); load(); } }}><Trash2 className="size-4" /></IconButton>
+          <ConfirmDeleteButton label={`Eliminar «${p.name}» y sus versiones`} confirmLabel="¿Borrar? No se puede deshacer" onConfirm={async () => { await repo.deleteProject(p.id); load(); }} />
         </li>
       ))}
     </ul>

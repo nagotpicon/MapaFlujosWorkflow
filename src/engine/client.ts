@@ -5,12 +5,17 @@
 import { ENGINE_API, type EngineFn, type EngineResult } from './api';
 
 let worker: Worker | null = null;
+let workerBroken = false;
 let seq = 0;
-const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>();
+const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void; fn: EngineFn; args: unknown[] }>();
+
+function runSync(fn: EngineFn, args: unknown[]) {
+  return (ENGINE_API[fn] as (...a: unknown[]) => unknown)(...args);
+}
 
 function getWorker(): Worker | null {
   if (worker) return worker;
-  if (typeof Worker === 'undefined') return null;
+  if (workerBroken || typeof Worker === 'undefined') return null;
   try {
     worker = new Worker(new URL('../workers/engine.worker.ts', import.meta.url), { type: 'module' });
     worker.onmessage = (ev: MessageEvent<{ id: number; ok: boolean; result?: unknown; error?: string }>) => {
@@ -20,11 +25,15 @@ function getWorker(): Worker | null {
       if (ev.data.ok) p.resolve(ev.data.result);
       else p.reject(new Error(ev.data.error));
     };
-    worker.onerror = (e) => {
-      for (const p of pending.values()) p.reject(new Error(e.message || 'Error en el motor'));
-      pending.clear();
+    worker.onerror = () => {
+      // el entorno no admite el Worker (o falló al cargar): se calcula en la página
+      workerBroken = true;
       worker?.terminate();
       worker = null;
+      for (const p of pending.values()) {
+        try { p.resolve(runSync(p.fn, p.args)); } catch (err) { p.reject(err as Error); }
+      }
+      pending.clear();
     };
     return worker;
   } catch {
@@ -43,7 +52,7 @@ export function runEngine<F extends EngineFn>(fn: F, ...args: Parameters<(typeof
   }
   const id = ++seq;
   return new Promise((resolve, reject) => {
-    pending.set(id, { resolve: resolve as (v: unknown) => void, reject });
+    pending.set(id, { resolve: resolve as (v: unknown) => void, reject, fn, args: args as unknown[] });
     w.postMessage({ id, fn, args });
   });
 }

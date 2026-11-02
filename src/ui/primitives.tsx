@@ -301,3 +301,17 @@ export const fmt = (n: number | null | undefined, d = 1) => {
   return n.toLocaleString('es-ES', { maximumFractionDigits: a >= 100 ? 0 : a >= 10 ? Math.min(d, 1) : Math.max(d, 2), minimumFractionDigits: 0 });
 };
 export const pct = (r: number | null | undefined, d = 0) => (r == null || !Number.isFinite(r) ? '—' : `${(r * 100).toLocaleString('es-ES', { maximumFractionDigits: d })} %`);
+
+/** Botón de borrado con confirmación en la página: primer clic arma, segundo clic confirma. */
+export function ConfirmDeleteButton({ label, confirmLabel = '¿Seguro? Pulsa otra vez', onConfirm, size = 'sm', className }: { label: string; confirmLabel?: string; onConfirm: () => void; size?: 'xs' | 'sm'; className?: string }) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => { if (!armed) return; const t = setTimeout(() => setArmed(false), 3500); return () => clearTimeout(t); }, [armed]);
+  if (armed) {
+    return (
+      <Button size={size} variant="danger" className={cx('bg-[color-mix(in_srgb,var(--loss)_12%,transparent)]', className)} onClick={() => { setArmed(false); onConfirm(); }} data-testid="confirm-delete">
+        {confirmLabel}
+      </Button>
+    );
+  }
+  return <IconButton size={size} label={label} variant="danger" className={className} onClick={() => setArmed(true)}><X className="size-3.5" /></IconButton>;
+}

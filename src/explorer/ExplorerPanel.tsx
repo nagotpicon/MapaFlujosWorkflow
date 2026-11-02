@@ -11,7 +11,7 @@ import {
 import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
 import * as A from '../app/actions';
-import { Badge, Button, Field, IconButton, Segmented, TextArea, TextInput, cx } from '../ui/primitives';
+import { Badge, Button, ConfirmDeleteButton, Field, IconButton, Segmented, TextArea, TextInput, cx } from '../ui/primitives';
 import { AREA_LABEL, STAGE_LABEL, type Proposal } from './shared/schemas';
 import { DOMAIN_LABEL, detectDomain } from './shared/templates';
 import { COMMAND_TEXT, cancel, deleteSession, generateProposal, loadSessions, newSession, refreshStatus, sendTurn, update, useExplorer, type ExplorerSession } from './session';
@@ -83,7 +83,7 @@ function Sidebar() {
                   <span className="block truncate text-[12.5px] text-ink">{s.title}</span>
                   <span className="block text-[10.5px] text-ink-3">{s.mode === 'strategy' ? 'Creador' : 'Entrevista'} · {s.messages.filter((m) => m.role === 'user').length} respuestas</span>
                 </button>
-                <IconButton size="xs" label="Eliminar exploración y sus datos" variant="danger" className="opacity-0 group-hover:opacity-100" onClick={() => { if (confirm('¿Eliminar esta exploración y su conversación?')) void deleteSession(s.id); }}><Trash2 className="size-3" /></IconButton>
+                <ConfirmDeleteButton size="xs" label="Eliminar exploración y sus datos" confirmLabel="¿Borrar?" className="opacity-0 group-hover:opacity-100 focus:opacity-100" onConfirm={() => void deleteSession(s.id)} />
               </li>
             ))}
           </ul>
