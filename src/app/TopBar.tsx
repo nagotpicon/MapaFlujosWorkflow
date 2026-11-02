@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Activity, Check, CircleAlert, Cloud, Download, FileJson, FileImage, FileText, FolderOpen, Grid3x3, History, Image, Loader2, Monitor, Moon,
-  MoreHorizontal, PanelBottom, PanelRight, Plus, Redo2, Search, Settings, Sparkles, Sun, Thermometer, Undo2, Upload, Copy, HelpCircle, MessageCircleHeart, Archive, Layers3,
+  MoreHorizontal, PanelBottom, PanelRight, Plus, Redo2, Search, Settings, Sparkles, Sun, Thermometer, Undo2, Upload, Copy, HelpCircle, MessageCircleHeart, Archive, Layers3, ClipboardPaste,
 } from 'lucide-react';
 import { useProject } from '../store/projectStore';
 import { useUI, writeLS, type ViewMode } from '../store/uiStore';
@@ -117,6 +117,7 @@ export function TopBar() {
           <Menu.Separator />
           <Menu.Label>Importar</Menu.Label>
           <Menu.Item icon={<Upload />} onSelect={() => void importFromFile()}>Importar proyecto (.json)</Menu.Item>
+          <Menu.Item icon={<ClipboardPaste />} onSelect={() => open('paste')}>Pegar proyecto (JSON)</Menu.Item>
           <Menu.Separator />
           <Menu.Label>Copias de seguridad</Menu.Label>
           <Menu.Item icon={<Archive />} onSelect={() => void exportBackup()}>Copia de seguridad completa</Menu.Item>

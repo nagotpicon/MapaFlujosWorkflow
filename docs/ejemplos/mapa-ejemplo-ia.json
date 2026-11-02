@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "prj_guitarra_ejemplo",
+    "name": "Captar alumnos de guitarra (ejemplo IA)",
+    "description": "Mapa de ejemplo generado siguiendo el MANUAL-IA. Valores ficticios.",
+    "createdAt": 1767225600000,
+    "updatedAt": 1767225600000,
+    "activeScenarioId": "scn_base",
+    "settings": {
+      "simulation": {
+        "iterations": 12
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "n_flyers",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "input",
+      "title": "Flyers repartidos",
+      "description": "Flyers por semana.",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "visualStyle": {},
+      "metadata": {
+        "confidence": "estimate"
+      },
+      "dimensionValues": {
+        "quantity": {
+          "value": 200,
+          "unit": "flyers"
+        },
+        "quality": {
+          "value": 0.6
+        }
+      },
+      "behaviorIds": [
+        "b_gen"
+      ],
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_responden",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "bubble",
+      "title": "Personas que responden",
+      "position": {
+        "x": 300,
+        "y": 0
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "behaviorIds": [
+        "b_resp"
+      ],
+      "createdAt": 1767225600001,
+      "updatedAt": 1767225600001
+    },
+    {
+      "id": "n_validos",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "bubble",
+      "title": "Contactos válidos",
+      "position": {
+        "x": 600,
+        "y": 0
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "behaviorIds": [
+        "b_valid"
+      ],
+      "createdAt": 1767225600002,
+      "updatedAt": 1767225600002
+    },
+    {
+      "id": "n_prueba",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "bubble",
+      "title": "Clase de prueba",
+      "position": {
+        "x": 900,
+        "y": 0
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "behaviorIds": [
+        "b_cap"
+      ],
+      "createdAt": 1767225600003,
+      "updatedAt": 1767225600003
+    },
+    {
+      "id": "n_alumnos",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "output",
+      "title": "Alumnos que pagan",
+      "position": {
+        "x": 1200,
+        "y": 0
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "createdAt": 1767225600004,
+      "updatedAt": 1767225600004
+    },
+    {
+      "id": "n_desplaz",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "bubble",
+      "title": "Desplazamientos",
+      "description": "Fricción: tiempo y coste entre clientes.",
+      "position": {
+        "x": 900,
+        "y": 240
+      },
+      "visualStyle": {
+        "color": "rose"
+      },
+      "metadata": {
+        "confidence": "hypothesis"
+      },
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": -3
+        }
+      },
+      "createdAt": 1767225600005,
+      "updatedAt": 1767225600005
+    },
+    {
+      "id": "n_domicilio",
+      "projectId": "prj_guitarra_ejemplo",
+      "type": "bubble",
+      "title": "Clases en mi domicilio",
+      "description": "Medida que compensa los desplazamientos. Empieza en la semana 4.",
+      "position": {
+        "x": 600,
+        "y": 240
+      },
+      "visualStyle": {
+        "color": "emerald"
+      },
+      "metadata": {},
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": 2
+        }
+      },
+      "createdAt": 1767225600006,
+      "updatedAt": 1767225600006,
+      "activationConditionId": "c_desde4"
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "b_gen",
+      "ownerId": "n_flyers",
+      "behaviorType": "generator",
+      "parameters": {
+        "amount": 200,
+        "mode": "continuous"
+      }
+    },
+    {
+      "id": "b_resp",
+      "ownerId": "n_responden",
+      "behaviorType": "filter",
+      "label": "Tasa de respuesta",
+      "parameters": {
+        "mode": "ratio",
+        "passRatio": 0.05
+      }
+    },
+    {
+      "id": "b_valid",
+      "ownerId": "n_validos",
+      "behaviorType": "filter",
+      "label": "Zona y horario compatibles",
+      "parameters": {
+        "mode": "ratio",
+        "passRatio": 0.6
+      }
+    },
+    {
+      "id": "b_cap",
+      "ownerId": "n_prueba",
+      "behaviorType": "restrictor",
+      "label": "Huecos libres por semana",
+      "parameters": {
+        "capacity": 4,
+        "excess": "queue"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_flyers",
+      "targetNodeId": "n_responden",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e2",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_responden",
+      "targetNodeId": "n_validos",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600001,
+        "updatedAt": 1767225600001
+      }
+    },
+    {
+      "id": "e3",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_validos",
+      "targetNodeId": "n_prueba",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600002,
+        "updatedAt": 1767225600002
+      }
+    },
+    {
+      "id": "e4",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_prueba",
+      "targetNodeId": "n_alumnos",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {
+        "loss": 0.3
+      },
+      "metadata": {
+        "description": "30% no se apunta tras la prueba",
+        "createdAt": 1767225600003,
+        "updatedAt": 1767225600003
+      }
+    },
+    {
+      "id": "e5",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_desplaz",
+      "targetNodeId": "n_prueba",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "top",
+        "targetAnchor": "bottom"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.25
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600004,
+        "updatedAt": 1767225600004
+      }
+    },
+    {
+      "id": "e6",
+      "projectId": "prj_guitarra_ejemplo",
+      "sourceNodeId": "n_domicilio",
+      "targetNodeId": "n_desplaz",
+      "type": "causal",
+      "visualStyle": {},
+      "behavior": {
+        "influence": {
+          "mode": "compensate",
+          "compensationType": "partial",
+          "compensationUnit": "points",
+          "amount": 2
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600005,
+        "updatedAt": 1767225600005
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "c_desde4",
+      "ownerId": "n_domicilio",
+      "ownerType": "node",
+      "label": "Desde la semana 4",
+      "conditionType": "iteration",
+      "operator": ">=",
+      "operands": [
+        {
+          "kind": "const",
+          "value": 4
+        }
+      ],
+      "expr": {
+        "id": "cx_desde4",
+        "conditionType": "iteration",
+        "operator": ">=",
+        "operands": [
+          {
+            "kind": "const",
+            "value": 4
+          }
+        ],
+        "children": []
+      },
+      "result": "activate",
+      "activationRules": {
+        "mode": "always",
+        "sustain": 1
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "id": "a1",
+      "ownerType": "node",
+      "ownerId": "n_responden",
+      "kind": "hypothesis",
+      "text": "Supongo un 5% de respuesta; hay que medirlo.",
+      "createdAt": 1767225600000
+    }
+  ],
+  "layers": [
+    {
+      "id": "lyr_general",
+      "name": "General",
+      "color": "#64748b",
+      "order": 0
+    }
+  ],
+  "dimensions": [],
+  "scenarios": [
+    {
+      "id": "scn_base",
+      "projectId": "prj_guitarra_ejemplo",
+      "name": "Situación actual",
+      "isBase": true,
+      "color": "#6366f1",
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "scn_huecos",
+      "projectId": "prj_guitarra_ejemplo",
+      "name": "Más huecos libres",
+      "description": "Abro 8 huecos de prueba por semana.",
+      "color": "#10b981",
+      "overrides": [
+        {
+          "id": "ov1",
+          "targetType": "behavior",
+          "targetId": "b_cap",
+          "path": "parameters.capacity",
+          "value": 8
+        }
+      ],
+      "createdAt": 1767225600001,
+      "updatedAt": 1767225600001
+    }
+  ],
+  "circuits": []
+}

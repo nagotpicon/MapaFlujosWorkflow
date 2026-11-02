@@ -9,6 +9,7 @@ import { SettingsPanel } from '../panels/Settings';
 import { HelpPanel } from '../panels/Help';
 import { ProjectList } from './StartScreen';
 import { ExplorerPanel } from '../explorer/ExplorerPanel';
+import { PasteImportDialog } from './PasteImport';
 
 export default function Overlays() {
   const overlay = useUI((s) => s.overlay);
@@ -39,6 +40,7 @@ export default function Overlays() {
       <Modal open={overlay === 'help'} onOpenChange={close} width="max-w-3xl" title="Ayuda" subtitle="Básico · Avanzado · Experto" icon={<HelpCircle />}>
         {overlay === 'help' && <HelpPanel />}
       </Modal>
+      <PasteImportDialog open={overlay === 'paste'} onOpenChange={close} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 # Mapa de Flujos
 
+> **Manuales:** [Manual de usuario](docs/MANUAL-USUARIO.md) (guía completa para personas) · [Manual para IA](docs/MANUAL-IA.md) (prompts, especificación JSON importable y selectores para agentes). Ejemplos validados en `docs/ejemplos/`.
+
 **Mapa mental + motor de comportamiento + circuitos de retroalimentación.**
 Una herramienta de pensamiento visual en la que cada burbuja puede ser una idea o
 una fuerza, y cada conexión una relación o un canal por el que circula un flujo

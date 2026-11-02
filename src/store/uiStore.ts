@@ -6,7 +6,7 @@ export type Tool = 'select' | 'bubble' | 'connect' | 'group' | 'input' | 'output
 export type ViewMode = 'mental' | 'flow' | 'energy' | 'system' | 'simulation';
 export type ThemePref = 'light' | 'dark' | 'system';
 export type BottomTab = 'simulation' | 'results' | 'diagnostics' | 'scenarios' | 'history' | 'events';
-export type Overlay = null | 'monitor' | 'explorer' | 'versions' | 'projects' | 'compare' | 'verdict' | 'help' | 'settings';
+export type Overlay = null | 'monitor' | 'explorer' | 'versions' | 'projects' | 'compare' | 'verdict' | 'help' | 'settings' | 'paste';
 
 export interface TraceState { rootId: string; direction: 'forward' | 'backward'; isolate: boolean }
 

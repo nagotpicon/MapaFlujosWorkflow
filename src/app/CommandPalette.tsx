@@ -65,6 +65,7 @@ export function CommandPalette() {
     add('exsvg', 'Exportar SVG', () => void exportImage('svg'), 'Archivo');
     add('expdf', 'Exportar PDF', () => void exportImage('pdf'), 'Archivo');
     add('import', 'Importar JSON', () => void importFromFile(), 'Archivo');
+    add('paste', 'Pegar proyecto (JSON)', () => useUI.setState({ overlay: 'paste' }), 'Archivo', 'pegar importar ia texto');
     add('theme-light', 'Tema claro', () => A.setTheme('light'), 'Tema');
     add('theme-dark', 'Tema oscuro', () => A.setTheme('dark'), 'Tema');
     add('theme-system', 'Tema del sistema', () => A.setTheme('system'), 'Tema');

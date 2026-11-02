@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, FileUp, Plus, Sparkles, Layers3 } from 'lucide-react';
+import { ArrowRight, ClipboardPaste, FileUp, Plus, Sparkles, Layers3 } from 'lucide-react';
+import { PasteImportDialog } from './PasteImport';
 import * as repo from '../persistence/repository';
 import { Button, ConfirmDeleteButton } from '../ui/primitives';
 import * as A from './actions';
@@ -34,6 +35,7 @@ export function ProjectList({ onOpen }: { onOpen?: () => void }) {
 }
 
 export function StartScreen() {
+  const [paste, setPaste] = useState(false);
   return (
     <div className="flex h-full items-center justify-center overflow-auto bg-bg p-6" data-testid="start-screen">
       <div className="w-full max-w-3xl mdf-slide-b">
@@ -67,10 +69,14 @@ export function StartScreen() {
         <div className="mt-8 rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <div className="mb-1 flex items-center justify-between">
             <h2 className="text-[13px] font-semibold text-ink">Proyectos guardados</h2>
-            <Button variant="ghost" size="sm" onClick={() => void importFromFile()}><FileUp className="size-4" />Importar</Button>
+            <div className="flex gap-1">
+              <Button variant="ghost" size="sm" onClick={() => setPaste(true)} data-testid="start-paste"><ClipboardPaste className="size-4" />Pegar JSON</Button>
+              <Button variant="ghost" size="sm" onClick={() => void importFromFile()}><FileUp className="size-4" />Importar</Button>
+            </div>
           </div>
           <ProjectList />
         </div>
+        <PasteImportDialog open={paste} onOpenChange={setPaste} />
         <p className="mt-4 text-center text-[11px] text-ink-3">Todo se guarda automáticamente en este navegador. No necesitas cuenta.</p>
       </div>
     </div>

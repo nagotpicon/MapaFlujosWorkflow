@@ -1,0 +1,556 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "prj_tienda_ejemplo",
+    "name": "Tienda online (ejemplo IA avanzado)",
+    "description": "Ejemplo avanzado del MANUAL-IA: rechazo, desborde, circuito de recomendaciones, dimensión propia y cuadrícula temporal. Valores ficticios.",
+    "createdAt": 1767225600000,
+    "updatedAt": 1767225600000,
+    "activeScenarioId": "scn_base",
+    "settings": {
+      "simulation": {
+        "iterations": 10
+      },
+      "depth": "expert",
+      "frame": {
+        "mode": "grid",
+        "cellWidth": 260,
+        "cellHeight": 140,
+        "origin": {
+          "x": 0,
+          "y": 0
+        },
+        "time": {
+          "enabled": true,
+          "unitLabel": "Semana",
+          "deadline": 8,
+          "latePolicy": "penalize",
+          "lateKeep": 0.5,
+          "inversionPenalty": 0.15
+        },
+        "support": {
+          "enabled": true,
+          "effectPerRow": 0.08,
+          "influencePerRow": 1
+        }
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "n_visitas",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "input",
+      "title": "Visitas a la web",
+      "position": {
+        "x": 35,
+        "y": -32
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "behaviorIds": [
+        "b_gen"
+      ],
+      "dimensionValues": {
+        "quantity": {
+          "value": 1000,
+          "unit": "visitas",
+          "confidence": "observation",
+          "source": "Analítica web",
+          "range": {
+            "low": 600,
+            "high": 1200
+          }
+        },
+        "quality": {
+          "value": 0.5,
+          "range": {
+            "low": 0.4,
+            "high": 0.6
+          }
+        },
+        "coste": {
+          "value": 300,
+          "unit": "€"
+        }
+      }
+    },
+    {
+      "id": "n_carrito",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Añaden al carrito",
+      "position": {
+        "x": 295,
+        "y": -32
+      },
+      "visualStyle": {
+        "icon": "ShoppingCart"
+      },
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "behaviorIds": [
+        "b_carrito"
+      ]
+    },
+    {
+      "id": "n_pago",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Pasarela de pago",
+      "position": {
+        "x": 555,
+        "y": -32
+      },
+      "visualStyle": {
+        "icon": "Wallet"
+      },
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "behaviorIds": [
+        "b_pago"
+      ]
+    },
+    {
+      "id": "n_pedidos",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "output",
+      "title": "Pedidos completados",
+      "position": {
+        "x": 815,
+        "y": -32
+      },
+      "visualStyle": {
+        "color": "emerald"
+      },
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_abandono",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Carritos abandonados",
+      "position": {
+        "x": 555,
+        "y": 108
+      },
+      "visualStyle": {
+        "color": "rose"
+      },
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "description": "Sumidero: retiene lo rechazado sin contarlo como resultado (no es una Salida)."
+    },
+    {
+      "id": "n_cola",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Pedidos en espera",
+      "position": {
+        "x": 815,
+        "y": 108
+      },
+      "visualStyle": {},
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "behaviorIds": [
+        "b_acum",
+        "b_lib"
+      ]
+    },
+    {
+      "id": "n_resenas",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Reseñas positivas",
+      "position": {
+        "x": 1075,
+        "y": -32
+      },
+      "visualStyle": {},
+      "metadata": {
+        "confidence": "hypothesis"
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_envio",
+      "projectId": "prj_tienda_ejemplo",
+      "type": "bubble",
+      "title": "Envío gratis",
+      "position": {
+        "x": 295,
+        "y": -172
+      },
+      "visualStyle": {
+        "color": "emerald"
+      },
+      "metadata": {},
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": 2
+        }
+      }
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "b_gen",
+      "ownerId": "n_visitas",
+      "behaviorType": "generator",
+      "parameters": {
+        "amount": 1000,
+        "mode": "continuous",
+        "startIteration": 1,
+        "endIteration": 0,
+        "growth": 0
+      }
+    },
+    {
+      "id": "b_carrito",
+      "ownerId": "n_carrito",
+      "behaviorType": "filter",
+      "label": "Tasa de carrito",
+      "parameters": {
+        "mode": "ratio",
+        "passRatio": 0.08
+      },
+      "ranges": {
+        "passRatio": {
+          "favorable": 0.1,
+          "unfavorable": 0.06
+        }
+      }
+    },
+    {
+      "id": "b_pago",
+      "ownerId": "n_pago",
+      "behaviorType": "restrictor",
+      "label": "Pagos por semana",
+      "parameters": {
+        "capacity": 60,
+        "excess": "overflow"
+      }
+    },
+    {
+      "id": "b_acum",
+      "ownerId": "n_cola",
+      "behaviorType": "accumulator",
+      "parameters": {
+        "maxStock": 0,
+        "initialStock": 0
+      }
+    },
+    {
+      "id": "b_lib",
+      "ownerId": "n_cola",
+      "behaviorType": "releaser",
+      "parameters": {
+        "mode": "ratio",
+        "ratio": 0.5,
+        "amount": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_vis_car",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_visitas",
+      "targetNodeId": "n_carrito",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_car_pago",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_carrito",
+      "targetNodeId": "n_pago",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_car_aband",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_carrito",
+      "targetNodeId": "n_abandono",
+      "type": "flow",
+      "visualStyle": {
+        "label": "no compran",
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "role": "reject"
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_pago_ped",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_pago",
+      "targetNodeId": "n_pedidos",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {
+        "loss": 0.05
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_pago_cola",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_pago",
+      "targetNodeId": "n_cola",
+      "type": "flow",
+      "visualStyle": {
+        "label": "desborde",
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "role": "overflow"
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_cola_ped",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_cola",
+      "targetNodeId": "n_pedidos",
+      "type": "flow",
+      "visualStyle": {
+        "sourceAnchor": "top",
+        "targetAnchor": "bottom"
+      },
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_ped_res",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_pedidos",
+      "targetNodeId": "n_resenas",
+      "type": "flow",
+      "visualStyle": {
+        "label": "opinan",
+        "sourceAnchor": "right",
+        "targetAnchor": "left"
+      },
+      "behavior": {
+        "transport": "replicate",
+        "multiplier": 0.3
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e_res_vis",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_resenas",
+      "targetNodeId": "n_visitas",
+      "type": "flow",
+      "visualStyle": {
+        "label": "recomendación",
+        "sourceAnchor": "top",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "transport": "replicate",
+        "multiplier": 2,
+        "polarity": "positive",
+        "isFeedback": true
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      },
+      "delay": 1
+    },
+    {
+      "id": "e_envio_car",
+      "projectId": "prj_tienda_ejemplo",
+      "sourceNodeId": "n_envio",
+      "targetNodeId": "n_carrito",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.25
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    }
+  ],
+  "conditions": [],
+  "annotations": [
+    {
+      "id": "a_res",
+      "ownerType": "node",
+      "ownerId": "n_resenas",
+      "kind": "question",
+      "text": "¿Cuántas reseñas trae cada pedido? Hay que medirlo.",
+      "createdAt": 1767225600000
+    }
+  ],
+  "layers": [
+    {
+      "id": "lyr_general",
+      "name": "General",
+      "color": "#64748b",
+      "order": 0
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "quantity",
+      "key": "quantity",
+      "name": "Cantidad",
+      "dataType": "numeric",
+      "range": {
+        "min": 0,
+        "max": 1000000
+      },
+      "aggregation": "extensive",
+      "color": "#3b82f6",
+      "builtin": true
+    },
+    {
+      "id": "quality",
+      "key": "quality",
+      "name": "Calidad",
+      "dataType": "numeric",
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "aggregation": "intensive",
+      "color": "#10b981",
+      "builtin": true,
+      "defaultValue": 0.5
+    },
+    {
+      "id": "coste",
+      "key": "coste",
+      "name": "Coste",
+      "description": "Coste de captación",
+      "dataType": "numeric",
+      "unit": "€",
+      "range": {
+        "min": 0,
+        "max": 100000
+      },
+      "aggregation": "extensive",
+      "color": "#f59e0b"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "scn_base",
+      "projectId": "prj_tienda_ejemplo",
+      "name": "Situación actual",
+      "isBase": true,
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "scn_pagos",
+      "projectId": "prj_tienda_ejemplo",
+      "name": "Más capacidad de pago",
+      "color": "#10b981",
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "overrides": [
+        {
+          "id": "ov_cap",
+          "targetType": "behavior",
+          "targetId": "b_pago",
+          "path": "parameters.capacity",
+          "value": 120
+        },
+        {
+          "id": "ov_car",
+          "targetType": "behavior",
+          "targetId": "b_carrito",
+          "path": "parameters.passRatio",
+          "value": 0.1
+        }
+      ]
+    },
+    {
+      "id": "scn_peor",
+      "projectId": "prj_tienda_ejemplo",
+      "name": "Semana floja",
+      "color": "#ef4444",
+      "uncertainty": "unfavorable",
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    }
+  ],
+  "circuits": [
+    {
+      "id": "cir_reco",
+      "name": "Recomendaciones",
+      "nodeIds": [
+        "n_visitas",
+        "n_carrito",
+        "n_pago",
+        "n_pedidos",
+        "n_resenas"
+      ],
+      "edgeIds": [
+        "e_res_vis"
+      ],
+      "returnEdgeId": "e_res_vis",
+      "loopType": "auto",
+      "returnPercent": 100,
+      "intensity": 1,
+      "saturation": 400,
+      "description": "Los clientes contentos traen visitas nuevas."
+    }
+  ]
+}
