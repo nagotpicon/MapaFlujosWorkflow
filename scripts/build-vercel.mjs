@@ -22,7 +22,7 @@ await build({
   input: join(root, 'server', 'vercel.ts'),
   platform: 'node',
   logLevel: 'warn',
-  output: { file: join(fn, 'index.mjs'), format: 'esm', inlineDynamicImports: true, minify: true },
+  output: { file: join(fn, 'index.mjs'), format: 'esm', codeSplitting: false, minify: true },
 });
 writeFileSync(join(fn, 'package.json'), JSON.stringify({ type: 'module' }));
 writeFileSync(join(fn, '.vc-config.json'), JSON.stringify({
