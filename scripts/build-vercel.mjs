@@ -36,6 +36,8 @@ writeFileSync(join(out, 'config.json'), JSON.stringify({
     { src: '^/assets/(.*)$', headers: { 'cache-control': 'public, max-age=31536000, immutable' }, continue: true },
     { handle: 'filesystem' },
     { src: '^/api/(.*)$', dest: '/api' },
+    { src: '^/manual/?$', dest: '/manual/index.html' },
+    { src: '^/manual-ia/?$', dest: '/manual-ia/index.html' },
     { src: '^/(.*)$', dest: '/index.html' },
   ],
 }, null, 2));

@@ -13,6 +13,7 @@ import * as op from '../core/operations';
 
 interface Cmd { id: string; label: string; hint?: string; group: string; run: () => void; keywords?: string }
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+import { openManual } from './manuals';
 
 export function CommandPalette() {
   const open = useUI((s) => s.commandOpen);
@@ -60,6 +61,8 @@ export function CommandPalette() {
     add('versions', 'Historial de versiones', () => useUI.setState({ overlay: 'versions' }), 'Paneles');
     add('settings', 'Ajustes del proyecto', () => useUI.setState({ overlay: 'settings' }), 'Paneles', 'escalas dimensiones atajos');
     add('help', 'Ayuda', () => useUI.setState({ overlay: 'help' }), 'Paneles');
+    add('manual', 'Manual de usuario', () => openManual('user'), 'Paneles', 'guia instrucciones documentacion');
+    add('manual-ia', 'Manual para IA (prompts)', () => openManual('ia'), 'Paneles', 'prompts json agente chatgpt claude gemini');
     add('exjson', 'Exportar JSON', () => void exportJSON(), 'Archivo');
     add('expng', 'Exportar PNG', () => void exportImage('png'), 'Archivo');
     add('exsvg', 'Exportar SVG', () => void exportImage('svg'), 'Archivo');

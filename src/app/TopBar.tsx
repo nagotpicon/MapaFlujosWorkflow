@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Activity, Check, CircleAlert, Cloud, Download, FileJson, FileImage, FileText, FolderOpen, Grid3x3, History, Image, Loader2, Monitor, Moon,
-  MoreHorizontal, PanelBottom, PanelRight, Plus, Redo2, Search, Settings, Sparkles, Sun, Thermometer, Undo2, Upload, Copy, HelpCircle, MessageCircleHeart, Archive, Layers3, ClipboardPaste,
+  MoreHorizontal, PanelBottom, PanelRight, Plus, Redo2, Search, Settings, Sparkles, Sun, Thermometer, Undo2, Upload, Copy, HelpCircle, MessageCircleHeart, Archive, Layers3, ClipboardPaste, BookOpen, Bot,
 } from 'lucide-react';
 import { useProject } from '../store/projectStore';
 import { useUI, writeLS, type ViewMode } from '../store/uiStore';
@@ -13,6 +13,7 @@ import { exportJSON, exportImage, importFromFile, exportBackup, restoreFromFile 
 import { FramePopover } from './FramePopover';
 import * as repo from '../persistence/repository';
 import { reassignProjectId } from '../persistence/repository';
+import { openManual } from './manuals';
 
 const VIEWS: { value: ViewMode; label: string; title: string }[] = [
   { value: 'mental', label: 'Mental', title: 'Ideas, jerarquías y relaciones (1)' },
@@ -97,6 +98,9 @@ export function TopBar() {
       <Button variant="ghost" size="sm" onClick={() => open('verdict')} data-testid="open-verdict">
         <MessageCircleHeart className="size-4" /><span className="hidden 2xl:inline">Dímelo claro</span>
       </Button>
+      <Button variant="ghost" size="sm" onClick={() => openManual('user')} data-testid="open-manual" title="Manual de usuario (se abre en otra pestaña)">
+        <BookOpen className="size-4" /><span className="hidden 2xl:inline">Manual</span>
+      </Button>
       <div className="mx-0.5 h-5 w-px bg-line" />
       <FramePopover trigger={<IconButton label={frameMode === 'grid' ? 'Marco espacial activo' : 'Marco espacial (cuadrícula)'} active={frameMode === 'grid'} data-testid="frame-toggle"><Grid3x3 className="size-4" /></IconButton>} />
       <IconButton label="Termómetro de calor" shortcut="H" active={showHeat} onClick={() => { useUI.setState({ showHeat: !showHeat }); writeLS('mdf.heat', !showHeat); }} data-testid="heat-toggle"><Thermometer className="size-4" /></IconButton>
@@ -147,6 +151,8 @@ export function TopBar() {
           <Menu.Separator />
           <Menu.Item icon={<Settings />} onSelect={() => open('settings')}>Ajustes del proyecto</Menu.Item>
           <Menu.Item icon={<HelpCircle />} onSelect={() => open('help')}>Ayuda y atajos</Menu.Item>
+          <Menu.Item icon={<BookOpen />} onSelect={() => openManual('user')}>Manual de usuario</Menu.Item>
+          <Menu.Item icon={<Bot />} onSelect={() => openManual('ia')}>Manual para IA (prompts)</Menu.Item>
           <Menu.Separator />
           <Menu.Item icon={<History />} onSelect={async () => { const d = useProject.getState().doc; if (d) { await repo.createSnapshot(d, 'Versión manual'); useUI.getState().notify('Versión guardada', 'success'); } }} shortcut="⌘S">Guardar versión ahora</Menu.Item>
         </Menu.Content>

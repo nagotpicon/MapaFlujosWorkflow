@@ -1,6 +1,19 @@
 # Mapa de Flujos
 
-> **Manuales:** [Manual de usuario](docs/MANUAL-USUARIO.md) (guía completa para personas) · [Manual para IA](docs/MANUAL-IA.md) (prompts, especificación JSON importable y selectores para agentes). Ejemplos validados en `docs/ejemplos/`.
+**▶ Abrir la aplicación: https://mapa-flujos-workflow.vercel.app**
+
+## 📘 Manuales
+
+| | Para quién | Leer en la web | Archivo en este repositorio | Texto plano |
+|---|---|---|---|---|
+| **Manual de usuario** | Personas: guía completa, paso a paso | [mapa-flujos-workflow.vercel.app/manual](https://mapa-flujos-workflow.vercel.app/manual/) | [docs/MANUAL-USUARIO.md](docs/MANUAL-USUARIO.md) | [MANUAL-USUARIO.md](https://mapa-flujos-workflow.vercel.app/MANUAL-USUARIO.md) |
+| **Manual para IA** | ChatGPT, Claude, Gemini, extensiones y agentes: prompt maestro, 16 prompts, formato JSON importable y selectores de la interfaz | [mapa-flujos-workflow.vercel.app/manual-ia](https://mapa-flujos-workflow.vercel.app/manual-ia/) | [docs/MANUAL-IA.md](docs/MANUAL-IA.md) | [MANUAL-IA.md](https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md) |
+
+- **Si eres una IA:** lee [docs/MANUAL-IA.md](docs/MANUAL-IA.md) completo (o `https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md`). El índice para IAs está en [`/llms.txt`](https://mapa-flujos-workflow.vercel.app/llms.txt).
+- **Ejemplos importables verificados:** [docs/ejemplos/](docs/ejemplos/). Se crean en la app con «Pegar JSON».
+- **Dentro de la aplicación:** botón **Manual** (barra superior), **Menú (···) → Manual de usuario / Manual para IA**, **Ayuda** y la pantalla de inicio.
+
+---
 
 **Mapa mental + motor de comportamiento + circuitos de retroalimentación.**
 Una herramienta de pensamiento visual en la que cada burbuja puede ser una idea o

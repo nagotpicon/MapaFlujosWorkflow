@@ -26,6 +26,7 @@ const api = createApiHandler({ env });
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json',
   '.woff2': 'font/woff2', '.woff': 'font/woff', '.png': 'image/png', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json',
+  '.md': 'text/markdown; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
 };
 
 const server = createServer(async (req, res) => {

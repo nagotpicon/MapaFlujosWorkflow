@@ -2,6 +2,8 @@
 
 Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la aplicación: desde abrirla por primera vez hasta simular escenarios, leer el Monitor, usar el Explorador con IA y guardar tu trabajo.
 
+> **Dónde leer este manual:** en la web, en **https://mapa-flujos-workflow.vercel.app/manual/**. Dentro de la aplicación, con el botón **Manual** de la barra superior, en **Menú (···) → Manual de usuario**, en **Ayuda** o en la pantalla de inicio. En GitHub, en `docs/MANUAL-USUARIO.md`. El manual para IA está en **/manual-ia/**.
+
 > **Convención de teclas.** «Ctrl» en Windows y Linux equivale a «⌘ (Cmd)» en Mac. Cuando leas **Ctrl+Z**, en Mac es **⌘Z**. «⇧» es la tecla Mayúsculas y «Supr» es la tecla Suprimir (en Mac, la tecla de borrar).
 
 ---
@@ -96,6 +98,7 @@ Al abrir la aplicación sin ningún proyecto verás tres tarjetas y la lista de 
 | **Proyectos guardados** | Lista de tus proyectos en este navegador: nombre, número de elementos y fecha. Haz clic para abrir uno. |
 | **Pegar JSON** | Abre un cuadro donde pegar el texto JSON de un proyecto, por ejemplo uno generado por una IA con el MANUAL-IA. |
 | **Importar** | Abre un archivo `.json` exportado antes. |
+| **Manual de usuario** · **Manual para IA** | Abren los manuales en otra pestaña. |
 | Icono de papelera | Borra un proyecto y sus versiones. Pide un segundo clic de confirmación: «¿Borrar? No se puede deshacer». |
 
 Si ya trabajaste antes, la aplicación abre directamente **el último proyecto** que usaste. Para volver a la lista, haz clic en el **logotipo** (arriba a la izquierda) o usa **Menú (···) → Proyectos…**.
@@ -130,6 +133,7 @@ Si ya trabajaste antes, la aplicación abre directamente **el último proyecto**
 | **Explorador** (✦) | Abre el Explorador de flujos (sección 23). |
 | **Monitor** | Abre el panel de métricas (sección 21). |
 | **Dímelo claro** | Abre el veredicto en lenguaje llano (sección 22). |
+| **Manual** (📖) | Abre este manual en otra pestaña. |
 | **Cuadrícula** (#) | Ajustes del marco espacial (sección 19). Se resalta cuando la cuadrícula está activa. |
 | **Termómetro** | Muestra u oculta el termómetro de calor. Tecla **H** (sección 20). |
 | **Deshacer / Rehacer** | Ctrl+Z / Ctrl+⇧+Z (también Ctrl+Y). |
@@ -139,7 +143,7 @@ Si ya trabajaste antes, la aplicación abre directamente **el último proyecto**
 | **Sol / Luna / Pantalla** | Tema: Claro, Oscuro o Sistema (sigue al sistema operativo). |
 | **Panel inferior** | Muestra u oculta el panel de simulación. |
 | **Panel derecho** | Muestra u oculta el inspector. |
-| **Menú (···)** | Proyectos…, Nuevo proyecto, Duplicar proyecto, Abrir proyecto de demostración, Ajustes del proyecto, Ayuda y atajos, Guardar versión ahora (Ctrl+S). |
+| **Menú (···)** | Proyectos…, Nuevo proyecto, Duplicar proyecto, Abrir proyecto de demostración, Ajustes del proyecto, Ayuda y atajos, Manual de usuario, Manual para IA (prompts), Guardar versión ahora (Ctrl+S). |
 
 > En pantallas estrechas algunos botones muestran solo el icono. Pasa el ratón por encima para ver su nombre y su atajo.
 
@@ -1099,7 +1103,7 @@ Ctrl+Z y Ctrl+⇧+Z (o Ctrl+Y). El historial guarda los últimos ~120 cambios **
   - Crear: burbuja, entrada, salida, nota, contenedor, circuito.
   - Editar y vistas.
   - Organizar: alinear, distribuir, distribución automática, mostrar ocultos, bloquear, clonar.
-  - Paneles: Monitor, Explorador, Dímelo claro, Comparar, Historial, Ajustes, Ayuda.
+  - Paneles: Monitor, Explorador, Dímelo claro, Comparar, Historial, Ajustes, Ayuda, Manual de usuario y Manual para IA.
   - Archivo: exportar, importar y pegar proyecto (JSON).
   - Tema.
 

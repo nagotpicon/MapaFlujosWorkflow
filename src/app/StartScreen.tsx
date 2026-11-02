@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, ClipboardPaste, FileUp, Plus, Sparkles, Layers3 } from 'lucide-react';
+import { ArrowRight, BookOpen, Bot, ClipboardPaste, FileUp, Plus, Sparkles, Layers3 } from 'lucide-react';
 import { PasteImportDialog } from './PasteImport';
+import { MANUAL_IA_PATH, MANUAL_USER_PATH, manualUrl } from './manuals';
 import * as repo from '../persistence/repository';
 import { Button, ConfirmDeleteButton } from '../ui/primitives';
 import * as A from './actions';
@@ -77,6 +78,10 @@ export function StartScreen() {
           <ProjectList />
         </div>
         <PasteImportDialog open={paste} onOpenChange={setPaste} />
+        <div className="mt-4 flex flex-wrap justify-center gap-2 text-[12.5px]" data-testid="start-manuals">
+          <a href={manualUrl(MANUAL_USER_PATH)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 font-medium text-ink-2 no-underline hover:border-accent hover:text-accent-text"><BookOpen className="size-4" />Manual de usuario</a>
+          <a href={manualUrl(MANUAL_IA_PATH)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 font-medium text-ink-2 no-underline hover:border-accent hover:text-accent-text"><Bot className="size-4" />Manual para IA</a>
+        </div>
         <p className="mt-4 text-center text-[11px] text-ink-3">Todo se guarda automáticamente en este navegador. No necesitas cuenta.</p>
       </div>
     </div>

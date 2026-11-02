@@ -12,7 +12,17 @@ Contiene:
 6. **Mapa de la interfaz con identificadores estables** (`data-testid`), para agentes que controlan el navegador.
 7. **Ejemplos validados**: dos proyectos JSON comprobados por pruebas automáticas (`tests/manual-ia.test.ts` y `e2e/paste-import.spec.ts`).
 
-Aplicación publicada: **https://mapa-flujos-workflow.vercel.app**. Código: repositorio `nagotpicon/MapaFlujosWorkflow`. El manual para personas es `docs/MANUAL-USUARIO.md`.
+Aplicación publicada: **https://mapa-flujos-workflow.vercel.app**.
+
+**Dónde está este manual:**
+- página web: **/manual-ia/**;
+- texto plano para IAs: **https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md**;
+- índice para IAs: **/llms.txt**;
+- en GitHub: `docs/MANUAL-IA.md`;
+- ejemplos importables: **/ejemplos/mapa-ejemplo-ia.json** y **/ejemplos/mapa-ejemplo-ia-avanzado.json**.
+
+Para la IA, la forma más fiable de leerlo completo es pedirle que lea la URL del texto plano o adjuntarle el archivo.
+ Código: repositorio `nagotpicon/MapaFlujosWorkflow`. El manual para personas es `docs/MANUAL-USUARIO.md`.
 
 ---
 
@@ -20,12 +30,13 @@ Aplicación publicada: **https://mapa-flujos-workflow.vercel.app**. Código: rep
 
 ### 0.1 Si eres la persona
 
-1. Abre tu IA y pega el bloque del **Prompt maestro** (sección 1) como primer mensaje (o en las «instrucciones personalizadas» o el «proyecto» de tu IA).
-2. Elige el prompt de la biblioteca (sección 2) que corresponda a lo que quieres. Cópialo, sustituye lo que está entre `{{ }}` y envíalo.
-3. Si la IA te devuelve un JSON, en la aplicación pulsa **Pegar JSON** (pantalla de inicio) o **Importar/exportar → Pegar proyecto (JSON)**. Pega todo lo que respondió la IA, aunque traiga texto o marcas ```json alrededor, y pulsa **Importar**.
-4. Si sale «No se pudo importar…», usa el prompt **P4** pegando el aviso.
+1. Abre **https://mapa-flujos-workflow.vercel.app/manual-ia/**. Cada bloque tiene un botón **Copiar**.
+2. Abre tu IA y pega el bloque del **Prompt maestro** (sección 1) como primer mensaje (o en las «instrucciones personalizadas» o el «proyecto» de tu IA).
+3. Elige el prompt de la biblioteca (sección 2) que corresponda a lo que quieres. Cópialo, sustituye lo que está entre `{{ }}` y envíalo.
+4. Si la IA te devuelve un JSON, en la aplicación pulsa **Pegar JSON** (pantalla de inicio) o **Importar/exportar → Pegar proyecto (JSON)**. Pega todo lo que respondió la IA, aunque traiga texto o marcas ```json alrededor, y pulsa **Importar**.
+5. Si sale «No se pudo importar…», usa el prompt **P4** pegando el aviso.
 
-Para que la IA tenga la especificación completa, adjúntale también este archivo entero (o pégalo). El prompt maestro le indica que lo use.
+Para que la IA tenga la especificación completa, adjúntale también este archivo entero, pégalo o dale la URL https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md si puede leer webs. El prompt maestro le indica que lo use.
 
 ### 0.2 Si eres la IA
 
@@ -54,6 +65,8 @@ CONOCIMIENTO DE LA APLICACIÓN (resumen; la especificación completa está en el
 - Marco espacial opcional: cuadrícula donde la columna es el tiempo (retardos, fecha límite, «prisas») y la fila es apoyo (arriba) o fricción (abajo).
 - Termómetro de calor (frío, ritmo perfecto, caliente, recalentado), Monitor (KPIs, embudo, impulsores, frenos, puntos neurálgicos), «Dímelo claro» (veredicto coloquial calculado sin IA) y Explorador (entrevista o creador de estrategias; con IA del servidor o en modo demostración).
 - Todo se guarda en el navegador de la persona. Exportar o importar JSON, versiones, copia de seguridad. Importar por archivo o PEGANDO el JSON: «Pegar JSON» en la pantalla de inicio o «Importar/exportar → Pegar proyecto (JSON)».
+
+Especificación completa (léela si puedes abrir webs): https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md
 
 REGLAS:
 1. No inventes botones, menús ni funciones. Usa los nombres exactos del manual. Si no sabes algo, dilo.
@@ -765,7 +778,7 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
   - Nombre del proyecto (clic para renombrar) e indicador de guardado.
   - Selector de escenario: «Nuevo escenario», «Duplicar «…»», «Restaurar valores iniciales», «Comparar escenarios…».
   - Vista: «Mental», «Flujo», «Energía», «Sistema», «Simulación».
-  - «Explorador», «Monitor», «Dímelo claro».
+  - «Explorador», «Monitor», «Dímelo claro», «Manual».
   - Cuadrícula «Marco espacial» y «Termómetro de calor».
   - «Deshacer», «Rehacer», «Buscar y comandos», «Historial de versiones».
   - «Importar / exportar»:
@@ -773,7 +786,7 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
     - «Importar proyecto (.json)», «Pegar proyecto (JSON)»;
     - «Copia de seguridad completa», «Restaurar copia de seguridad».
   - «Tema» (Claro / Oscuro / Sistema), «Mostrar u ocultar panel de simulación», «Mostrar u ocultar inspector».
-  - «Menú»: «Proyectos…», «Nuevo proyecto», «Duplicar proyecto», «Abrir proyecto de demostración», «Ajustes del proyecto», «Ayuda y atajos», «Guardar versión ahora».
+  - «Menú»: «Proyectos…», «Nuevo proyecto», «Duplicar proyecto», «Abrir proyecto de demostración», «Ajustes del proyecto», «Ayuda y atajos», «Manual de usuario», «Manual para IA (prompts)», «Guardar versión ahora».
 - **Barra de herramientas:** «Seleccionar» (V), «Crear burbuja» (B), «Crear conexión» (C; tipos Flujo / Causal / Info / Idea), «Agrupar selección» (Ctrl+G), «Crear entrada» (I), «Crear salida» (O), «Añadir nota» (N), «Añadir comentario», «Añadir etiqueta a la selección», «Texto libre», «Crear contenedor», «Crear circuito», «Administrar capas».
 - **Inspector de nodo** (secciones): «Peso e influencia», «Comportamientos» («Añadir comportamiento»), «Condiciones de activación», «Mitigadores y compensaciones» («Vincular», «Nueva medida compensatoria»), «Dimensiones del flujo» («Definir»), «Bifurcación y convergencia», «Relaciones», «Estilo», «Comentarios y notas», «Documentos adjuntos», «Avanzado».
 - **Inspector de conexión:** «Tipo de conexión», «Dirección», «Comportamiento del flujo», «Influencia», «Condiciones de paso», «Circuito» («Configurar como circuito»), «Apariencia», «Comentarios».
@@ -854,16 +867,16 @@ Selectores estables: `[data-testid="…"]`.
 
 | Zona | Identificadores |
 |---|---|
-| Inicio | `start-screen`, `new-project`, `open-demo`, `start-explorer`, `start-paste`, `project-list`, `confirm-delete` |
+| Inicio | `start-screen`, `new-project`, `open-demo`, `start-explorer`, `start-paste`, `project-list`, `confirm-delete`, `start-manuals` |
 | Pegar JSON | `paste-import` (diálogo), `paste-json` (cuadro de texto), `paste-import-run` (botón Importar) |
 | Aplicación | `app`, `topbar`, `toolbar`, `canvas`, `inspector`, `bottom-panel`, `legend`, `toast` |
-| Barra superior | `project-name`, `save-state` (atributo `data-state`: idle/pending/saving/saved/error), `scenario-switcher`, `open-explorer`, `open-monitor`, `open-verdict`, `frame-toggle`, `heat-toggle`, `undo`, `redo`, `open-palette`, `open-versions`, `io-menu`, `theme-menu`, `toggle-bottom`, `toggle-inspector`, `main-menu` |
+| Barra superior | `project-name`, `save-state` (atributo `data-state`: idle/pending/saving/saved/error), `scenario-switcher`, `open-explorer`, `open-monitor`, `open-verdict`, `open-manual`, `frame-toggle`, `heat-toggle`, `undo`, `redo`, `open-palette`, `open-versions`, `io-menu`, `theme-menu`, `toggle-bottom`, `toggle-inspector`, `main-menu` |
 | Herramientas | `tool-select`, `tool-bubble`, `tool-connect`, `tool-group`, `tool-input`, `tool-output`, `tool-note`, `tool-comment`, `tool-tag`, `tool-label`, `tool-container`, `tool-circuit`, `tool-layers` |
 | Lienzo | nodos `.react-flow__node` con `[data-node-title="Título"]`; `map-node`, `group-node`, `group-toggle`; asas de conexión `.react-flow__handle-top/right/bottom/left`; `context-menu` |
 | Inspector | `node-inspector`, `edge-inspector`, `multi-inspector`, `project-panel`, `inspector-title`, `node-summary`, `add-behavior`, `behavior-option-<tipo>`, `behavior-card`, `add-condition`, `condition-block`, `add-clause`, `add-mitigator`, `mitigator-row`, `dim-<dimId>`, `circuit-block`, `override-mark`, `add-annotation`, `discovery-block`, `friction-resolution`, `trace-forward`, `trace-backward` |
 | Simulación | `tab-simulation`, `tab-results`, `tab-diagnostics`, `tab-scenarios`, `tab-history`, `tab-events`, `sim-play`, `sim-stop`, `sim-reset`, `sim-prev`, `sim-next`, `sim-step`, `sim-save`, `sim-scrubber`, `sim-iterations`, `iteration-badge`, `step-info`, `ledger`, `diagnostic`, `iterations-table`, `events-list` |
 | Escenarios | `scenario-list`, `scenario-new`, `scenario-duplicate`, `scenario-name`, `scenario-compare`, `run-sweep`, `run-band`, `compare`, `compare-b` |
-| Paneles | `monitor`, `funnel`, `neuralgic`, `heat-strip`, `verdict`, `verdict-headline`, `verdict-point`, `verdict-md`, `verdict-pdf`, `versions`, `save-version`, `version-row`, `restore-version`, `settings`, `command-palette` |
+| Paneles | `monitor`, `funnel`, `neuralgic`, `heat-strip`, `verdict`, `verdict-headline`, `verdict-point`, `verdict-md`, `verdict-pdf`, `versions`, `save-version`, `version-row`, `restore-version`, `settings`, `command-palette`, `help-manuals` |
 | Explorador | `explorer`, `provider-status`, `explorer-topic`, `explorer-strategy`, `explorer-start`, `strategy-text`, `strategy-ai`, `strategy-template`, `upload-plan`, `plan-docs`, `conversation`, `explorer-message`, `explorer-answer`, `explorer-send`, `cmd-<comando>` (`dont_know`, `examples`, `deepen`, `challenge`, `alternatives`, `simplify`, `perspective`, `compare`, `prepare`, `back`), `discoveries`, `create-flow`, `proposal`, `proposal-preview`, `proposal-node`, `insert-proposal`, `voice-start`, `voice-stop` |
 
 **Secuencias fiables**

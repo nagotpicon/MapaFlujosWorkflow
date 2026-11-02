@@ -1,10 +1,22 @@
 import { SHORTCUTS, displayCombo } from '../app/shortcuts';
 import { Kbd, Section } from '../ui/primitives';
+import { BookOpen, Bot } from 'lucide-react';
+import { MANUAL_IA_PATH, MANUAL_USER_PATH, manualUrl } from '../app/manuals';
 
 export function HelpPanel() {
   const groups = [...new Set(SHORTCUTS.map((s) => s.group))];
   return (
     <div className="text-[13px] leading-relaxed text-ink-2">
+      <div className="grid gap-2 px-5 pt-4 sm:grid-cols-2" data-testid="help-manuals">
+        <a href={manualUrl(MANUAL_USER_PATH)} target="_blank" rel="noopener" className="flex items-start gap-3 rounded-xl border border-line p-3 no-underline hover:border-accent">
+          <BookOpen className="mt-0.5 size-5 shrink-0 text-accent" />
+          <span><b className="block text-ink">Manual de usuario</b><span className="text-[12px] text-ink-3">Guía completa, paso a paso, de todo lo que hace la aplicación.</span></span>
+        </a>
+        <a href={manualUrl(MANUAL_IA_PATH)} target="_blank" rel="noopener" className="flex items-start gap-3 rounded-xl border border-line p-3 no-underline hover:border-accent">
+          <Bot className="mt-0.5 size-5 shrink-0 text-transform" />
+          <span><b className="block text-ink">Manual para IA</b><span className="text-[12px] text-ink-3">Prompts listos para copiar y el formato JSON para que una IA cree mapas.</span></span>
+        </a>
+      </div>
       <Section title="Básico: crear, editar, conectar, organizar">
         <ul className="list-disc space-y-1 pl-4">
           <li><b className="text-ink">Doble clic</b> en el lienzo crea una burbuja. <b className="text-ink">Doble clic</b> en una burbuja edita su texto.</li>
