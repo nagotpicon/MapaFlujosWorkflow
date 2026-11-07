@@ -135,7 +135,7 @@ test.describe('Editor de mapas (plan de pruebas 1–14)', () => {
     await expect(page.getByTestId('node-inspector')).toBeVisible();
     await node(page, 'Aguja en el pajar').click({ button: 'right' });
     await expect(page.getByTestId('context-menu')).toBeVisible();
-    await page.getByRole('menuitem', { name: /Añadir burbuja conectada/ }).click();
+    await page.getByRole('menuitem', { name: /Añadir idea unida/ }).click();
     await expect(page.locator('.react-flow__edge')).toHaveCount(1);
   });
 });

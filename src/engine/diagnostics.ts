@@ -96,7 +96,7 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
     out.push({
       id: `loss:${id}`, kind: 'loss', severity: share > 0.4 ? 'critical' : 'warning',
       title: `Pérdida principal en «${title(id)}»`,
-      description: `Se pierden ${fmt(v)} u. en ${N} iteraciones (${Math.round(share * 100)}% de todas las pérdidas${totalGen > 0 ? `, ${Math.round((v / totalGen) * 100)}% de lo generado` : ''}).`,
+      description: `Se pierden ${fmt(v)} u. en ${N} rondas (${Math.round(share * 100)}% de todas las pérdidas${totalGen > 0 ? `, ${Math.round((v / totalGen) * 100)}% de lo generado` : ''}).`,
       nodeIds: [id], edgeIds: [], rule: bhs.length ? `Comportamientos: ${bhs.join(', ')}` : 'Flujo sin ruta de salida o bloqueado',
       data: [`Entrada acumulada: ${fmt(inTotal[id] ?? 0)} u.`, `Pérdida acumulada: ${fmt(v)} u.`],
       assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
@@ -105,8 +105,8 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
   for (const [id, v] of Object.entries(edgeLost).filter(([, v]) => v > 1e-6).sort((a, b) => b[1] - a[1]).slice(0, 2)) {
     const e = doc.edges[id.replace('~rev', '')];
     out.push({
-      id: `eloss:${id}`, kind: 'loss', severity: 'warning', title: `Pérdida en la conexión ${edgeName(id)}`,
-      description: `La conexión pierde ${fmt(v)} u. en total por ${e?.behavior.loss ? `pérdida del ${Math.round(e.behavior.loss * 100)}%` : edgeSat[id] ? 'capacidad insuficiente' : edgeBlocked[id] ? 'condiciones no cumplidas' : 'su configuración'}.`,
+      id: `eloss:${id}`, kind: 'loss', severity: 'warning', title: `Pérdida en la unión ${edgeName(id)}`,
+      description: `La unión pierde ${fmt(v)} u. en total por ${e?.behavior.loss ? `pérdida del ${Math.round(e.behavior.loss * 100)}%` : edgeSat[id] ? 'capacidad insuficiente' : edgeBlocked[id] ? 'condiciones no cumplidas' : 'su configuración'}.`,
       nodeIds: e ? [e.sourceNodeId, e.targetNodeId] : [], edgeIds: [id.replace('~rev', '')], rule: 'Pérdida / capacidad / condición de conexión',
       data: [`Pérdida acumulada: ${fmt(v)} u.`], assumptions: [], confidence: 'media',
     });
@@ -118,15 +118,15 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
     out.push({
       id: `bottleneck:${id}`, kind: c >= N / 2 ? 'bottleneck' : 'saturation', severity: c >= N / 2 ? 'critical' : 'warning',
       title: c >= N / 2 ? `Cuello de botella: «${title(id)}»` : `Saturación puntual en «${title(id)}»`,
-      description: `Está saturado en ${c} de ${N} iteraciones (desde la iteración ${first}). Limita lo que llega a las etapas siguientes.`,
+      description: `Está saturado en ${c} de ${N} rondas (desde la ronda ${first}). Limita lo que llega a las etapas siguientes.`,
       nodeIds: [id], edgeIds: [], rule: 'Entrada > capacidad (restrictor, puerto o stock máximo)',
-      data: [`Iteraciones saturadas: ${c}/${N}`], assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
+      data: [`Rondas saturadas: ${c}/${N}`], assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
     });
   }
   for (const [id, c] of Object.entries(edgeSat)) {
     out.push({
-      id: `esat:${id}`, kind: 'saturation', severity: 'warning', title: `Conexión saturada: ${edgeName(id)}`,
-      description: `La capacidad de la conexión se supera en ${c} de ${N} iteraciones.`, nodeIds: [], edgeIds: [id.replace('~rev', '')],
+      id: `esat:${id}`, kind: 'saturation', severity: 'warning', title: `Unión saturada: ${edgeName(id)}`,
+      description: `La capacidad de la unión se supera en ${c} de ${N} rondas.`, nodeIds: [], edgeIds: [id.replace('~rev', '')],
       rule: 'Capacidad de conexión / circuito', data: [], assumptions: [], confidence: 'media',
     });
   }
@@ -136,14 +136,14 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
     out.push({
       id: `blocked:${id}`, kind: 'blocked', severity: c === N ? 'warning' : 'info',
       title: `Ruta ${c === N ? 'bloqueada' : 'intermitente'}: ${edgeName(id)}`,
-      description: `Sus condiciones no se cumplen en ${c} de ${N} iteraciones.`, nodeIds: [], edgeIds: [id.replace('~rev', '')],
+      description: `Sus condiciones no se cumplen en ${c} de ${N} rondas.`, nodeIds: [], edgeIds: [id.replace('~rev', '')],
       rule: 'Condición de conexión / reparto condicionado', data: [], assumptions: [], confidence: 'media',
     });
   }
   for (const [id, c] of Object.entries(blockedCount)) {
     out.push({
       id: `nblocked:${id}`, kind: 'blocked', severity: 'warning', title: `«${title(id)}» bloquea el flujo`,
-      description: `El nodo bloquea el paso en ${c} de ${N} iteraciones (condición no cumplida o ninguna ruta disponible).`,
+      description: `Esta idea bloquea el paso en ${c} de ${N} rondas (condición no cumplida o ninguna ruta disponible).`,
       nodeIds: [id], edgeIds: [], rule: 'Condición de activación con modo bloqueo', data: [], assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
     });
   }
@@ -156,7 +156,7 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
       out.push({
         id: `recovery:${ev.nodeId}:${ev.mechanism}`, kind: 'recovery', severity: 'info',
         title: `Oportunidad de recuperación en «${title(ev.nodeId)}»`,
-        description: `${fmt(ev.amount ?? 0)} u. por iteración (${ev.mechanism}) se pierden sin ruta alternativa. Una conexión de rechazo/desborde hacia una ruta de recuperación podría aprovecharlas.`,
+        description: `${fmt(ev.amount ?? 0)} u. por ronda (${ev.mechanism}) se pierden sin ruta alternativa. Una conexión de rechazo/desborde hacia una ruta de recuperación podría aprovecharlas.`,
         nodeIds: [ev.nodeId], edgeIds: [], rule: 'Flujo rechazado o desbordado sin conexión alternativa',
         data: [ev.message], assumptions: assumptionsFor([ev.nodeId]), confidence: confidenceFor([ev.nodeId]),
       });
@@ -268,9 +268,9 @@ export function diagnose(doc: ProjectDoc, r: SimulationResult, tornadoEntries?: 
       if (i > 0 && key !== prevKey) {
         const what = !st.active && prevKey.startsWith('A') ? 'se desactiva' : st.active && prevKey.startsWith('I') ? 'se activa' : st.saturated && !prevKey.includes('S') ? 'empieza a saturarse' : !st.saturated && prevKey.includes('S') ? 'deja de estar saturado' : st.blocked ? 'empieza a bloquear' : 'cambia de estado';
         out.push({
-          id: `change:${id}:${i}`, kind: 'behavior-change', severity: 'info', title: `«${title(id)}» ${what} en la iteración ${i + 1}`,
+          id: `change:${id}:${i}`, kind: 'behavior-change', severity: 'info', title: `«${title(id)}» ${what} en la ronda ${i + 1}`,
           description: 'El comportamiento del elemento cambia durante la simulación; conviene revisar qué condición o acumulación lo provoca.',
-          nodeIds: [id], edgeIds: [], rule: 'Cambio de estado entre iteraciones', data: [], assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
+          nodeIds: [id], edgeIds: [], rule: 'Cambio de estado entre rondas', data: [], assumptions: assumptionsFor([id]), confidence: confidenceFor([id]),
         });
         break;
       }

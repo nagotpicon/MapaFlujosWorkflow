@@ -4,7 +4,7 @@ import { openDemo, selectNode, waitSaved } from './helpers';
 test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, recargar e independencia', async ({ page }) => {
   await openDemo(page);
   const totalText = async () => (await page.getByTestId('kpi-total').textContent()) ?? '';
-  await expect(page.getByTestId('kpi-total')).toContainText('eficiencia 19');
+  await expect(page.getByTestId('kpi-total')).toContainText('aprovechas el 19');
   const totalBase = await totalText();
   // 1. clonar el escenario base
   await page.getByTestId('scenario-switcher').click();
@@ -21,7 +21,7 @@ test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, rec
   await expect(page.getByTestId('override-mark').first()).toBeVisible();
   // 3. ejecutar: el resultado cambia
   await expect.poll(totalText).not.toBe(totalBase);
-  await expect.poll(totalText).toMatch(/Acumulado\d+eficiencia \d/);
+  await expect.poll(totalText).toMatch(/Total en la meta\d+aprovechas el \d/);
   const totalClone = await totalText();
   // 4. comparar
   await page.getByTestId('tab-scenarios').click();

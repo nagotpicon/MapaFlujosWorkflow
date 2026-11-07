@@ -14,7 +14,7 @@ export function ScenarioSwitcher() {
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
-        <button type="button" className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] text-ink-2 hover:bg-surface-2" data-testid="scenario-switcher" aria-label="Escenario activo">
+        <button type="button" className="flex h-7 items-center gap-1.5 rounded-lg px-2 text-[12px] text-ink-2 hover:bg-surface-2" data-testid="scenario-switcher" aria-label="¿Y si…? activo">
           <span className="size-2 rounded-full" style={{ background: active?.color }} />
           <span className="max-w-44 truncate font-medium text-ink">{active?.name}</span>
           {active && active.overrides.length > 0 && <span className="rounded bg-surface-2 px-1 text-[10px] tabular text-ink-3">{active.overrides.length} cambios</span>}
@@ -22,7 +22,7 @@ export function ScenarioSwitcher() {
         </button>
       </Menu.Trigger>
       <Menu.Content>
-        <Menu.Label>Escenarios</Menu.Label>
+        <Menu.Label>¿Y si…? (pruebas sin estropear el original)</Menu.Label>
         {list.map((s) => (
           <Menu.Item key={s.id} onSelect={() => A.apply((d) => op.setActiveScenario(d, s.id))}
             icon={<span className={cx('mt-1 block size-2 rounded-full', s.id === activeId && 'ring-2 ring-accent ring-offset-1 ring-offset-[var(--surface)]')} style={{ background: s.color }} />}
@@ -31,10 +31,10 @@ export function ScenarioSwitcher() {
           </Menu.Item>
         ))}
         <Menu.Separator />
-        <Menu.Item icon={<Plus />} onSelect={() => A.apply((d) => { const r = op.addScenario(d, `Escenario ${Object.keys(d.scenarios).length + 1}`); return op.setActiveScenario(r.doc, r.id); })}>Nuevo escenario</Menu.Item>
+        <Menu.Item icon={<Plus />} onSelect={() => A.apply((d) => { const r = op.addScenario(d, `¿Y si…? ${Object.keys(d.scenarios).length + 1}`); return op.setActiveScenario(r.doc, r.id); })}>Nuevo «¿y si…?»</Menu.Item>
         {active && <Menu.Item icon={<CopyPlus />} onSelect={() => A.apply((d) => { const r = op.addScenario(d, `${active.name} (copia)`, active.id); return op.setActiveScenario(r.doc, r.id); })}>Duplicar «{active.name}»</Menu.Item>}
-        {active && !active.isBase && <Menu.Item icon={<RotateCcw />} onSelect={() => A.apply((d) => op.updateScenario(d, active.id, { overrides: [], initialConditions: {} }))}>Restaurar valores iniciales</Menu.Item>}
-        <Menu.Item icon={<GitCompare />} onSelect={() => useUI.setState({ overlay: 'compare' })}>Comparar escenarios…</Menu.Item>
+        {active && !active.isBase && <Menu.Item icon={<RotateCcw />} onSelect={() => A.apply((d) => op.updateScenario(d, active.id, { overrides: [], initialConditions: {} }))}>Quitar todos sus cambios</Menu.Item>}
+        <Menu.Item icon={<GitCompare />} onSelect={() => useUI.setState({ overlay: 'compare' })}>Comparar…</Menu.Item>
       </Menu.Content>
     </Menu.Root>
   );

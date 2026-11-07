@@ -7,11 +7,11 @@
 | | Para quién | Leer en la web | Archivo en este repositorio | Texto plano |
 |---|---|---|---|---|
 | **Manual de usuario** | Personas: guía completa, paso a paso | [mapa-flujos-workflow.vercel.app/manual](https://mapa-flujos-workflow.vercel.app/manual/) | [docs/MANUAL-USUARIO.md](docs/MANUAL-USUARIO.md) | [MANUAL-USUARIO.md](https://mapa-flujos-workflow.vercel.app/MANUAL-USUARIO.md) |
-| **Manual para IA** | ChatGPT, Claude, Gemini, extensiones y agentes: prompt maestro, 16 prompts, formato JSON importable y selectores de la interfaz | [mapa-flujos-workflow.vercel.app/manual-ia](https://mapa-flujos-workflow.vercel.app/manual-ia/) | [docs/MANUAL-IA.md](docs/MANUAL-IA.md) | [MANUAL-IA.md](https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md) |
+| **Manual para IA** | ChatGPT, Claude, Gemini, extensiones y agentes: prompt maestro, 18 prompts (incluidos ACLARATOR y COPYWRITER), formato JSON importable y selectores de la interfaz | [mapa-flujos-workflow.vercel.app/manual-ia](https://mapa-flujos-workflow.vercel.app/manual-ia/) | [docs/MANUAL-IA.md](docs/MANUAL-IA.md) | [MANUAL-IA.md](https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md) |
 
 - **Si eres una IA:** lee [docs/MANUAL-IA.md](docs/MANUAL-IA.md) completo (o `https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md`). El índice para IAs está en [`/llms.txt`](https://mapa-flujos-workflow.vercel.app/llms.txt).
-- **Ejemplos importables verificados:** [docs/ejemplos/](docs/ejemplos/). Se crean en la app con «Pegar JSON».
-- **Dentro de la aplicación:** botón **Manual** (barra superior), **Menú (···) → Manual de usuario / Manual para IA**, **Ayuda** y la pantalla de inicio.
+- **Ejemplos importables verificados:** [docs/ejemplos/](docs/ejemplos/). Se crean en la app con «Pegar un mapa».
+- **Dentro de la aplicación:** botón **Manual** (barra superior), **Más opciones (···) → Manual de usuario / Manual para IA**, **Ayuda** y la pantalla de inicio.
 
 ---
 
@@ -22,6 +22,10 @@ multidimensional que se filtra, se transforma, se pierde, se compensa, se acumul
 y vuelve a su origen.
 
 Funciona en el navegador, **local‑first** (IndexedDB) y sin cuenta.
+
+**De menos a más.** La aplicación se abre casi en blanco («¿Qué te ronda la cabeza?») con la paleta cálida de Claude (blanco roto, arcilla) y detalles de madera clara, y habla en un lenguaje sencillo, pensado para que lo entienda alguien de 13 años. Crece en **tres niveles** que se guardan con cada mapa: **1 · Ideas** (escribir y unir ideas), **2 · Movimiento** (inicio, meta, botón Probar, «Dímelo claro» y Marcador) y **3 · Todo** (todas las herramientas). Una guía propone en cada momento un solo paso siguiente.
+
+**Modos de trabajo** en «Ayúdame a pensar», todos terminan en un mapa: **Hazme preguntas**, **Te cuento mi plan**, **ACLARATOR** (aclara un proyecto bloque a bloque en doble capa interna/externa, sin pasar al siguiente hasta validar el actual) y **COPYWRITER** (guion de voz de 700–900 palabras para YouTube, tres reels y 3–5 stories, con al menos un reto tangible).
 
 ---
 

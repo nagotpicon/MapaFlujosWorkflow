@@ -16,7 +16,7 @@ export function behaviorSummary(b: Behavior, dimName: (id: string) => string): s
   const p = b.parameters;
   const pc = (x: unknown) => `${Math.round(Number(x) * 100)}%`;
   switch (b.behaviorType) {
-    case 'generator': return `Genera ${p.amount ?? ''} por iteración${p.mode === 'once' ? ' (pulso)' : ''}`;
+    case 'generator': return `Genera ${p.amount ?? ''} por ronda${p.mode === 'once' ? ' (pulso)' : ''}`;
     case 'filter': return p.mode === 'threshold' ? `Pasa si ${dimName(String(p.thresholdDimension))} ${p.operator} ${p.threshold}` : `Deja pasar ${pc(p.passRatio)}`;
     case 'reducer': return p.mode === 'amount' ? `Resta ${p.amount}` : `Reduce ${pc(p.ratio)}`;
     case 'consumer': return p.mode === 'amount' ? `Consume ${p.amount}` : `Consume ${pc(p.ratio)}`;
@@ -59,6 +59,17 @@ function visible(spec: ParamSpec, params: Behavior['parameters']) {
   return spec.showIf.equals.includes(params[spec.showIf.key] as never);
 }
 
+/** Nombres sencillos de los comportamientos que se ofrecen en el nivel 2 («Movimiento»). */
+export const KID_BEHAVIOR: Partial<Record<BehaviorType, { label: string; hint: string }>> = {
+  filter: { label: 'Colador', hint: 'Solo pasa una parte de lo que llega.' },
+  restrictor: { label: 'Límite', hint: 'Solo caben unos cuantos en cada ronda; el resto espera o se pierde.' },
+  reducer: { label: 'Se escapa algo', hint: 'Por el camino se pierde un poco.' },
+  multiplier: { label: 'Multiplica', hint: 'Lo que llega se hace más grande.' },
+  accumulator: { label: 'Hucha', hint: 'Lo va guardando para más adelante.' },
+  releaser: { label: 'Suelta lo guardado', hint: 'Saca lo que había en la hucha.' },
+};
+const KID_ORDER: BehaviorType[] = ['filter', 'restrictor', 'reducer', 'multiplier', 'accumulator', 'releaser'];
+
 function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
   const { eff, doc } = useInspector();
   const depth = doc.project.settings.depth;
@@ -69,6 +80,7 @@ function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
   const [enabled, setEnabled] = useParam<boolean>('behavior', b.id, 'enabled');
   const update = (patch: Partial<Behavior>) => A.apply((d) => op.updateBehavior(d, b.id, patch));
   const params = spec.params.filter((p) => visible(p, effB.parameters) && (depth === 'expert' || !p.advanced));
+  const kid = depth !== 'expert' ? KID_BEHAVIOR[b.behaviorType] : undefined;
   const numericParams = spec.params.filter((p) => p.kind === 'number' || p.kind === 'percent');
   return (
     <div className={cx('rounded-xl border border-line transition-colors', !enabled && 'opacity-60')} data-testid="behavior-card" data-behavior={b.behaviorType}>
@@ -77,7 +89,7 @@ function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
           <ChevronRight className={cx('size-3.5 shrink-0 text-ink-3 transition-transform', open && 'rotate-90')} />
           <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-ink-2"><BehaviorIcon type={b.behaviorType} className="size-3.5" /></span>
           <span className="min-w-0">
-            <span className="block text-[12.5px] font-medium text-ink">{b.label || spec.label}</span>
+            <span className="block text-[12.5px] font-medium text-ink">{b.label || kid?.label || spec.label}</span>
             <span className="block truncate text-[11px] text-ink-3">{behaviorSummary(effB, dimName)}{b.conditions.length ? ' · condicionado' : ''}</span>
           </span>
         </button>
@@ -86,9 +98,9 @@ function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
       </div>
       {open && (
         <div className="space-y-3 border-t border-line px-3 py-3 mdf-fade-in">
-          <p className="text-[11px] leading-snug text-ink-3">{spec.description}</p>
+          <p className="text-[11.5px] leading-snug text-ink-3">{kid?.hint ?? spec.description}</p>
           <div className="grid grid-cols-2 gap-2">{params.map((p) => <div key={p.key} className={p.kind === 'select' || p.kind === 'behavior' || p.kind === 'text' ? 'col-span-2' : ''}><ParamControl b={b} spec={p} /></div>)}</div>
-          {['multiplier', 'reducer', 'transformer', 'accelerator', 'consumer'].includes(b.behaviorType) && (
+          {depth === 'expert' && ['multiplier', 'reducer', 'transformer', 'accelerator', 'consumer'].includes(b.behaviorType) && (
             <Field label="Dimensiones afectadas" hint="las demás no cambian">
               <div className="flex flex-wrap gap-1">
                 {Object.values(doc.dimensions).map((d) => {
@@ -103,7 +115,7 @@ function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
             </Field>
           )}
           <Field label="Nombre propio"><TextInput value={b.label} onChange={(label) => update({ label })} placeholder={spec.label} /></Field>
-          {depth !== 'basic' && (
+          {depth === 'expert' && (
             <div className="space-y-2 rounded-lg bg-surface-2/60 p-2">
               <div className="text-[11px] font-semibold text-ink-2">SI … (condiciones)</div>
               <ConditionsList ownerType="behavior" ownerId={b.id} ids={b.conditions} ownerNode={ownerNode} emptyText="Siempre activo." addLabel="Añadir SI" />
@@ -120,7 +132,7 @@ function BehaviorCard({ b, ownerNode }: { b: Behavior; ownerNode: string }) {
               )}
             </div>
           )}
-          {depth !== 'basic' && spec.params.length > 0 && (
+          {depth === 'expert' && spec.params.length > 0 && (
             <Field label="Combinación con otros del mismo tipo">
               <Select label="Regla de combinación" value={b.combinationRule} onChange={(combinationRule) => update({ combinationRule })}
                 options={[{ value: 'sequential', label: 'Encadenada (uno tras otro)' }, { value: 'additive', label: 'Aditiva' }, { value: 'multiplicative', label: 'Multiplicativa' }, { value: 'max', label: 'El mayor' }, { value: 'min', label: 'El menor' }]} />
@@ -170,8 +182,23 @@ function SideEffects({ b }: { b: Behavior }) {
   );
 }
 
-export function AddBehaviorMenu({ nodeId, label = 'Añadir comportamiento' }: { nodeId: string; label?: string }) {
+export function AddBehaviorMenu({ nodeId, label = 'Añadir comportamiento', simple }: { nodeId: string; label?: string; simple?: boolean }) {
   const families = [...new Set(BEHAVIOR_ORDER.map((t) => BEHAVIOR_LIBRARY[t].family))];
+  if (simple) {
+    return (
+      <Menu.Root>
+        <Menu.Trigger asChild><Button size="sm" variant="outline" data-testid="add-behavior"><Plus className="size-3.5" />{label}</Button></Menu.Trigger>
+        <Menu.Content>
+          <Menu.Label>¿Qué pasa en este paso?</Menu.Label>
+          {KID_ORDER.map((t) => (
+            <Menu.Item key={t} icon={<BehaviorIcon type={t} />} onSelect={() => { A.apply((d) => op.addBehavior(d, nodeId, t).doc); useUI.getState().notify(`${KID_BEHAVIOR[t]!.label}: hecho`, 'success'); }}>
+              <span data-testid={`behavior-option-${t}`} className="flex flex-col leading-tight"><span>{KID_BEHAVIOR[t]!.label}</span><span className="text-[11px] text-ink-3">{KID_BEHAVIOR[t]!.hint}</span></span>
+            </Menu.Item>
+          ))}
+        </Menu.Content>
+      </Menu.Root>
+    );
+  }
   return (
     <Menu.Root>
       <Menu.Trigger asChild><Button size="sm" variant="outline" data-testid="add-behavior"><Plus className="size-3.5" />{label}</Button></Menu.Trigger>
@@ -191,15 +218,15 @@ export function AddBehaviorMenu({ nodeId, label = 'Añadir comportamiento' }: { 
   );
 }
 
-export function BehaviorList({ nodeId }: { nodeId: string }) {
+export function BehaviorList({ nodeId, simple }: { nodeId: string; simple?: boolean }) {
   const { doc } = useInspector();
   const node = doc.nodes[nodeId];
   const bhs = node.behaviorIds.map((b) => doc.behaviors[b]).filter(Boolean);
   return (
     <div className="space-y-2">
-      {bhs.length === 0 && <p className="text-[11.5px] text-ink-3">Sin comportamiento: el elemento es conceptual o deja pasar el flujo sin cambios.</p>}
+      {bhs.length === 0 && <p className="text-[12px] text-ink-3">{simple ? 'Aquí no pasa nada especial: todo lo que llega, sigue adelante.' : 'Sin comportamiento: el elemento es conceptual o deja pasar el flujo sin cambios.'}</p>}
       {bhs.map((b) => <BehaviorCard key={b.id} b={b} ownerNode={nodeId} />)}
-      <AddBehaviorMenu nodeId={nodeId} />
+      <AddBehaviorMenu nodeId={nodeId} simple={simple} label={simple ? '¿Qué pasa aquí?' : undefined} />
     </div>
   );
 }

@@ -32,16 +32,16 @@ function MultiInspector({ ids }: { ids: string[] }) {
     <div data-testid="multi-inspector">
       <div className="border-b border-line px-4 py-3">
         <div className="flex items-center gap-2 text-[13px] font-semibold text-ink"><Users className="size-4 text-ink-3" />{nodes.length} elementos seleccionados</div>
-        <p className="mt-1 text-[11px] text-ink-3">Los cambios se aplican a todos. «Varios» indica que hoy tienen valores distintos.</p>
+        <p className="mt-1 text-[11px] text-ink-3">Lo que cambies aquí se aplica a todas. «Varios» = ahora mismo son distintas.</p>
       </div>
-      <Section title="Edición conjunta">
+      <Section title="Cambiar todas a la vez">
         <Field label={<>Color {color == null && <span className="text-ink-3">· varios</span>}</>}>
           <div className="flex flex-wrap gap-1.5">
             {NODE_COLORS.map((c) => <button key={c} type="button" aria-label={COLOR_LABEL[c]} onClick={() => setStyle({ color: c })} className={cx('size-6 rounded-full border-2', color === c ? 'border-accent' : 'border-transparent')} style={{ background: `var(--n-${c}-ac)` }} />)}
           </div>
         </Field>
         <Field label={<>Forma {shape == null && <span className="text-ink-3">· varias</span>}</>}>
-          <Segmented size="xs" label="Forma" value={shape ?? ('' as never)} onChange={(s) => setStyle({ shape: s })} options={[{ value: 'rounded', label: 'Burbuja' }, { value: 'pill', label: 'Píldora' }, { value: 'rect', label: 'Recto' }, { value: 'circle', label: 'Círculo' }, { value: 'diamond', label: 'Rombo' }]} />
+          <Segmented size="xs" label="Forma" value={shape ?? ('' as never)} onChange={(s) => setStyle({ shape: s })} options={[{ value: 'rounded', label: 'Redondeado' }, { value: 'pill', label: 'Píldora' }, { value: 'rect', label: 'Recto' }, { value: 'circle', label: 'Círculo' }, { value: 'diamond', label: 'Rombo' }]} />
         </Field>
         <Field label="Etiquetas comunes">
           <div className="flex flex-wrap gap-1">
@@ -65,17 +65,17 @@ function MultiInspector({ ids }: { ids: string[] }) {
             onChange={(v) => A.apply((d) => ids.reduce((acc, id) => op.setParam(acc, 'node', id, 'weight.influence', { mode: 'weighted', value: v, scaleId: null }), d))} />
         </Field>
       </Section>
-      <Section title="Organizar" icon={<Layers />}>
+      <Section title="Ordenar" icon={<Layers />}>
         <div className="flex flex-wrap gap-1">
-          <Button size="xs" variant="subtle" onClick={() => A.groupSelection()}>Agrupar</Button>
-          <Button size="xs" variant="subtle" onClick={() => A.groupSelection('container')}>Contenedor</Button>
-          <Button size="xs" variant="subtle" onClick={A.createCircuitFromSelection}>Crear circuito</Button>
-          <Button size="xs" variant="subtle" onClick={A.autoLayout}>Distribuir</Button>
+          <Button size="xs" variant="subtle" onClick={() => A.groupSelection()}>Grupo</Button>
+          <Button size="xs" variant="subtle" onClick={() => A.groupSelection('container')}>Zona</Button>
+          <Button size="xs" variant="subtle" onClick={A.createCircuitFromSelection}>Bucle</Button>
+          <Button size="xs" variant="subtle" onClick={A.autoLayout}>Ordenar</Button>
           {(['left', 'center', 'right', 'top', 'middle', 'bottom', 'hdist', 'vdist'] as const).map((m) => (
             <Button key={m} size="xs" variant="ghost" onClick={() => A.align(m)}>{({ left: '⇤', center: '↔', right: '⇥', top: '⤒', middle: '↕', bottom: '⤓', hdist: '⋯', vdist: '⋮' })[m]}</Button>
           ))}
         </div>
-        <Button size="sm" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" />Eliminar selección</Button>
+        <Button size="sm" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" />Borrar lo elegido</Button>
       </Section>
     </div>
   );
@@ -118,28 +118,23 @@ function ProjectPanel() {
   return (
     <div data-testid="project-panel">
       <div className="space-y-2.5 border-b border-line px-4 py-3">
-        <Field label="Proyecto"><TextInput value={doc.project.name} onChange={(name) => A.apply((d) => ({ ...d, project: { ...d.project, name } }), 'pname')} /></Field>
-        <Field label="Descripción"><TextArea rows={2} value={doc.project.description} onChange={(description) => A.apply((d) => ({ ...d, project: { ...d.project, description } }), 'pdesc')} placeholder="De qué trata este mapa…" /></Field>
-        <Field label="Nivel de profundidad de la interfaz">
-          <Segmented label="Profundidad" value={doc.project.settings.depth} onChange={(depth) => set({ depth })}
-            options={[{ value: 'basic', label: 'Básico' }, { value: 'advanced', label: 'Avanzado' }, { value: 'expert', label: 'Experto' }]} />
-        </Field>
-        <p className="text-[11px] text-ink-3">{doc.project.settings.depth === 'basic' ? 'Crear, editar, conectar y organizar.' : doc.project.settings.depth === 'advanced' ? 'Además: pesos, condiciones, comportamientos y dimensiones.' : 'Además: fórmulas, puertos, rangos de incertidumbre y reglas avanzadas.'}</p>
+        <Field label="Nombre del mapa"><TextInput value={doc.project.name} onChange={(name) => A.apply((d) => ({ ...d, project: { ...d.project, name } }), 'pname')} /></Field>
+        <Field label="De qué va"><TextArea rows={2} value={doc.project.description} onChange={(description) => A.apply((d) => ({ ...d, project: { ...d.project, description } }), 'pdesc')} placeholder="De qué trata este mapa…" /></Field>
+        <p className="text-[12px] text-ink-3">Elige una idea o una unión para ver sus detalles. Doble clic en el lienzo: idea nueva.</p>
       </div>
-      <Section title="Simulación" icon={<Sigma />}>
-        <Field label="Iteraciones"><NumberInput value={doc.project.settings.simulation.iterations} min={1} max={500} onChange={(v) => set({ simulation: { iterations: Math.round(v) } })} data-testid="iterations-input" /></Field>
-        <p className="text-[11px] text-ink-3">Selecciona una burbuja o conexión para ver y editar sus propiedades. Doble clic en el lienzo crea una burbuja.</p>
+      <Section title="Probar" icon={<Sigma />}>
+        <Field label="Rondas (semanas, meses…)"><NumberInput value={doc.project.settings.simulation.iterations} min={1} max={500} onChange={(v) => set({ simulation: { iterations: Math.round(v) } })} data-testid="iterations-input" /></Field>
       </Section>
-      <Section title="Circuitos configurados" icon={<RefreshCcw />} count={circuits.length} defaultOpen={circuits.length > 0}>
-        {circuits.length === 0 ? <p className="text-[11.5px] text-ink-3">Selecciona burbujas en orden y usa «Crear circuito» para cerrar un ciclo.</p> : circuits.map((c) => (
+      <Section title="Bucles" icon={<RefreshCcw />} count={circuits.length} defaultOpen={circuits.length > 0}>
+        {circuits.length === 0 ? <p className="text-[11.5px] text-ink-3">Elige ideas en orden y pulsa «Bucle» para cerrar un círculo (como el boca a boca).</p> : circuits.map((c) => (
           <button key={c.id} type="button" onClick={() => c.returnEdgeId && useUI.getState().setSelection([], [c.returnEdgeId])} className="flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-[12px] hover:bg-surface-2">
             <RefreshCcw className="size-3.5 text-gain" /><span className="flex-1 truncate">{c.name}</span><Badge>{c.returnPercent}%</Badge>
           </button>
         ))}
       </Section>
-      <Section title="Dimensiones del flujo" icon={<Ruler />} defaultOpen={false}><DimensionEditor /></Section>
+      <Section title="Qué se mide (dimensiones)" icon={<Ruler />} defaultOpen={false}><DimensionEditor /></Section>
       <Section title="Ajustes" icon={<Settings2 />} defaultOpen={false}>
-        <Button size="sm" variant="outline" onClick={() => useUI.setState({ overlay: 'settings' })}>Escalas, paleta, leyenda y atajos…</Button>
+        <Button size="sm" variant="outline" onClick={() => useUI.setState({ overlay: 'settings' })}>Más ajustes: escalas, colores, leyenda y atajos…</Button>
       </Section>
     </div>
   );
@@ -158,11 +153,11 @@ export function Inspector() {
   if (nodeIds.length === 1 && edgeIds.length === 0) body = <NodeInspector id={nodeIds[0]} />;
   else if (nodeIds.length === 0 && edgeIds.length === 1) body = <EdgeInspector id={edgeIds[0]} />;
   else if (nodeIds.length > 1) body = <MultiInspector ids={nodeIds} />;
-  else if (edgeIds.length > 1) body = <Empty title={`${edgeIds.length} conexiones seleccionadas`}>Selecciona una sola para editarla.</Empty>;
+  else if (edgeIds.length > 1) body = <Empty title={`${edgeIds.length} conexiones seleccionadas`}>Elige solo una para cambiarla.</Empty>;
   else body = <ProjectPanel />;
   return (
     <InspectorContext.Provider value={{ doc, eff, scenarioIsBase: !scenario || scenario.isBase }}>
-      <aside className="flex w-[340px] shrink-0 flex-col border-l border-line bg-surface mdf-slide-r" aria-label="Inspector" data-testid="inspector">
+      <aside className="flex w-[340px] shrink-0 flex-col border-l border-line bg-surface mdf-slide-r" aria-label="Detalles" data-testid="inspector">
         {scenario && !scenario.isBase && (
           <div className="flex items-center gap-2 border-b border-line bg-accent-soft px-4 py-1.5 text-[11.5px] text-accent-text" data-testid="scenario-banner">
             <span className="size-2 rounded-full" style={{ background: scenario.color }} />

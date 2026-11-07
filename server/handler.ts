@@ -11,6 +11,9 @@ import {
   ExplorerTurnSchema, PlanSummarySchema, ProposalRequestSchema, ProposalSchema, TurnRequestSchema, PLAN_JSON_SCHEMA, PROPOSAL_JSON_SCHEMA, TURN_JSON_SCHEMA, extractJson,
 } from '../src/explorer/shared/schemas.ts';
 import { SYSTEM_INSTRUCTION, buildPlanPrompt, buildPolishPrompt, buildProposalPrompt, buildTurnPrompt } from '../src/explorer/shared/prompts.ts';
+import {
+  ACLARATOR_SYSTEM, CLARIFY_JSON_SCHEMA, COPYWRITER_SYSTEM, COPY_JSON_SCHEMA, ClarifyRequestSchema, ClarifyTurnSchema, CopyPackageAiSchema, CopyRequestSchema, buildClarifyPrompt, buildCopyPrompt,
+} from '../src/explorer/shared/modes.ts';
 
 const MAX_BODY = 45 * 1024 * 1024;
 const TIMEOUT = { turn: 90_000, proposal: 180_000, transcribe: 300_000, short: 60_000 };
@@ -119,6 +122,22 @@ export function createApiHandler({ env, log = (m) => console.error(m), provider:
         const r = ProposalRequestSchema.parse(body);
         const { data, repaired } = await generateValidated(provider, ProposalSchema, { system: SYSTEM_INSTRUCTION, prompt: buildProposalPrompt(r), jsonSchema: PROPOSAL_JSON_SCHEMA, signal: timed(TIMEOUT.proposal), temperature: 0.4 });
         send(res, 200, { proposal: data, repaired, model: await provider.model() });
+        return true;
+      }
+
+      // modo de trabajo ACLARATOR: un bloque cada vez, en doble capa
+      if (url.pathname === '/api/explorer/clarify') {
+        const r = ClarifyRequestSchema.parse(body);
+        const { data } = await generateValidated(provider, ClarifyTurnSchema, { system: ACLARATOR_SYSTEM, prompt: buildClarifyPrompt(r), jsonSchema: CLARIFY_JSON_SCHEMA, signal: timed(TIMEOUT.turn), temperature: 0.5 });
+        send(res, 200, { turn: data, model: await provider.model() });
+        return true;
+      }
+
+      // modo de trabajo COPYWRITER: guion de voz + reels + stories
+      if (url.pathname === '/api/explorer/copy') {
+        const r = CopyRequestSchema.parse(body);
+        const { data, repaired } = await generateValidated(provider, CopyPackageAiSchema, { system: COPYWRITER_SYSTEM, prompt: buildCopyPrompt(r), jsonSchema: COPY_JSON_SCHEMA, signal: timed(TIMEOUT.proposal), temperature: 0.8 });
+        send(res, 200, { pkg: data, repaired, model: await provider.model() });
         return true;
       }
 

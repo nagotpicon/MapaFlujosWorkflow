@@ -49,7 +49,7 @@ export const useUI = create<UIState>((set) => ({
   tool: 'select',
   connectType: 'flow',
   view: readLS<ViewMode>('mdf.view', 'flow'),
-  theme: readLS<ThemePref>('mdf.theme', 'system'),
+  theme: readLS<ThemePref>('mdf.theme.v2', 'light'),
   inspectorOpen: true,
   bottomOpen: readLS('mdf.bottomOpen', true),
   bottomTab: 'simulation',

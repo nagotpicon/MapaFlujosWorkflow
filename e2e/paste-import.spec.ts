@@ -12,6 +12,8 @@ test('Pegar el JSON del manual para IA (con vallas ```json) crea el proyecto y s
   for (const t of ['Flyers repartidos', 'Personas que responden', 'Contactos válidos', 'Clase de prueba', 'Alumnos que pagan', 'Desplazamientos', 'Clases en mi domicilio']) {
     await expect(page.locator(`[data-node-title="${t}"]`)).toBeVisible();
   }
+  // el mapa pegado trae inicio y meta: abre en el nivel 2; los «¿y si…?» y los resultados detallados están en el 3
+  await page.getByTestId('level-3').click();
   await expect(page.getByTestId('scenario-switcher')).toContainText('Situación actual');
   await page.getByTestId('tab-results').click();
   const salidas = page.getByTestId('bottom-panel');

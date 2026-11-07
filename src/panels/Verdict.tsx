@@ -57,7 +57,7 @@ export function VerdictPanel() {
       </div>
       {polished && (
         <div className="rounded-xl border border-[color-mix(in_srgb,var(--transform)_40%,transparent)] bg-[color-mix(in_srgb,var(--transform)_6%,transparent)] p-3 text-[13.5px] leading-relaxed text-ink">
-          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-transform"><Sparkles className="size-3.5" />Redactado por IA a partir de los mismos datos (sin cifras nuevas)</div>
+          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-transform"><Sparkles className="size-3.5" />Contado por la IA con los mismos datos (sin inventar números)</div>
           <div className="whitespace-pre-wrap">{polished}</div>
         </div>
       )}
@@ -92,9 +92,9 @@ export function VerdictPanel() {
             if (!st.configured) { useUI.getState().notify('Ningún proveedor de IA configurado: el veredicto ya está calculado sin IA.', 'info'); return; }
             setPolished(await polishVerdict(md));
           } catch (e) { useUI.getState().notify((e as Error).message, 'error'); } finally { setBusy(false); }
-        }}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}Pulir redacción con IA</Button>
+        }}>{busy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}Que la IA lo cuente mejor</Button>
       </div>
-      <p className="text-[11px] text-ink-3">Se calcula a partir de la simulación del mapa tal como está ahora. No es una predicción: es lo que sale de tus supuestos.</p>
+      <p className="text-[11px] text-ink-3">Sale de tu mapa tal y como está ahora. No es adivinar el futuro: es lo que sale de lo que tú has puesto.</p>
     </div>
   );
 }

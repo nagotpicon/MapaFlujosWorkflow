@@ -1,6 +1,6 @@
 /**
  * TERMÓMETRO DE CALOR
- * Temperatura en [-1, 1] por elemento e iteración:
+ * Temperatura en [-1, 1] por elemento e ronda:
  *   < -0.33  frío        (sin flujo / infrautilizado / bloqueado)
  *   ±0.33    ritmo       (utilización sana, sin fricción relevante)
  *   > 0.33   caliente    (presión, fricción, prisas)
@@ -22,13 +22,13 @@ export interface HeatReading {
 }
 
 export interface HeatMap {
-  /** nodeId -> lecturas por iteración */
+  /** nodeId -> lecturas por ronda */
   nodes: Record<string, HeatReading[]>;
   /** media por nodo (ponderada por actividad) */
   nodeAvg: Record<string, HeatReading>;
-  /** zonas del marco: "col:row" -> lecturas por iteración (solo modo cuadrícula) */
+  /** zonas del marco: "col:row" -> lecturas por ronda (solo modo cuadrícula) */
   zones: Record<string, { column: number; row: number; readings: HeatReading[]; avg: HeatReading }>;
-  /** temperatura global por iteración */
+  /** temperatura global por ronda */
   global: number[];
 }
 
@@ -41,7 +41,7 @@ export function heatState(t: number, active = true): HeatState {
 }
 
 export const HEAT_LABEL: Record<HeatState, string> = {
-  cold: 'Frío', rhythm: 'Ritmo perfecto', warm: 'Caliente', overheated: 'Recalentado', idle: 'Sin actividad',
+  cold: 'Frío: le falta', rhythm: 'A buen ritmo', warm: 'Caliente', overheated: 'Agobiado', idle: 'Sin actividad',
 };
 
 function capacityOf(doc: ProjectDoc, nodeId: string): number | null {
@@ -100,7 +100,7 @@ export function computeHeat(doc: ProjectDoc, r: SimulationResult): HeatMap {
       }
       if (thr + queue <= 1e-9) {
         const starving = (peak[id] ?? 0) > 1e-9;
-        readings.push({ temperature: starving ? -0.8 : 0, state: starving ? 'cold' : 'idle', utilization: cap ? 0 : null, causes: starving ? ['Sin flujo en esta iteración'] : [] });
+        readings.push({ temperature: starving ? -0.8 : 0, state: starving ? 'cold' : 'idle', utilization: cap ? 0 : null, causes: starving ? ['Sin flujo en esta ronda'] : [] });
         prevQueue = queue;
         continue;
       }

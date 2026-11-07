@@ -36,8 +36,22 @@ export async function openProject(doc: ProjectDoc, repairs: string[] = []) {
   await repo.setSetting('lastProjectId', doc.project.id);
 }
 
-export async function newProject(name = 'Proyecto sin título') {
-  await openProject(createEmptyDoc(name));
+/**
+ * Mapa nuevo. Empieza en el nivel 1 (solo ideas). Si traes una idea, aparece
+ * en el centro como idea principal, más grande y en letra de libro.
+ */
+export async function newProject(name = 'Mapa sin título', idea?: string) {
+  let doc = createEmptyDoc(name);
+  doc = { ...doc, project: { ...doc.project, settings: { ...doc.project.settings, depth: 'basic' } } };
+  const text = idea?.trim();
+  if (text) {
+    const r = op.addNode(doc, 'bubble', {
+      title: text, position: { x: -150, y: -40 },
+      visualStyle: { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid' },
+    });
+    doc = r.doc;
+  }
+  await openProject(doc);
 }
 
 export async function openDemo() {
@@ -266,7 +280,7 @@ export function addCommentToSelection() {
 
 export function setTheme(theme: 'light' | 'dark' | 'system') {
   useUI.setState({ theme });
-  try { localStorage.setItem('mdf.theme', JSON.stringify(theme)); } catch { /* */ }
+  try { localStorage.setItem('mdf.theme.v2', JSON.stringify(theme)); } catch { /* */ }
   const doc = getDoc();
   if (doc) apply((d) => ({ ...d, project: { ...d.project, themePreference: theme } }));
   void repo.setSetting('theme', theme);

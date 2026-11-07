@@ -9,7 +9,7 @@
     <script>
       (function () {
         try {
-          var t = JSON.parse(localStorage.getItem('mdf.theme') || '"system"');
+          var t = JSON.parse(localStorage.getItem('mdf.theme.v2') || '"light"');
           var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.dataset.theme = dark ? 'dark' : 'light';
         } catch (e) { document.documentElement.dataset.theme = 'light'; }

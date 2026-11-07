@@ -18,6 +18,10 @@ import { useResolvedTheme } from './useTheme';
 import { StartScreen } from './StartScreen';
 import { useSimPlayback } from './useSimPlayback';
 import * as A from './actions';
+import { Dock } from './Dock';
+import { Coach } from './Coach';
+import { SimpleSimBar } from './SimpleSimBar';
+import { syncViewToLevel, useLevel } from './levels';
 
 const Overlays = lazy(() => import('./Overlays'));
 
@@ -27,6 +31,12 @@ export function App() {
   const theme = useResolvedTheme();
   const inspectorOpen = useUI((s) => s.inspectorOpen);
   const bottomOpen = useUI((s) => s.bottomOpen);
+  const level = useLevel();
+  const projectId = doc?.project.id;
+  const hasSelection = useUI((s) => s.selection.nodes.length + s.selection.edges.length > 0);
+  // en los niveles 1 y 2 los detalles solo aparecen cuando eliges algo
+  const showInspector = level === 3 ? inspectorOpen : hasSelection;
+  useEffect(() => { if (projectId) syncViewToLevel(level); }, [level, projectId]);
   useShortcuts();
   useSimPlayback();
 
@@ -64,14 +74,17 @@ export function App() {
           <div className="flex h-full flex-col" data-testid="app">
             <TopBar />
             <div className="flex min-h-0 flex-1">
-              <Toolbar />
+              {level === 3 && <Toolbar />}
               <main className="relative flex min-w-0 flex-1 flex-col">
                 <div className="relative min-h-0 flex-1">
-                  <Canvas resolvedTheme={theme} />
+                  <Canvas resolvedTheme={theme} level={level} />
+                  {level < 3 && <Coach level={level} />}
+                  {level < 3 && <Dock level={level} />}
+                  {level === 2 && <SimpleSimBar />}
                 </div>
-                {bottomOpen && <BottomPanel />}
+                {level === 3 && bottomOpen && <BottomPanel />}
               </main>
-              {inspectorOpen && <Inspector />}
+              {showInspector && <Inspector />}
             </div>
           </div>
           <CommandPalette />

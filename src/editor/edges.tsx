@@ -136,12 +136,12 @@ export const MapEdgeView = memo(function MapEdgeView(props: P) {
           {flowViews && isFlow && st && q > 1e-6 && (
             <span className="rounded-md border border-line bg-surface/95 px-1.5 py-px text-[10.5px] font-semibold tabular text-flow shadow-sm" data-testid="edge-flow">{fmt(q)}</span>
           )}
-          {view === 'energy' && lostAmt > 1e-6 && <span className="rounded-md bg-[color-mix(in_srgb,var(--loss)_14%,transparent)] px-1 text-[10.5px] font-semibold tabular text-loss" title="Pérdida en la conexión">−{fmt(lostAmt)}</span>}
+          {view === 'energy' && lostAmt > 1e-6 && <span className="rounded-md bg-[color-mix(in_srgb,var(--loss)_14%,transparent)] px-1 text-[10.5px] font-semibold tabular text-loss" title="Lo que se pierde en esta unión">−{fmt(lostAmt)}</span>}
           {blocked && view !== 'mental' && <span className="rounded-full bg-surface p-0.5 text-loss shadow-sm" title="Bloqueada por condición"><Ban className="size-3" /></span>}
           {(isBack || edge.behavior.isFeedback || edge.behavior.transport === 'replicate') && view !== 'mental' && (
-            <span className="rounded-full bg-surface p-0.5 text-gain shadow-sm" title={edge.behavior.transport === 'replicate' ? 'Retroalimentación (réplica)' : 'Retorno: llega en la iteración siguiente'}><RotateCcw className="size-3" /></span>
+            <span className="rounded-full bg-surface p-0.5 text-gain shadow-sm" title={edge.behavior.transport === 'replicate' ? 'Retroalimentación (réplica)' : 'Vuelta: llega en la ronda siguiente'}><RotateCcw className="size-3" /></span>
           )}
-          {edge.delay > 0 && view !== 'mental' && <span className="rounded-md bg-surface-2 px-1 text-[10px] tabular text-ink-3" title="Retardo en iteraciones">⏱{edge.delay}</span>}
+          {edge.delay > 0 && view !== 'mental' && <span className="rounded-md bg-surface-2 px-1 text-[10px] tabular text-ink-3" title="Rondas que tarda en llegar">⏱{edge.delay}</span>}
         </div>
       </EdgeLabelRenderer>
     </>

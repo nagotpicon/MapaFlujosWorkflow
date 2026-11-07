@@ -1,6 +1,6 @@
 /**
  * Motor de condiciones: AND, OR, NOT, comparaciones, rangos, umbrales,
- * activación por iteración y dependencias de otros elementos.
+ * activación por ronda y dependencias de otros elementos.
  */
 import type { Condition, ConditionExpr, Operand } from '../core/model/schema';
 
@@ -109,7 +109,7 @@ export function describeExpr(expr: ConditionExpr, nodeName: (id: string) => stri
   const od = (o: Operand | undefined): string => {
     if (!o) return '?';
     if (o.kind === 'const') return String(o.value);
-    if (o.kind === 'iteration') return 'iteración';
+    if (o.kind === 'iteration') return 'ronda';
     return `${METRIC_LABEL[o.metric] ?? o.metric}${o.dimensionId && o.metric === 'dim' ? `·${o.dimensionId}` : ''} de «${nodeName(o.nodeId)}»`;
   };
   switch (expr.conditionType) {
@@ -118,7 +118,7 @@ export function describeExpr(expr: ConditionExpr, nodeName: (id: string) => stri
     case 'or': return expr.children.map((c) => `(${describeExpr(c, nodeName)})`).join(' O ') || 'nunca';
     case 'not': return `NO (${expr.children[0] ? describeExpr(expr.children[0], nodeName) : '…'})`;
     case 'compare': return `${od(expr.operands[0])} ${OP_LABEL[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[1])}`;
-    case 'iteration': return `iteración ${OP_LABEL[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[0])}`;
+    case 'iteration': return `ronda ${OP_LABEL[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[0])}`;
     case 'range': return `${od(expr.operands[0])} ${expr.operator === 'outside' ? 'fuera de' : 'entre'} ${od(expr.operands[1])} y ${od(expr.operands[2])}`;
     case 'threshold': return `${od(expr.operands[0])} ${expr.operator === 'below' ? 'por debajo de' : 'supera'} ${od(expr.operands[1])}`;
     case 'active': return `«${od(expr.operands[0])}» está activo`;

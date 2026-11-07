@@ -24,9 +24,9 @@ export function ComparePanel() {
   return (
     <div className="space-y-4 px-5 py-4" data-testid="compare">
       <div className="flex flex-wrap items-center gap-2 text-[12px]">
-        <span className="size-2 rounded-full" style={{ background: SA?.color }} /><Select label="Escenario A" className="w-56" value={a} onChange={setA} options={opts} />
+        <span className="size-2 rounded-full" style={{ background: SA?.color }} /><Select label="Opción A" className="w-56" value={a} onChange={setA} options={opts} />
         <span className="text-ink-3">frente a</span>
-        <span className="size-2 rounded-full" style={{ background: SB?.color }} /><Select label="Escenario B" className="w-56" value={b} onChange={setB} options={opts} />
+        <span className="size-2 rounded-full" style={{ background: SB?.color }} /><Select label="Opción B" className="w-56" value={b} onChange={setB} options={opts} />
         {cmp?.hypothesisBased && <Badge tone="cond"><TriangleAlert className="size-3" />Basado en hipótesis: resultados orientativos</Badge>}
       </div>
       {!cmp ? <div className="flex h-40 items-center justify-center text-ink-3"><Loader2 className="size-5 animate-spin" /></div> : (
@@ -57,7 +57,7 @@ export function ComparePanel() {
             <div className="space-y-3">
               <List title="Nuevos cuellos de botella" items={cmp.newBottlenecks} empty="Ninguno" />
               <List title="Cuellos resueltos" items={cmp.resolvedBottlenecks} empty="Ninguno" />
-              <List title="Cambios en circuitos" items={cmp.loopChanges.map((l) => `${l.label}: ${l.change}`)} empty="Sin cambios" />
+              <List title="Cambios en bucles" items={cmp.loopChanges.map((l) => `${l.label}: ${l.change}`)} empty="Sin cambios" />
             </div>
           </div>
           <List title="Parámetros que difieren" items={cmp.parameterDiffs.map((p) => `${p.label}: ${JSON.stringify(p.a)} → ${JSON.stringify(p.b)}`)} empty="Los dos escenarios tienen la misma configuración." />

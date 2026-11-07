@@ -1,4 +1,4 @@
-/** Constructor visual de condiciones (Y / O / NO, comparaciones, rangos, umbrales, iteración, dependencias). Sin código. */
+/** Constructor visual de condiciones (Y / O / NO, comparaciones, rangos, umbrales, ronda, dependencias). Sin código. */
 import { Plus, Trash2, Diamond } from 'lucide-react';
 import type { Condition, ConditionExpr, Operand } from '../core/model/schema';
 import { newId } from '../core/model/factory';
@@ -59,7 +59,7 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
     <div className="space-y-1 rounded-lg bg-surface-2 p-1.5" data-testid="condition-clause">
       <div className="flex items-center gap-1">
         <Select label="Tipo de cláusula" className="flex-1" value={expr.conditionType} onChange={(t) => onChange(newClause(t as ClauseKind, ownerNode))}
-          options={[{ value: 'compare', label: 'Comparación' }, { value: 'threshold', label: 'Umbral' }, { value: 'range', label: 'Rango' }, { value: 'iteration', label: 'Iteración / tiempo' }, { value: 'active', label: 'Depende de otro activo' }]} />
+          options={[{ value: 'compare', label: 'Comparación' }, { value: 'threshold', label: 'Umbral' }, { value: 'range', label: 'Rango' }, { value: 'iteration', label: 'Ronda / tiempo' }, { value: 'active', label: 'Depende de otro activo' }]} />
         <IconButton size="xs" label="Negar (NO)" onClick={() => onChange({ id: newId('cx'), conditionType: 'not', operator: null, operands: [], children: [expr] })}><span className="text-[10px] font-bold">NO</span></IconButton>
         <IconButton size="xs" label="Eliminar cláusula" onClick={onRemove}><Trash2 className="size-3" /></IconButton>
       </div>
@@ -88,7 +88,7 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
       </>)}
       {expr.conditionType === 'iteration' && (
         <div className="flex items-center gap-1">
-          <span className="text-[11.5px] text-ink-2">Iteración</span>
+          <span className="text-[11.5px] text-ink-2">Ronda</span>
           <Select label="Operador" className="w-16" value={expr.operator ?? '>='} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
           <NumberInput className="flex-1" value={constVal(expr.operands[0])} min={1} onChange={(v) => onChange({ ...expr, operands: [{ kind: 'const', value: Math.round(v) }] })} />
         </div>
@@ -141,11 +141,11 @@ export function ConditionBlock({ condition, ownerNode, onDelete }: { condition: 
         <Select label="Resultado" value={condition.result} onChange={(result) => A.apply((d) => op.updateCondition(d, condition.id, { result }))}
           options={[{ value: 'activate', label: 'Si se cumple: actúa' }, { value: 'deactivate', label: 'Si se cumple: no actúa' }]} />
         <Select label="Activación" value={condition.activationRules.mode} onChange={(mode) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, mode } }))}
-          options={[{ value: 'always', label: 'Cada iteración' }, { value: 'latch', label: 'Una vez cierta, queda' }, { value: 'once', label: 'Solo una vez' }]} />
+          options={[{ value: 'always', label: 'Cada ronda' }, { value: 'latch', label: 'Una vez cierta, queda' }, { value: 'once', label: 'Solo una vez' }]} />
       </div>
       <label className="flex items-center justify-between gap-2 text-[11px] text-ink-2">
         Debe cumplirse durante
-        <span className="flex w-24 items-center gap-1"><NumberInput value={condition.activationRules.sustain} min={1} onChange={(v) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, sustain: Math.max(1, Math.round(v)) } }))} /> it.</span>
+        <span className="flex w-24 items-center gap-1"><NumberInput value={condition.activationRules.sustain} min={1} onChange={(v) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, sustain: Math.max(1, Math.round(v)) } }))} /> rondas</span>
       </label>
     </div>
   );

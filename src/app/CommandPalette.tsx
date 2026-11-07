@@ -13,6 +13,7 @@ import * as op from '../core/operations';
 
 interface Cmd { id: string; label: string; hint?: string; group: string; run: () => void; keywords?: string }
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const TYPE_HINT: Record<string, string> = { bubble: 'idea', input: 'inicio', output: 'meta', note: 'nota', label: 'texto', comment: 'comentario', group: 'grupo', container: 'zona' };
 import { openManual } from './manuals';
 
 export function CommandPalette() {
@@ -29,7 +30,7 @@ export function CommandPalette() {
     const cmds: Cmd[] = [];
     for (const n of Object.values(doc.nodes)) {
       cmds.push({
-        id: `node:${n.id}`, label: n.title || 'Sin título', group: n.hidden ? 'Elementos ocultos' : 'Elementos', hint: n.type, keywords: `${n.description} ${n.tags.join(' ')}`,
+        id: `node:${n.id}`, label: n.title || 'Sin título', group: n.hidden ? 'Ideas ocultas' : 'Ideas del mapa', hint: TYPE_HINT[n.type] ?? n.type, keywords: `${n.description} ${n.tags.join(' ')}`,
         run: () => {
           if (n.hidden) A.apply((d) => op.updateNode(d, n.id, { hidden: false }));
           useUI.getState().setSelection([n.id]);
@@ -38,46 +39,46 @@ export function CommandPalette() {
       });
     }
     const add = (id: string, label: string, run: () => void, group = 'Comandos', keywords = '') => cmds.push({ id, label, run, group, keywords, hint: SHORTCUTS.find((s) => s.id === id) ? displayCombo(SHORTCUTS.find((s) => s.id === id)!.default) : undefined });
-    add('bubble', 'Nueva burbuja', () => A.createNodeAt('bubble'), 'Crear');
-    add('input', 'Nueva entrada', () => A.createNodeAt('input'), 'Crear');
-    add('output', 'Nueva salida', () => A.createNodeAt('output'), 'Crear');
+    add('bubble', 'Nueva idea', () => A.createNodeAt('bubble'), 'Crear');
+    add('input', 'Nuevo inicio', () => A.createNodeAt('input'), 'Crear');
+    add('output', 'Nueva meta', () => A.createNodeAt('output'), 'Crear');
     add('note', 'Nueva nota', () => A.createNodeAt('note'), 'Crear');
-    add('container', 'Nuevo contenedor', () => A.groupSelection('container'), 'Crear');
-    add('circuit', 'Crear circuito con la selección', A.createCircuitFromSelection, 'Crear');
+    add('container', 'Nueva zona', () => A.groupSelection('container'), 'Crear');
+    add('circuit', 'Bucle con lo elegido', A.createCircuitFromSelection, 'Crear');
     for (const s of SHORTCUTS) if (!['delete', 'edit', 'child', 'sibling', 'palette'].includes(s.id)) add(s.id, s.label, () => runShortcut(s.id), s.group);
-    add('layout', 'Distribución automática', A.autoLayout, 'Organizar');
+    add('layout', 'Ordenar el mapa', A.autoLayout, 'Organizar');
     for (const m of ['left', 'center', 'right', 'top', 'middle', 'bottom', 'hdist', 'vdist'] as const) {
       const lbl = { left: 'Alinear a la izquierda', center: 'Centrar horizontalmente', right: 'Alinear a la derecha', top: 'Alinear arriba', middle: 'Centrar verticalmente', bottom: 'Alinear abajo', hdist: 'Distribuir horizontalmente', vdist: 'Distribuir verticalmente' }[m];
       add(`align-${m}`, lbl, () => A.align(m), 'Organizar');
     }
-    add('showhidden', 'Mostrar todos los elementos ocultos', A.showAllHidden, 'Organizar');
-    add('lock', 'Bloquear / desbloquear selección', A.toggleLockSelection, 'Organizar');
-    add('clone', 'Clonar selección (misma identidad)', A.cloneSelection, 'Organizar');
-    for (const v of [['mental', 'Mental'], ['flow', 'Flujo'], ['energy', 'Energía'], ['system', 'Sistema'], ['simulation', 'Simulación']] as const) add(`v-${v[0]}`, `Vista ${v[1]}`, () => setView(v[0]), 'Vistas');
-    add('monitor', 'Abrir monitor', () => useUI.setState({ overlay: 'monitor' }), 'Paneles');
-    add('explorer', 'Explorador de flujos', () => useUI.setState({ overlay: 'explorer' }), 'Paneles', 'ia gemini estrategias');
+    add('showhidden', 'Mostrar lo oculto', A.showAllHidden, 'Organizar');
+    add('lock', 'Bloquear / desbloquear lo elegido', A.toggleLockSelection, 'Organizar');
+    add('clone', 'Clonar (la misma idea en otro sitio)', A.cloneSelection, 'Organizar');
+    for (const v of [['mental', 'Ideas'], ['flow', 'Recorrido'], ['energy', 'Fuerzas'], ['system', 'Piezas'], ['simulation', 'Película']] as const) add(`v-${v[0]}`, `Vista ${v[1]}`, () => setView(v[0]), 'Vistas');
+    add('monitor', 'Marcador', () => useUI.setState({ overlay: 'monitor' }), 'Paneles', 'monitor');
+    add('explorer', 'Ayúdame a pensar', () => useUI.setState({ overlay: 'explorer' }), 'Paneles', 'explorador ia gemini estrategias aclarator copywriter guion');
     add('verdict', 'Dímelo claro', () => useUI.setState({ overlay: 'verdict' }), 'Paneles', 'conclusion veredicto');
-    add('compare', 'Comparar escenarios', () => useUI.setState({ overlay: 'compare' }), 'Paneles');
-    add('versions', 'Historial de versiones', () => useUI.setState({ overlay: 'versions' }), 'Paneles');
-    add('settings', 'Ajustes del proyecto', () => useUI.setState({ overlay: 'settings' }), 'Paneles', 'escalas dimensiones atajos');
+    add('compare', 'Comparar «¿y si…?»', () => useUI.setState({ overlay: 'compare' }), 'Paneles', 'escenarios');
+    add('versions', 'Versiones guardadas', () => useUI.setState({ overlay: 'versions' }), 'Paneles', 'historial');
+    add('settings', 'Ajustes del mapa', () => useUI.setState({ overlay: 'settings' }), 'Paneles', 'escalas dimensiones atajos');
     add('help', 'Ayuda', () => useUI.setState({ overlay: 'help' }), 'Paneles');
     add('manual', 'Manual de usuario', () => openManual('user'), 'Paneles', 'guia instrucciones documentacion');
     add('manual-ia', 'Manual para IA (prompts)', () => openManual('ia'), 'Paneles', 'prompts json agente chatgpt claude gemini');
-    add('exjson', 'Exportar JSON', () => void exportJSON(), 'Archivo');
-    add('expng', 'Exportar PNG', () => void exportImage('png'), 'Archivo');
-    add('exsvg', 'Exportar SVG', () => void exportImage('svg'), 'Archivo');
-    add('expdf', 'Exportar PDF', () => void exportImage('pdf'), 'Archivo');
-    add('import', 'Importar JSON', () => void importFromFile(), 'Archivo');
+    add('exjson', 'Guardar copia (.json)', () => void exportJSON(), 'Archivo', 'exportar');
+    add('expng', 'Imagen PNG', () => void exportImage('png'), 'Archivo', 'exportar');
+    add('exsvg', 'Imagen SVG', () => void exportImage('svg'), 'Archivo', 'exportar');
+    add('expdf', 'Documento PDF', () => void exportImage('pdf'), 'Archivo', 'exportar');
+    add('import', 'Abrir un archivo (.json)', () => void importFromFile(), 'Archivo', 'importar');
     add('paste', 'Pegar proyecto (JSON)', () => useUI.setState({ overlay: 'paste' }), 'Archivo', 'pegar importar ia texto');
-    add('theme-light', 'Tema claro', () => A.setTheme('light'), 'Tema');
-    add('theme-dark', 'Tema oscuro', () => A.setTheme('dark'), 'Tema');
-    add('theme-system', 'Tema del sistema', () => A.setTheme('system'), 'Tema');
+    add('theme-light', 'Claro', () => A.setTheme('light'), 'Tema');
+    add('theme-dark', 'Oscuro', () => A.setTheme('dark'), 'Tema');
+    add('theme-system', 'Como mi ordenador', () => A.setTheme('system'), 'Tema');
     return cmds;
   }, [doc]);
 
   const results = useMemo(() => {
     const nq = norm(q.trim());
-    const list = nq ? commands.filter((c) => norm(`${c.label} ${c.keywords ?? ''}`).includes(nq)) : commands.filter((c) => c.group !== 'Elementos' && c.group !== 'Elementos ocultos').slice(0, 14);
+    const list = nq ? commands.filter((c) => norm(`${c.label} ${c.keywords ?? ''}`).includes(nq)) : commands.filter((c) => c.group !== 'Ideas del mapa' && c.group !== 'Ideas ocultas').slice(0, 14);
     return list.slice(0, 60);
   }, [q, commands]);
 
@@ -91,10 +92,10 @@ export function CommandPalette() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-[var(--overlay)] mdf-fade-in" />
         <Dialog.Content aria-describedby={undefined} className="fixed left-1/2 top-[14vh] z-[61] w-[560px] max-w-[calc(100%-32px)] -translate-x-1/2 overflow-hidden rounded-2xl border border-line bg-surface shadow-float mdf-slide-b" data-testid="command-palette">
-          <Dialog.Title className="sr-only">Buscar elementos y comandos</Dialog.Title>
+          <Dialog.Title className="sr-only">Buscar ideas y comandos</Dialog.Title>
           <div className="flex items-center gap-2 border-b border-line px-4">
             <Search className="size-4 text-ink-3" />
-            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar burbujas, comandos, vistas…" aria-label="Buscar"
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar ideas, comandos, vistas…" aria-label="Buscar"
               className="h-12 flex-1 bg-transparent text-[14px] text-ink outline-none placeholder:text-ink-3"
               onKeyDown={(e) => {
                 if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(results.length - 1, i + 1)); }

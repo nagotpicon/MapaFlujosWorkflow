@@ -63,7 +63,7 @@ describe('Ejemplo avanzado del manual para IA', () => {
     // Fórmulas de colocación del MANUAL-IA: x = (c−1)·ancho + ancho/2 − 95 ; y = −f·alto − 32
     expect(r.frameNotes).toContain('«Envío gratis» está 1 fila(s) por encima (apoyo) del eje: +8% sobre su flujo');
     expect(r.frameNotes).toContain('«Pedidos en espera» está 1 fila(s) por debajo (fricción) del eje: −8% sobre su flujo');
-    expect(r.frameNotes).toContain('«Visitas a la web» → «Añaden al carrito»: 1 semana(s) de separación = 1 iteración(es) de retardo');
+    expect(r.frameNotes).toContain('«Visitas a la web» → «Añaden al carrito»: 1 semana(s) de separación = 1 ronda(s) de retardo');
     console.log('avanzado base', total(r).toFixed(1), 'pagos', total(mas).toFixed(1), 'floja', total(peor).toFixed(1));
   });
 });

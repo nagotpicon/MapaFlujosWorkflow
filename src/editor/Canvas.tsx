@@ -23,7 +23,7 @@ const TOOL_NODE: Partial<Record<string, NodeType>> = {
   bubble: 'bubble', input: 'input', output: 'output', note: 'note', label: 'label', comment: 'comment', container: 'container', group: 'group',
 };
 
-export function Canvas({ resolvedTheme }: { resolvedTheme: 'light' | 'dark' }) {
+export function Canvas({ resolvedTheme, level = 3 }: { resolvedTheme: 'light' | 'dark'; level?: 1 | 2 | 3 }) {
   const rf = useReactFlow<Node<RFNodeData>, Edge<RFEdgeData>>();
   const doc = useProject((s) => s.doc);
   const tool = useUI((s) => s.tool);
@@ -199,17 +199,17 @@ export function Canvas({ resolvedTheme }: { resolvedTheme: 'light' | 'dark' }) {
           {frame?.mode === 'grid'
             ? <ViewportPortal><FrameGrid showHeat={showHeat} /></ViewportPortal>
             : <Background variant={BackgroundVariant.Dots} gap={22} size={1.3} color="var(--grid-dot)" />}
-          <MiniMap pannable zoomable position="bottom-right" ariaLabel="Minimapa"
+          {level === 3 && <MiniMap pannable zoomable position="bottom-right" ariaLabel="Minimapa"
             nodeColor={(n) => {
               const d = useProject.getState().doc?.nodes[n.id];
               return d ? `var(--n-${d.visualStyle.color}-ac)` : 'var(--concept)';
             }}
-            nodeStrokeWidth={0} nodeBorderRadius={6} maskColor="color-mix(in srgb, var(--canvas) 70%, transparent)" style={{ width: 168, height: 112 }} />
+            nodeStrokeWidth={0} nodeBorderRadius={6} maskColor="color-mix(in srgb, var(--canvas) 70%, transparent)" style={{ width: 168, height: 112 }} />}
         </ReactFlow>
         <CanvasControls />
-        <Legend />
+        {level === 3 && <Legend />}
         {menu && <ContextMenu state={menu} onClose={() => setMenu(null)} />}
-        <SimCursorBadge />
+        {level === 3 && <SimCursorBadge />}
       </div>
     </HighlightContext.Provider>
   );
@@ -222,7 +222,7 @@ function SimCursorBadge() {
   if (!result || view === 'mental') return null;
   return (
     <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded-full border border-line bg-surface/90 px-3 py-1 text-[11px] font-medium text-ink-2 shadow-sm backdrop-blur" data-testid="iteration-badge">
-      Iteración <span className="tabular text-ink">{cursor + 1}</span> / {result.iterationCount}
+      Ronda <span className="tabular text-ink">{cursor + 1}</span> / {result.iterationCount}
     </div>
   );
 }

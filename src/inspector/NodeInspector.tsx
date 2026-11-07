@@ -20,9 +20,10 @@ import { BehaviorList } from './BehaviorEditor';
 import { ConditionsList } from './ConditionEditor';
 import { KV, NodeSelect, OverrideMark, ScaleValueEditor, useInspector, useParam } from './fields';
 import { download } from '../app/io';
+import { levelOf } from '../app/levels';
 
 const TYPE_LABEL: Record<MapNode['type'], string> = {
-  bubble: 'Burbuja', input: 'Entrada', output: 'Salida', note: 'Nota', label: 'Etiqueta', comment: 'Comentario', group: 'Grupo', container: 'Contenedor',
+  bubble: 'Idea', input: 'Inicio', output: 'Meta', note: 'Nota', label: 'Texto suelto', comment: 'Comentario', group: 'Grupo', container: 'Zona',
 };
 
 function Identity({ n }: { n: MapNode }) {
@@ -34,7 +35,7 @@ function Identity({ n }: { n: MapNode }) {
       <Field label="Descripción"><TextArea rows={2} value={n.description} onChange={(description) => upd({ description }, `desc-${n.id}`)} placeholder="Qué representa, por qué existe…" /></Field>
       <div className="grid grid-cols-2 gap-2">
         <Field label="Tipo">
-          <Select label="Tipo" value={n.type} onChange={(type) => upd({ type })} options={(['bubble', 'input', 'output', 'note', 'label', 'group', 'container'] as const).map((t) => ({ value: t, label: TYPE_LABEL[t] }))} />
+          <Select label="Tipo" value={n.type} onChange={(type) => A.apply((d) => op.convertNodeType(d, n.id, type))} options={(['bubble', 'input', 'output', 'note', 'label', 'group', 'container'] as const).map((t) => ({ value: t, label: TYPE_LABEL[t] }))} />
         </Field>
         <Field label="Categoría"><TextInput value={n.metadata.category} onChange={(category) => upd({ metadata: { ...n.metadata, category } }, `cat-${n.id}`)} placeholder="p.ej. Operativa" /></Field>
       </div>
@@ -56,24 +57,79 @@ function Identity({ n }: { n: MapNode }) {
   );
 }
 
-function SimSummary({ n }: { n: MapNode }) {
+
+const QTY = (value: number): DimensionValue => ({ value, mode: 'numeric', unit: '', confidence: 'estimate', source: '', range: null });
+
+/** Identidad sencilla (niveles 1 y 2): qué es, notas, tipo y color. */
+function SimpleIdentity({ n, level }: { n: MapNode; level: number }) {
+  const upd = (patch: Partial<MapNode>, key?: string) => A.apply((d) => op.updateNode(d, n.id, patch), key);
+  const content = ['bubble', 'input', 'output'].includes(n.type);
+  const setKind = (type: 'bubble' | 'input' | 'output') => A.apply((d) => op.convertNodeType(d, n.id, type, {
+    color: type === 'input' ? 'blue' : type === 'output' ? 'emerald' : n.visualStyle.color === 'blue' || n.visualStyle.color === 'emerald' ? 'slate' : n.visualStyle.color,
+    shape: type === 'bubble' ? (n.visualStyle.shape === 'pill' ? 'rounded' : n.visualStyle.shape) : 'pill',
+  }));
+  return (
+    <div className="space-y-3">
+      <Field label="Qué es"><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${n.id}`)} data-testid="inspector-title" /></Field>
+      <Field label="Notas"><TextArea rows={3} value={n.description} onChange={(description) => upd({ description }, `desc-${n.id}`)} placeholder="Lo que quieras apuntar sobre esta idea…" /></Field>
+      {level >= 2 && content && (
+        <Field label="Esta idea es…">
+          <Segmented label="Esta idea es" value={n.type as 'bubble' | 'input' | 'output'} onChange={setKind}
+            options={[{ value: 'bubble', label: 'Un paso', title: 'Algo por donde pasa' }, { value: 'input', label: 'El inicio', title: 'De aquí sale todo' }, { value: 'output', label: 'Mi meta', title: 'Lo que quieres conseguir' }]} />
+        </Field>
+      )}
+      {level >= 2 && n.type === 'input' && (
+        <Field label="¿Cuánto sale de aquí en cada ronda?" hint="por ejemplo: 100 personas a la semana">
+          <NumberInput value={n.dimensionValues.quantity?.value ?? null} min={0} onChange={(v) => upd({ dimensionValues: { ...n.dimensionValues, quantity: { ...(n.dimensionValues.quantity ?? QTY(0)), value: Math.max(0, v) } } })} data-testid="simple-quantity" />
+        </Field>
+      )}
+      <Field label="Color">
+        <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Color">
+          {NODE_COLORS.map((c) => (
+            <button key={c} type="button" role="radio" aria-checked={n.visualStyle.color === c} aria-label={COLOR_LABEL[c]} title={COLOR_LABEL[c]}
+              onClick={() => upd({ visualStyle: { ...n.visualStyle, color: c, background: null } })}
+              className={cx('size-7 rounded-full border transition-transform hover:scale-110', n.visualStyle.color === c && 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--surface)]')}
+              style={{ background: `var(--n-${c}-bg)`, borderColor: `var(--n-${c}-ac)` }} />
+          ))}
+        </div>
+      </Field>
+    </div>
+  );
+}
+
+function SimSummary({ n, simple }: { n: MapNode; simple?: boolean }) {
   const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[n.aliasOf ?? n.id]);
   const heat = useSim((s) => s.heat?.nodes[n.aliasOf ?? n.id]?.[s.cursor]);
   const cursor = useSim((s) => s.cursor);
   const { doc } = useInspector();
   const bhs = n.behaviorIds.map((b) => doc.behaviors[b]).filter(Boolean);
   const unit = doc.dimensions.quantity?.unit ?? '';
+  if (simple) {
+    if (!st) return null;
+    const lost = st.lost.quantity ?? 0;
+    return (
+      <div className="space-y-1 rounded-xl bg-surface-2/70 p-3" data-testid="node-summary">
+        <div className="text-[11.5px] font-semibold text-ink-3">En la ronda {cursor + 1}</div>
+        {n.type !== 'input' && <KV k="Le llega" v={`${fmt(qty(st.in))} ${unit}`} />}
+        <KV k={n.type === 'output' ? 'Llega a tu meta' : 'Sigue adelante'} v={`${fmt(Math.max(qty(st.out), qty(st.terminal)))} ${unit}`} tone="text-flow" />
+        {lost > 0 && <KV k="Se pierde aquí" v={`${fmt(lost)} ${unit}`} tone="text-loss" />}
+        {(st.stock.quantity ?? 0) > 0 && <KV k="Guardado" v={fmt(st.stock.quantity)} tone="text-cond" />}
+        {(st.queue.quantity ?? 0) > 0 && <KV k="Esperando turno" v={fmt(st.queue.quantity)} tone="text-cond" />}
+        {heat && heat.state !== 'idle' && <div className="flex items-center gap-1.5 pt-1 text-[12px] text-ink-2"><Thermometer className="size-3.5 text-ink-3" /><b>{HEAT_LABEL[heat.state]}</b></div>}
+      </div>
+    );
+  }
   return (
     <div className="space-y-2 rounded-xl bg-surface-2/70 p-2.5" data-testid="node-summary">
       <div className="flex flex-wrap gap-1">
         {bhs.length ? bhs.map((b) => <Badge key={b.id} tone={['reducer', 'consumer', 'restrictor'].includes(b.behaviorType) ? 'loss' : ['multiplier', 'generator', 'compensator'].includes(b.behaviorType) ? 'gain' : 'transform'}>{b.label || BEHAVIOR_LIBRARY[b.behaviorType].label}</Badge>)
-          : <span className="text-[11px] text-ink-3">Elemento conceptual (sin comportamiento)</span>}
+          : <span className="text-[11.5px] text-ink-3">Aquí no pasa nada especial</span>}
         {n.weight.influence && <Badge tone={n.weight.influence.value < 0 && n.weight.influence.mode !== 'qualitative' ? 'loss' : 'gain'}>influencia {n.weight.influence.mode === 'qualitative' ? '≈' : ''}{n.weight.influence.mode !== 'qualitative' && n.weight.influence.value > 0 ? '+' : ''}{n.weight.influence.mode === 'qualitative' ? '' : n.weight.influence.value}</Badge>}
         {n.activationConditionId && <Badge tone="cond"><Diamond className="size-2.5" />condicionado</Badge>}
       </div>
       {st && (
         <div className="space-y-1 border-t border-line pt-2">
-          <div className="text-[10.5px] font-semibold uppercase tracking-wider text-ink-3">Iteración {cursor + 1}</div>
+          <div className="text-[10.5px] font-semibold uppercase tracking-wider text-ink-3">Ronda {cursor + 1}</div>
           <KV k="Entra" v={`${fmt(qty(st.in))} ${unit}`} />
           <KV k={n.type === 'output' ? 'Resultado' : 'Sale'} v={`${fmt(Math.max(qty(st.out), qty(st.terminal)))} ${unit}`} tone="text-flow" />
           {(st.generated.quantity ?? 0) > 0 && <KV k="Generado" v={`+${fmt(st.generated.quantity)}`} tone="text-gain" />}
@@ -83,15 +139,15 @@ function SimSummary({ n }: { n: MapNode }) {
           {(st.queue.quantity ?? 0) > 0 && <KV k="En cola" v={fmt(st.queue.quantity)} tone="text-cond" />}
           {st.compensation > 0 && <KV k="Compensado" v={`${Math.round(st.compensation * 100)} %`} tone="text-gain" />}
           {n.weight.influence && <KV k="Influencia neta" v={fmt(st.influence)} tone={st.influence < 0 ? 'text-loss' : 'text-gain'} />}
-          {Object.entries(st.out.int).concat(Object.entries(st.terminal.int)).slice(0, 4).map(([d, v]) => <KV key={d} k={doc.dimensions[d]?.name ?? d} v={fmt(v, 2)} />)}
+          {Object.entries({ ...st.out.int, ...st.terminal.int }).slice(0, 4).map(([d, v]) => <KV key={d} k={doc.dimensions[d]?.name ?? d} v={fmt(v, 2)} />)}
           <div className="flex flex-wrap gap-1 pt-1">{st.flags.filter((f) => !['receiving', 'emitting'].includes(f)).map((f) => <Badge key={f}>{FLAG[f] ?? f}</Badge>)}</div>
           {heat && heat.state !== 'idle' && <div className="flex items-start gap-1.5 pt-1 text-[11px] text-ink-2"><Thermometer className="mt-0.5 size-3.5 text-ink-3" /><span><b>{HEAT_LABEL[heat.state]}</b> · {heat.causes.join(' · ')}</span></div>}
         </div>
       )}
       <div className="flex flex-wrap gap-1 pt-1">
-        <Button size="xs" variant="subtle" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'forward', isolate: false } })} data-testid="trace-forward"><Route className="size-3" />Rastrear adelante</Button>
-        <Button size="xs" variant="subtle" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'backward', isolate: false } })} data-testid="trace-backward"><ScanSearch className="size-3" />Rastrear atrás</Button>
-        <Button size="xs" variant="subtle" onClick={() => { useUI.setState({ focusNodeId: n.id }); A.fit([n.id]); }}><Compass className="size-3" />Enfocar</Button>
+        <Button size="xs" variant="subtle" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'forward', isolate: false } })} data-testid="trace-forward"><Route className="size-3" />¿A qué afecta?</Button>
+        <Button size="xs" variant="subtle" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'backward', isolate: false } })} data-testid="trace-backward"><ScanSearch className="size-3" />¿De dónde le viene?</Button>
+        <Button size="xs" variant="subtle" onClick={() => { useUI.setState({ focusNodeId: n.id }); A.fit([n.id]); }}><Compass className="size-3" />Centrarme en esto</Button>
       </div>
     </div>
   );
@@ -136,7 +192,7 @@ function DimensionValues({ n }: { n: MapNode }) {
   };
   return (
     <div className="space-y-2">
-      {!isGen && <p className="text-[11px] text-ink-3">Estas dimensiones se usan cuando el elemento genera flujo (entrada o generador).</p>}
+      {!isGen && <p className="text-[11px] text-ink-3">Estas dimensiones se usan cuando la idea genera flujo (inicio o generador).</p>}
       {Object.values(doc.dimensions).map((d) => {
         const v = dv[d.id];
         return (
@@ -245,7 +301,7 @@ function MitigatorRow({ edgeId }: { edgeId: string }) {
         )}
       </div>
       {type === 'temporal' && (
-        <div className="flex items-center gap-1.5 text-[11px] text-ink-3">De la iteración<NumberInput className="w-14" value={from} min={1} onChange={(v) => setFrom(Math.round(v))} />a<NumberInput className="w-14" value={to} placeholder="∞" min={1} onChange={(v) => setTo(Math.round(v))} /></div>
+        <div className="flex items-center gap-1.5 text-[11px] text-ink-3">De la ronda<NumberInput className="w-14" value={from} min={1} onChange={(v) => setFrom(Math.round(v))} />a<NumberInput className="w-14" value={to} placeholder="∞" min={1} onChange={(v) => setTo(Math.round(v))} /></div>
       )}
       {type === 'conditional' && <ConditionsList ownerType="edge" ownerId={edgeId} ids={e.conditions} ownerNode={e.sourceNodeId} emptyText="Añade la condición que activa la compensación." />}
     </div>
@@ -261,10 +317,10 @@ function Relations({ n }: { n: MapNode }) {
       <span className="text-ink-3">{dir}</span><span className="flex-1 truncate text-ink">{doc.nodes[other]?.title}</span><Badge>{type}</Badge>
     </button>
   );
-  const T: Record<string, string> = { flow: 'flujo', causal: 'causal', conceptual: 'idea', informative: 'info' };
+  const T: Record<string, string> = { flow: 'pasa', causal: 'influye', conceptual: 'idea', informative: 'info' };
   return (
     <div className="space-y-0.5">
-      {!ins.length && !outs.length && <p className="text-[11.5px] text-ink-3">Sin conexiones. Arrastra desde un punto del borde para conectar.</p>}
+      {!ins.length && !outs.length && <p className="text-[11.5px] text-ink-3">Aún no está unida a nada. Arrastra desde un punto del borde hasta otra idea.</p>}
       {ins.map((e) => row(e.id, e.sourceNodeId, '←', T[e.type]))}
       {outs.map((e) => row(e.id, e.targetNodeId, '→', T[e.type]))}
     </div>
@@ -347,7 +403,7 @@ function StyleSection({ n }: { n: MapNode }) {
     <div className="space-y-3">
       <Field label="Forma">
         <Segmented size="xs" label="Forma" value={n.visualStyle.shape} onChange={(shape) => upd({ shape })}
-          options={[{ value: 'rounded', label: 'Burbuja' }, { value: 'pill', label: 'Píldora' }, { value: 'rect', label: 'Recto' }, { value: 'circle', label: 'Círculo' }, { value: 'diamond', label: 'Rombo' }, { value: 'hexagon', label: 'Hex.' }]} />
+          options={[{ value: 'rounded', label: 'Redondeado' }, { value: 'pill', label: 'Píldora' }, { value: 'rect', label: 'Recto' }, { value: 'circle', label: 'Círculo' }, { value: 'diamond', label: 'Rombo' }, { value: 'hexagon', label: 'Hex.' }]} />
       </Field>
       <Field label="Color">
         <div className="flex flex-wrap gap-1.5">
@@ -515,13 +571,33 @@ export function NodeInspector({ id }: { id: string }) {
       </div>
     );
   }
+  const level = levelOf(depth);
+  if (level < 3) {
+    return (
+      <div data-testid="node-inspector">
+        <div className="flex items-center gap-2 border-b border-line px-4 py-3">
+          <span className="font-display text-[16px] font-medium text-ink">Detalles</span>
+          <span className="flex-1" />
+          <IconButton size="xs" label="Borrar esta idea" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
+        </div>
+        <div className="space-y-3 border-b border-line px-4 py-4">
+          <SimpleIdentity n={n} level={level} />
+          {level === 2 && !isMeta && !isGroup && <SimSummary n={n} simple />}
+        </div>
+        {level === 2 && !isMeta && !isGroup && n.type !== 'output' && (
+          <Section title="Qué pasa en este paso" icon={<Workflow />} count={behaviorsCount} defaultOpen testId="section-behaviors"><BehaviorList nodeId={n.id} simple /></Section>
+        )}
+        <Section title="Comentarios" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0} testId="section-comments"><Annotations ownerType="node" ownerId={n.id} /></Section>
+      </div>
+    );
+  }
   return (
     <div data-testid="node-inspector">
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">
         <Badge>{TYPE_LABEL[n.type]}</Badge>
         {n.locked && <Lock className="size-3.5 text-ink-3" />}
         <span className="flex-1" />
-        <IconButton size="xs" label="Eliminar" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
+        <IconButton size="xs" label="Borrar" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
       </div>
       <div className="space-y-3 border-b border-line px-4 py-3">
         <Identity n={n} />
@@ -530,21 +606,21 @@ export function NodeInspector({ id }: { id: string }) {
       </div>
       {!isMeta && !isGroup && depth !== 'basic' && (
         <>
-          <Section title="Peso e influencia" icon={<Gauge />} defaultOpen={false} testId="section-weights"><Weights n={n} /></Section>
-          <Section title="Comportamientos" icon={<Workflow />} count={behaviorsCount} defaultOpen={behaviorsCount > 0} testId="section-behaviors"><BehaviorList nodeId={n.id} /></Section>
-          <Section title="Condiciones de activación" icon={<Diamond />} count={n.activationConditionId ? 1 : 0} defaultOpen={false} testId="section-conditions">
+          <Section title="Cuánto empuja o frena" icon={<Gauge />} defaultOpen={false} testId="section-weights"><Weights n={n} /></Section>
+          <Section title="Qué hace" icon={<Workflow />} count={behaviorsCount} defaultOpen={behaviorsCount > 0} testId="section-behaviors"><BehaviorList nodeId={n.id} /></Section>
+          <Section title="Cuándo funciona" icon={<Diamond />} count={n.activationConditionId ? 1 : 0} defaultOpen={false} testId="section-conditions">
             <ConditionsList ownerType="node" ownerId={n.id} ids={n.activationConditionId ? [n.activationConditionId] : []} ownerNode={n.id} emptyText="Siempre activo." />
           </Section>
-          <Section title="Mitigadores y compensaciones" icon={<ShieldCheck />} count={mitigCount} defaultOpen={false} testId="section-mitigators"><Mitigators n={n} /></Section>
-          <Section title="Dimensiones del flujo" icon={<Sliders />} defaultOpen={n.type === 'input'} testId="section-dimensions"><DimensionValues n={n} /></Section>
-          <Section title="Bifurcación y convergencia" icon={<Waypoints />} defaultOpen={false}><Routing n={n} /></Section>
+          <Section title="Remedios" icon={<ShieldCheck />} count={mitigCount} defaultOpen={false} testId="section-mitigators"><Mitigators n={n} /></Section>
+          <Section title="Qué genera (dimensiones)" icon={<Sliders />} defaultOpen={n.type === 'input'} testId="section-dimensions"><DimensionValues n={n} /></Section>
+          <Section title="Cómo reparte y cómo junta" icon={<Waypoints />} defaultOpen={false}><Routing n={n} /></Section>
         </>
       )}
-      <Section title="Relaciones" icon={<Activity />} defaultOpen={false}><Relations n={n} /></Section>
-      <Section title="Estilo" icon={<Paintbrush />} defaultOpen={false}><StyleSection n={n} /></Section>
-      <Section title="Comentarios y notas" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0} testId="section-comments"><Annotations ownerType="node" ownerId={n.id} /></Section>
-      <Section title="Documentos adjuntos" icon={<FileUp />} count={n.metadata.attachmentIds.length} defaultOpen={false}><Attachments n={n} /></Section>
-      <Section title="Avanzado" icon={<Boxes />} defaultOpen={false}><Advanced n={n} /></Section>
+      <Section title="Con quién está unida" icon={<Activity />} defaultOpen={false}><Relations n={n} /></Section>
+      <Section title="Aspecto" icon={<Paintbrush />} defaultOpen={false}><StyleSection n={n} /></Section>
+      <Section title="Comentarios" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0} testId="section-comments"><Annotations ownerType="node" ownerId={n.id} /></Section>
+      <Section title="Archivos" icon={<FileUp />} count={n.metadata.attachmentIds.length} defaultOpen={false}><Attachments n={n} /></Section>
+      <Section title="Más opciones" icon={<Boxes />} defaultOpen={false}><Advanced n={n} /></Section>
     </div>
   );
 }

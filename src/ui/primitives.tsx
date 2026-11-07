@@ -21,12 +21,12 @@ interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const VARIANT: Record<Variant, string> = {
   ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink',
   subtle: 'bg-surface-2 text-ink hover:bg-surface-3',
-  solid: 'bg-accent text-on-accent hover:opacity-90 shadow-sm',
+  solid: 'bg-ink text-bg hover:opacity-85 shadow-sm',
   outline: 'border border-line text-ink hover:bg-surface-2',
   danger: 'text-loss hover:bg-[color-mix(in_srgb,var(--loss)_10%,transparent)]',
 };
-const SIZE = { xs: 'h-6 px-1.5 text-[11px] gap-1 rounded-md', sm: 'h-7 px-2 text-xs gap-1.5 rounded-lg', md: 'h-8 px-3 text-[13px] gap-2 rounded-lg' };
-const SQUARE = { xs: 'size-6 rounded-md', sm: 'size-7 rounded-lg', md: 'size-8 rounded-lg' };
+const SIZE = { xs: 'h-6 px-1.5 text-[11px] gap-1 rounded-md', sm: 'h-8 px-2.5 text-[12.5px] gap-1.5 rounded-lg', md: 'h-9 px-3.5 text-[13px] gap-2 rounded-xl' };
+const SQUARE = { xs: 'size-6 rounded-md', sm: 'size-8 rounded-lg', md: 'size-9 rounded-xl' };
 
 export const Button = forwardRef<HTMLButtonElement, BtnProps>(function Button({ variant = 'ghost', size = 'sm', active, square, className, ...rest }, ref) {
   return (
@@ -110,7 +110,7 @@ export const Menu = {
   ),
   Item: ({ children, onSelect, icon, shortcut, danger, disabled }: { children: ReactNode; onSelect?: () => void; icon?: ReactNode; shortcut?: string; danger?: boolean; disabled?: boolean }) => (
     <RMenu.Item disabled={disabled} onSelect={onSelect}
-      className={cx('flex h-8 cursor-default items-center gap-2 rounded-lg px-2 text-[13px] outline-none data-[highlighted]:bg-surface-2 data-[disabled]:opacity-40', danger ? 'text-loss' : 'text-ink')}>
+      className={cx('flex min-h-8 cursor-default items-center gap-2 rounded-lg px-2 py-1 text-[13px] outline-none data-[highlighted]:bg-surface-2 data-[disabled]:opacity-40', danger ? 'text-loss' : 'text-ink')}>
       <span className="w-4 text-ink-3 [&>svg]:size-4">{icon}</span>
       <span className="flex-1">{children}</span>
       {shortcut && <span className="text-[11px] text-ink-3">{shortcut}</span>}
@@ -144,11 +144,11 @@ export function Modal({ open, onOpenChange, title, subtitle, children, width = '
           onOpenAutoFocus={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement | null)?.focus(); }}
           className={cx('fixed z-[61] outline-none flex flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-float mdf-slide-b',
             full ? 'inset-3 md:inset-6' : `left-1/2 top-[8vh] max-h-[84vh] w-[calc(100%-32px)] -translate-x-1/2 ${width}`)}>
-          <div className="flex items-start gap-3 border-b border-line px-5 py-3.5">
+          <div className="flex items-start gap-3 border-b border-line px-5 py-4">
             {icon && <div className="mt-0.5 text-accent [&>svg]:size-5">{icon}</div>}
             <div className="min-w-0 flex-1">
-              <RDialog.Title className="text-[15px] font-semibold tracking-tight text-ink">{title}</RDialog.Title>
-              {subtitle && <div className="text-xs text-ink-3">{subtitle}</div>}
+              <RDialog.Title className="font-display text-[19px] font-medium tracking-tight text-ink">{title}</RDialog.Title>
+              {subtitle && <div className="text-[12.5px] text-ink-3">{subtitle}</div>}
             </div>
             <RDialog.Close asChild><IconButton label="Cerrar" side="left"><X className="size-4" /></IconButton></RDialog.Close>
           </div>
@@ -262,7 +262,7 @@ export function Section({ title, icon, children, defaultOpen = true, aside, coun
         <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex flex-1 items-center gap-2 py-2.5 text-left">
           <ChevronRight className={cx('size-3.5 text-ink-3 transition-transform', open && 'rotate-90')} />
           {icon && <span className="text-ink-3 [&>svg]:size-3.5">{icon}</span>}
-          <span className="text-[11.5px] font-semibold tracking-wide text-ink-2">{title}</span>
+          <span className="text-[12.5px] font-semibold text-ink-2">{title}</span>
           {count != null && count > 0 && <span className="rounded-full bg-surface-2 px-1.5 text-[10px] tabular text-ink-3">{count}</span>}
         </button>
         {aside}

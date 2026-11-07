@@ -50,7 +50,12 @@ export function useComputeHighlight(): Highlight {
     return { maxFlow: m, particles: new Set(top) };
   }, [result, cursor, dragging]);
 
+  // sin búsqueda, filtros, rastreo ni enfoque el resaltado no depende del mapa:
+  // así, al arrastrar una idea no se vuelve a dibujar todo el lienzo en cada fotograma
+  const filtering = !!(q.trim() || tags.length || bfil.length || tr || focus);
+  const hlDoc = filtering ? doc : null;
   return useMemo(() => {
+    const doc = hlDoc;
     if (!doc) return { ...EMPTY, maxFlow, particles };
     let nodes: Set<string> | null = null;
     let edges: Set<string> | null = null;
@@ -83,5 +88,5 @@ export function useComputeHighlight(): Highlight {
     const ns = nodes ?? new Set(Object.keys(doc.nodes));
     if (!edges) edges = new Set(Object.values(doc.edges).filter((e) => ns.has(e.sourceNodeId) && ns.has(e.targetNodeId)).map((e) => e.id));
     return { active: true, nodes: ns, edges, inactiveEdges: inactive, trace: trRes, maxFlow, particles };
-  }, [doc, q, tags, bfil, tr, focus, result, maxFlow, particles]);
+  }, [hlDoc, q, tags, bfil, tr, focus, result, maxFlow, particles]);
 }

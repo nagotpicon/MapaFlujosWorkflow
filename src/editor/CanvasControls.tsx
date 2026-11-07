@@ -13,8 +13,8 @@ export function CanvasControls() {
       <IconButton label="Alejar" side="top" onClick={() => void rf.zoomOut({ duration: 200 })}><Minus className="size-4" /></IconButton>
       <button type="button" className="w-11 text-center text-[11px] tabular text-ink-2 hover:text-ink" onClick={() => void rf.zoomTo(1, { duration: 200 })} title="Zoom al 100 %">{Math.round(zoom * 100)}%</button>
       <IconButton label="Acercar" side="top" onClick={() => void rf.zoomIn({ duration: 200 })}><Plus className="size-4" /></IconButton>
-      <IconButton label="Ajustar al contenido" shortcut="F" side="top" onClick={() => A.fit()}><Maximize className="size-4" /></IconButton>
-      <IconButton label="Zoom a la selección" shortcut="⇧F" side="top" disabled={!sel.length} onClick={() => A.fit(sel)}><ScanLine className="size-4" /></IconButton>
+      <IconButton label="Verlo todo" shortcut="F" side="top" onClick={() => A.fit()}><Maximize className="size-4" /></IconButton>
+      <IconButton label="Acercarme a lo elegido" shortcut="⇧F" side="top" disabled={!sel.length} onClick={() => A.fit(sel)}><ScanLine className="size-4" /></IconButton>
     </div>
   );
 }

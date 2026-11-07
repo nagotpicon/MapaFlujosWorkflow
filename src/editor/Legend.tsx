@@ -16,34 +16,34 @@ const dot = (color: string) => <span className="inline-block size-2.5 rounded-fu
 function itemsFor(view: string, heat: boolean): Item[] {
   const base: Item[] = [];
   if (view === 'mental') base.push(
-    { key: 'concept', label: 'Relación', swatch: line('var(--concept)') },
-    { key: 'causal', label: 'Causal', swatch: line('var(--concept)', 1.5, '7 5') },
+    { key: 'concept', label: 'Tienen que ver', swatch: line('var(--concept)') },
+    { key: 'causal', label: 'Influye', swatch: line('var(--concept)', 1.5, '7 5') },
     { key: 'info', label: 'Informativa', swatch: line('var(--concept)', 1.5, '1.5 4') },
   );
   if (view === 'flow' || view === 'simulation') base.push(
-    { key: 'qty', label: 'Grosor = cantidad', swatch: <span className="flex items-center gap-0.5">{line('var(--flow)', 1.5)}{line('var(--flow)', 6)}</span> },
-    { key: 'quality', label: 'Opacidad = calidad', swatch: <span className="flex">{line('var(--flow)', 3, undefined, 0.45)}{line('var(--flow)', 3)}</span> },
-    { key: 'speed', label: 'Partículas = velocidad', swatch: <span className="flex gap-1">{dot('var(--flow)')}{dot('var(--flow)')}</span> },
-    { key: 'potential', label: 'Halo = potencial', swatch: <span className="inline-block h-2 w-6 rounded-full" style={{ background: 'var(--flow)', boxShadow: '0 0 6px var(--flow)' }} /> },
-    { key: 'blocked', label: 'Bloqueada', swatch: line('var(--loss)', 2, '6 5') },
-    { key: 'inactive', label: 'Sin flujo', swatch: line('var(--flow)', 2, '2 5', 0.4) },
+    { key: 'qty', label: 'Más gorda = pasa más', swatch: <span className="flex items-center gap-0.5">{line('var(--flow)', 1.5)}{line('var(--flow)', 6)}</span> },
+    { key: 'quality', label: 'Más clara = peor calidad', swatch: <span className="flex">{line('var(--flow)', 3, undefined, 0.45)}{line('var(--flow)', 3)}</span> },
+    { key: 'speed', label: 'Puntitos = velocidad', swatch: <span className="flex gap-1">{dot('var(--flow)')}{dot('var(--flow)')}</span> },
+    { key: 'potential', label: 'Brillo = potencial', swatch: <span className="inline-block h-2 w-6 rounded-full" style={{ background: 'var(--flow)', boxShadow: '0 0 6px var(--flow)' }} /> },
+    { key: 'blocked', label: 'Cortada', swatch: line('var(--loss)', 2, '6 5') },
+    { key: 'inactive', label: 'No pasa nada', swatch: line('var(--flow)', 2, '2 5', 0.4) },
   );
   if (view === 'energy') base.push(
-    { key: 'gain', label: 'Impulso / ganancia', swatch: line('var(--gain)', 3) },
-    { key: 'loss', label: 'Pérdida / fricción', swatch: line('var(--loss)', 3) },
-    { key: 'flow', label: 'Flujo conservado', swatch: line('var(--flow)', 3) },
+    { key: 'gain', label: 'Empuja / gana', swatch: line('var(--gain)', 3) },
+    { key: 'loss', label: 'Pierde / frena', swatch: line('var(--loss)', 3) },
+    { key: 'flow', label: 'Pasa tal cual', swatch: line('var(--flow)', 3) },
   );
   if (view === 'system') base.push(
-    { key: 'pos', label: '+ refuerza', swatch: line('var(--transform)', 2, '7 5') },
+    { key: 'pos', label: '+ empuja', swatch: line('var(--transform)', 2, '7 5') },
     { key: 'neg', label: '− frena', swatch: line('var(--loss)', 2, '7 5') },
-    { key: 'comp', label: '⊕ compensa', swatch: line('var(--gain)', 2, '7 5') },
-    { key: 'cond', label: '◆ condición', swatch: <span className="text-cond">◆</span> },
+    { key: 'comp', label: '⊕ remedio', swatch: line('var(--gain)', 2, '7 5') },
+    { key: 'cond', label: '◆ solo si…', swatch: <span className="text-cond">◆</span> },
   );
   if (heat) base.push(
-    { key: 'cold', label: 'Frío', swatch: dot('var(--heat-cold)') },
-    { key: 'rhythm', label: 'Ritmo perfecto', swatch: dot('var(--heat-rhythm)') },
+    { key: 'cold', label: 'Frío: le falta', swatch: dot('var(--heat-cold)') },
+    { key: 'rhythm', label: 'A buen ritmo', swatch: dot('var(--heat-rhythm)') },
     { key: 'warm', label: 'Caliente', swatch: dot('var(--heat-warm)') },
-    { key: 'hot', label: 'Recalentado', swatch: dot('var(--heat-hot)') },
+    { key: 'hot', label: 'Agobiado', swatch: dot('var(--heat-hot)') },
   );
   return base;
 }

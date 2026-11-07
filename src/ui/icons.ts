@@ -23,5 +23,5 @@ export function nodeIcon(name: string | null | undefined): LucideIcon | null {
 
 export const NODE_COLORS = ['slate', 'blue', 'emerald', 'rose', 'amber', 'violet', 'cyan', 'pink'] as const;
 export const COLOR_LABEL: Record<string, string> = {
-  slate: 'Grafito', blue: 'Azul', emerald: 'Verde', rose: 'Rojo suave', amber: 'Ámbar', violet: 'Violeta', cyan: 'Cian', pink: 'Rosa',
+  slate: 'Papel', blue: 'Cielo', emerald: 'Oliva', rose: 'Arcilla', amber: 'Madera', violet: 'Lavanda', cyan: 'Agua', pink: 'Rosa',
 };

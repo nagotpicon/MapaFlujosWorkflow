@@ -17,31 +17,31 @@ export function HelpPanel() {
           <span><b className="block text-ink">Manual para IA</b><span className="text-[12px] text-ink-3">Prompts listos para copiar y el formato JSON para que una IA cree mapas.</span></span>
         </a>
       </div>
-      <Section title="Básico: crear, editar, conectar, organizar">
+      <Section title="Nivel 1 · Ideas: suelta lo que tienes en la cabeza">
         <ul className="list-disc space-y-1 pl-4">
-          <li><b className="text-ink">Doble clic</b> en el lienzo crea una burbuja. <b className="text-ink">Doble clic</b> en una burbuja edita su texto.</li>
-          <li>Arrastra desde un <b className="text-ink">punto del borde</b> de una burbuja hasta otra para conectarlas. Elige el tipo de conexión en la barra lateral.</li>
-          <li><b className="text-ink">Tab</b> crea una burbuja conectada; <b className="text-ink">⇧↵</b> una hermana. Clic derecho abre el menú contextual.</li>
-          <li>Mayúsculas + arrastrar selecciona varias. ⌘G agrupa; los grupos se pliegan con su flecha.</li>
+          <li><b className="text-ink">Doble clic</b> en cualquier sitio del lienzo: idea nueva. <b className="text-ink">Doble clic</b> en una idea: escribir en ella.</li>
+          <li>Con una idea elegida, <b className="text-ink">Tab</b> crea otra unida a ella y <b className="text-ink">⇧↵</b> una «hermana» debajo.</li>
+          <li>Para unir dos ideas, arrastra desde el <b className="text-ink">borde</b> de una hasta la otra (o usa «Unir»).</li>
+          <li>«Ordenar» coloca todo en su sitio. Clic derecho: más opciones. Ctrl+Z: deshacer.</li>
         </ul>
       </Section>
-      <Section title="Avanzado: pesos, condiciones, comportamientos, dimensiones" defaultOpen={false}>
+      <Section title="Nivel 2 · Movimiento: mira qué llega a tu meta" defaultOpen={false}>
         <ul className="list-disc space-y-1 pl-4">
-          <li>Una burbuja puede ser solo una idea o tener <b className="text-ink">comportamientos</b> (filtrar, multiplicar, acumular…) que actúan sobre el flujo.</li>
-          <li>Las <b className="text-ink">entradas</b> generan flujo con varias dimensiones independientes: cantidad, calidad, velocidad, potencial y carga.</li>
-          <li>Las conexiones <b className="text-ink">causales</b> refuerzan, frenan o compensan; las de <b className="text-ink">flujo</b> transportan.</li>
-          <li>Los valores cualitativos se interpretan como aproximación configurable y se marcan como tal.</li>
+          <li>Marca dónde empieza todo (<b className="text-ink">Inicio</b>) y qué quieres conseguir (<b className="text-ink">Meta</b>). Une los pasos en orden.</li>
+          <li>Pulsa <b className="text-ink">Probar</b>: ronda a ronda (semana, mes…) verás cuánto llega a la meta.</li>
+          <li>En cada paso puedes decir qué pasa: <b className="text-ink">Colador</b> (solo pasa una parte), <b className="text-ink">Límite</b> (solo caben unos cuantos), <b className="text-ink">Hucha</b> (lo guarda), <b className="text-ink">Multiplica</b>…</li>
+          <li>«Dímelo claro» te cuenta, sin rodeos, dónde se pierde lo demás.</li>
         </ul>
       </Section>
-      <Section title="Experto: reglas, fórmulas, circuitos, simulaciones" defaultOpen={false}>
+      <Section title="Nivel 3 · Todo: para cuando quieras afinar" defaultOpen={false}>
         <ul className="list-disc space-y-1 pl-4">
-          <li>Los ciclos se procesan por iteraciones: una conexión de retorno entrega en la iteración siguiente, así nunca hay bucles infinitos.</li>
-          <li>Pipeline por elemento: entradas → convergencia → condiciones → activación → filtros → transformaciones e influencias → capacidad → acumuladores → bifurcación → conexiones → retroalimentación → registro.</li>
-          <li>Cada aumento o pérdida queda en el libro de conservación con su mecanismo: no aparecen unidades sin explicar.</li>
-          <li>Los escenarios guardan solo sus cambios; el modelo base es compartido.</li>
+          <li><b className="text-ink">¿Y si…?</b>: prueba cambios (más tiempo, otro precio…) sin estropear tu mapa original, y compáralos.</li>
+          <li><b className="text-ink">Frenos y remedios</b>: una idea puede frenar a otra; un remedio le quita fuerza al freno.</li>
+          <li><b className="text-ink">Bucles</b>: lo que vuelve al principio, como el boca a boca. Se calcula ronda a ronda, así nunca se atasca.</li>
+          <li><b className="text-ink">Cuadrícula del tiempo</b>, <b className="text-ink">termómetro</b> (qué se agobia y qué va tranquilo) y <b className="text-ink">Marcador</b> con lo que más te ayuda y te frena.</li>
         </ul>
       </Section>
-      <Section title="Atajos" defaultOpen={false}>
+      <Section title="Atajos de teclado" defaultOpen={false}>
         {groups.map((g) => (
           <div key={g} className="mb-2">
             <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-3">{g}</div>

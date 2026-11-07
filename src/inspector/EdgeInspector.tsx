@@ -10,9 +10,10 @@ import { Annotations } from './Annotations';
 import { ConditionsList } from './ConditionEditor';
 import { DimSelect, KV, OverrideMark, ParamNumber, ParamSelect, useInspector, useParam } from './fields';
 import { useUI } from '../store/uiStore';
+import { levelOf } from '../app/levels';
 
 const TYPES: { value: MapEdge['type']; label: string }[] = [
-  { value: 'flow', label: 'Flujo' }, { value: 'causal', label: 'Causal' }, { value: 'informative', label: 'Informativa' }, { value: 'conceptual', label: 'Conceptual' },
+  { value: 'flow', label: 'Pasa' }, { value: 'causal', label: 'Influye' }, { value: 'informative', label: 'Info' }, { value: 'conceptual', label: 'Idea' },
 ];
 
 function CircuitBlock({ e }: { e: MapEdge }) {
@@ -21,8 +22,8 @@ function CircuitBlock({ e }: { e: MapEdge }) {
   if (!c) {
     return (
       <div className="space-y-2">
-        <p className="text-[11.5px] text-ink-3">Si esta conexión cierra un ciclo puedes configurarla como retorno de un circuito (porcentaje de retorno, retardo, frecuencia, saturación y límites).</p>
-        <Button size="sm" variant="outline" onClick={() => { useUI.getState().setSelection([e.sourceNodeId, e.targetNodeId], [e.id]); A.createCircuitFromSelection(); }}><RefreshCcw className="size-3.5" />Configurar como circuito</Button>
+        <p className="text-[11.5px] text-ink-3">Si esta unión cierra un círculo, puedes convertirla en la vuelta de un bucle (cuánto vuelve, cuánto tarda, cada cuánto, hasta dónde…).</p>
+        <Button size="sm" variant="outline" onClick={() => { useUI.getState().setSelection([e.sourceNodeId, e.targetNodeId], [e.id]); A.createCircuitFromSelection(); }}><RefreshCcw className="size-3.5" />Convertir en bucle</Button>
       </div>
     );
   }
@@ -30,22 +31,22 @@ function CircuitBlock({ e }: { e: MapEdge }) {
   return (
     <div className="space-y-2.5" data-testid="circuit-block">
       <div className="flex items-center gap-2">
-        <TextInput value={c.name} onChange={(name) => A.apply((d) => ({ ...d, circuits: { ...d.circuits, [id]: { ...d.circuits[id], name } } }), `cname-${id}`)} aria-label="Nombre del circuito" />
-        <IconButton size="xs" label="Eliminar circuito" variant="danger" onClick={() => A.apply((d) => op.deleteCircuit(d, id))}><Trash2 className="size-3" /></IconButton>
+        <TextInput value={c.name} onChange={(name) => A.apply((d) => ({ ...d, circuits: { ...d.circuits, [id]: { ...d.circuits[id], name } } }), `cname-${id}`)} aria-label="Nombre del bucle" />
+        <IconButton size="xs" label="Borrar el bucle" variant="danger" onClick={() => A.apply((d) => op.deleteCircuit(d, id))}><Trash2 className="size-3" /></IconButton>
       </div>
       <ParamSelect kind="circuit" id={id} path="loopType" label="Tipo de bucle" options={[{ value: 'auto', label: 'Automático (por polaridades)' }, { value: 'reinforcing', label: 'Reforzador' }, { value: 'balancing', label: 'Equilibrador' }, { value: 'mixed', label: 'Mixto' }]} />
       <div className="grid grid-cols-2 gap-2">
         <ParamNumber kind="circuit" id={id} path="returnPercent" label="% de retorno" min={0} suffix="%" />
         <ParamNumber kind="circuit" id={id} path="intensity" label="Intensidad" min={0} step={0.05} />
-        <ParamNumber kind="circuit" id={id} path="delay" label="Retardo" min={0} suffix="it" />
-        <ParamNumber kind="circuit" id={id} path="frequency" label="Frecuencia" hint="cada N it" min={1} />
-        <ParamNumber kind="circuit" id={id} path="persistence" label="Persistencia" min={1} suffix="it" />
+        <ParamNumber kind="circuit" id={id} path="delay" label="Retardo" hint="rondas" min={0} />
+        <ParamNumber kind="circuit" id={id} path="frequency" label="Frecuencia" hint="cada N rondas" min={1} />
+        <ParamNumber kind="circuit" id={id} path="persistence" label="Persistencia" hint="rondas" min={1} />
         <ParamNumber kind="circuit" id={id} path="saturation" label="Saturación" hint="suave" min={0} />
         <ParamNumber kind="circuit" id={id} path="maxLimit" label="Límite máximo" min={0} />
         <ParamNumber kind="circuit" id={id} path="minLimit" label="Límite mínimo" min={0} />
       </div>
-      <Field label="Activo" inline><Toggle label="Circuito activo" checked={c.enabled} onChange={(enabled) => A.apply((d) => op.setParam(d, 'circuit', id, 'enabled', enabled))} /></Field>
-      <ConditionsList ownerType="circuit" ownerId={id} ids={c.conditionId ? [c.conditionId] : []} ownerNode={e.sourceNodeId} emptyText="Retorna en cada iteración." addLabel="Condición del circuito" />
+      <Field label="Activo" inline><Toggle label="Bucle activo" checked={c.enabled} onChange={(enabled) => A.apply((d) => op.setParam(d, 'circuit', id, 'enabled', enabled))} /></Field>
+      <ConditionsList ownerType="circuit" ownerId={id} ids={c.conditionId ? [c.conditionId] : []} ownerNode={e.sourceNodeId} emptyText="Vuelve en cada ronda." addLabel="Condición del bucle" />
     </div>
   );
 }
@@ -69,22 +70,46 @@ export function EdgeInspector({ id }: { id: string }) {
   const tgt = doc.nodes[e.targetNodeId]?.title;
   const annCount = Object.values(doc.annotations).filter((a) => a.ownerId === id).length;
   void role; void oRole;
+  const level = levelOf(depth);
+  if (level < 3) {
+    return (
+      <div data-testid="edge-inspector">
+        <div className="space-y-3 border-b border-line px-4 py-4">
+          <div className="flex items-center gap-2">
+            <span className="font-display text-[16px] font-medium text-ink">Unión</span>
+            <span className="flex-1" />
+            <IconButton size="xs" label="Darle la vuelta" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
+            <IconButton size="xs" label="Borrar esta unión" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
+          </div>
+          <p className="text-[13px] text-ink-2">De <b className="text-ink">{src}</b> a <b className="text-ink">{tgt}</b></p>
+          <Field label="Texto sobre la línea"><TextInput value={e.visualStyle.label} onChange={(label) => vs({ label }, `elabel-${id}`)} placeholder="Ej.: me escriben, compran…" data-edge-label-input /></Field>
+          {level === 2 && e.type === 'flow' && (
+            <Field label="¿Se pierde algo por el camino?" hint="0 % = llega todo">
+              <NumberInput percent value={ee.behavior.loss} min={0} max={1} onChange={(v) => upd({ behavior: { ...e.behavior, loss: Math.max(0, Math.min(1, v)) } })} data-testid="simple-loss" />
+            </Field>
+          )}
+          {level === 2 && st && e.type === 'flow' && <p className="text-[12.5px] text-ink-3">En esta ronda pasan <b className="tabular text-flow">{fmt(qty(st.delivered))}</b>.</p>}
+        </div>
+        <Section title="Comentarios" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0}><Annotations ownerType="edge" ownerId={id} /></Section>
+      </div>
+    );
+  }
   return (
     <div data-testid="edge-inspector">
       <div className="space-y-3 border-b border-line px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-ink">{src} <span className="text-ink-3">{e.direction === 'both' ? '⇄' : e.direction === 'none' ? '—' : '→'}</span> {tgt}</span>
-          <IconButton size="xs" label="Invertir dirección" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
-          <IconButton size="xs" label="Eliminar conexión" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
+          <IconButton size="xs" label="Darle la vuelta" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
+          <IconButton size="xs" label="Borrar esta unión" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
         </div>
-        <Field label="Modalidad">
-          <Segmented size="xs" label="Tipo de conexión" value={e.type} onChange={(type) => upd({ type, direction: type === 'conceptual' ? e.direction : e.direction === 'none' ? 'forward' : e.direction, visualStyle: { ...e.visualStyle, dash: type === 'causal' ? 'dashed' : type === 'informative' ? 'dotted' : 'solid' } })} options={TYPES} />
+        <Field label="Tipo de unión">
+          <Segmented size="xs" label="Tipo de unión" value={e.type} onChange={(type) => upd({ type, direction: type === 'conceptual' ? e.direction : e.direction === 'none' ? 'forward' : e.direction, visualStyle: { ...e.visualStyle, dash: type === 'causal' ? 'dashed' : type === 'informative' ? 'dotted' : 'solid' } })} options={TYPES} />
         </Field>
         <p className="text-[11px] text-ink-3">
-          {e.type === 'flow' && 'Transporta flujo. Grosor, pérdidas y capacidad afectan a la simulación.'}
-          {e.type === 'causal' && 'Transmite una influencia (refuerza, frena o compensa) sin mover flujo.'}
-          {e.type === 'informative' && 'Relación informativa: no participa en la simulación.'}
-          {e.type === 'conceptual' && 'Relación conceptual: organiza ideas, no transporta nada.'}
+          {e.type === 'flow' && 'Por aquí pasa algo (clientes, dinero, horas…). Lo que se pierde o cabe aquí cambia el resultado.'}
+          {e.type === 'causal' && 'Una idea empuja, frena o compensa a otra, sin mover nada.'}
+          {e.type === 'informative' && 'Solo informa: no cambia el resultado.'}
+          {e.type === 'conceptual' && 'Solo dice que tienen que ver: ordena las ideas.'}
         </p>
         <Field label="Etiqueta"><TextInput value={e.visualStyle.label} onChange={(label) => vs({ label }, `elabel-${id}`)} placeholder="Texto sobre la línea" data-edge-label-input /></Field>
         <Field label="Dirección">
@@ -96,15 +121,15 @@ export function EdgeInspector({ id }: { id: string }) {
             <KV k="Entregado" v={fmt(qty(st.delivered))} tone="text-flow" />
             {st.lost > 0 && <KV k="Perdido" v={`−${fmt(st.lost)}`} tone="text-loss" />}
             {st.generated > 0 && <KV k="Generado" v={`+${fmt(st.generated)}`} tone="text-gain" />}
-            {st.arrivesAt > 0 && <KV k="Llega en iteración" v={st.arrivesAt} />}
-            <div className="flex flex-wrap gap-1">{st.blocked && <Badge tone="loss">bloqueada</Badge>}{st.saturated && <Badge tone="loss">saturada</Badge>}{st.feedback && <Badge tone="gain">retorno</Badge>}{st.inhibition && <Badge tone="loss">inhibe</Badge>}</div>
+            {st.arrivesAt > 0 && <KV k="Llega en la ronda" v={st.arrivesAt} />}
+            <div className="flex flex-wrap gap-1">{st.blocked && <Badge tone="loss">bloqueada</Badge>}{st.saturated && <Badge tone="loss">saturada</Badge>}{st.feedback && <Badge tone="gain">vuelta</Badge>}{st.inhibition && <Badge tone="loss">inhibe</Badge>}</div>
           </div>
         )}
         {st && e.type === 'causal' && st.influenceFactor != null && <KV k={mode === 'compensate' ? 'Compensación aplicada' : 'Efecto en el destino'} v={mode === 'compensate' ? `${Math.round((st.compensationApplied ?? 0) * 100)} %` : targetDim === '__influence' ? `${st.influenceFactor > 0 ? '+' : ''}${fmt(st.influenceFactor)} pt` : `×${st.influenceFactor.toFixed(3)}`} />}
       </div>
 
       {e.type === 'flow' && depth !== 'basic' && (
-        <Section title="Comportamiento del flujo" icon={<Workflow />} testId="section-edge-flow">
+        <Section title="Qué pasa por esta unión" icon={<Workflow />} testId="section-edge-flow">
           <ParamSelect kind="edge" id={id} path="behavior.transport" label="Transporte" options={[{ value: 'transfer', label: 'Transfiere el flujo' }, { value: 'replicate', label: 'Réplica / retroalimentación (genera en destino)' }]} />
           {transport === 'transfer' && (
             <ParamSelect kind="edge" id={id} path="behavior.role" label="Rol en el reparto del origen" options={[{ value: 'main', label: 'Ruta principal' }, { value: 'reject', label: 'Ruta de rechazo (lo filtrado)' }, { value: 'overflow', label: 'Desborde (exceso de capacidad)' }, { value: 'divert', label: 'Desvío' }]} />
@@ -112,8 +137,8 @@ export function EdgeInspector({ id }: { id: string }) {
           <div className="grid grid-cols-2 gap-2">
             <ParamNumber kind="edge" id={id} path="behavior.multiplier" label="Multiplicador" step={0.05} min={0} />
             <ParamNumber kind="edge" id={id} path="behavior.loss" label="Pérdida" percent min={0} max={1} />
-            <ParamNumber kind="edge" id={id} path="capacity" label="Capacidad" hint="por it." min={0} />
-            <ParamNumber kind="edge" id={id} path="delay" label="Retardo" min={0} suffix="it" />
+            <ParamNumber kind="edge" id={id} path="capacity" label="Capacidad" hint="por ronda" min={0} />
+            <ParamNumber kind="edge" id={id} path="delay" label="Retardo" hint="rondas" min={0} />
             <ParamNumber kind="edge" id={id} path="resistance" label="Resistencia" hint="frena" percent min={0} max={1} />
             <ParamNumber kind="edge" id={id} path="behavior.speed" label="Velocidad" step={0.05} min={0} suffix="×" />
             <ParamNumber kind="edge" id={id} path="behavior.intensity" label="Intensidad" hint="potencial" step={0.05} min={0} />
@@ -127,7 +152,7 @@ export function EdgeInspector({ id }: { id: string }) {
               <Segmented size="xs" label="Polaridad del retorno" value={polarity} onChange={setPolarity} options={[{ value: 'positive', label: '+ Alimenta (refuerza)' }, { value: 'negative', label: '− Inhibe (equilibra)' }]} />
             </Field>
           )}
-          <Field label="Marcar como retorno (se procesa en la iteración siguiente)" inline><Toggle label="Retorno" checked={feedback} onChange={setFeedback} /></Field>
+          <Field label="Marcar como vuelta (llega en la ronda siguiente)" inline><Toggle label="Vuelta" checked={feedback} onChange={setFeedback} /></Field>
           {depth === 'expert' && (
             <Field label="Dimensiones transportadas">
               <div className="flex flex-wrap gap-1">
@@ -150,7 +175,7 @@ export function EdgeInspector({ id }: { id: string }) {
       )}
 
       {e.type === 'causal' && (
-        <Section title="Influencia" icon={<Zap />} testId="section-edge-influence">
+        <Section title="Cómo influye" icon={<Zap />} testId="section-edge-influence">
           <ParamSelect kind="edge" id={id} path="behavior.influence.mode" label="Qué hace" options={[{ value: 'modulate', label: 'Modula al destino (refuerza o frena)' }, { value: 'compensate', label: 'Compensa / mitiga una dificultad' }]} />
           {mode === 'modulate' ? (
             <>
@@ -172,8 +197,8 @@ export function EdgeInspector({ id }: { id: string }) {
               </div>
               {ee.behavior.influence.compensationType === 'temporal' && (
                 <div className="grid grid-cols-2 gap-2">
-                  <ParamNumber kind="edge" id={id} path="behavior.influence.fromIteration" label="Desde it." min={1} />
-                  <ParamNumber kind="edge" id={id} path="behavior.influence.toIteration" label="Hasta it." min={1} />
+                  <ParamNumber kind="edge" id={id} path="behavior.influence.fromIteration" label="Desde la ronda" min={1} />
+                  <ParamNumber kind="edge" id={id} path="behavior.influence.toIteration" label="Hasta la ronda" min={1} />
                 </div>
               )}
             </>
@@ -183,15 +208,15 @@ export function EdgeInspector({ id }: { id: string }) {
       )}
 
       {(e.type === 'flow' || e.type === 'causal') && depth !== 'basic' && (
-        <Section title="Condiciones de paso" icon={<Diamond />} count={e.conditions.length} defaultOpen={e.conditions.length > 0} testId="section-edge-conditions">
+        <Section title="Cuándo deja pasar" icon={<Diamond />} count={e.conditions.length} defaultOpen={e.conditions.length > 0} testId="section-edge-conditions">
           <ConditionsList ownerType="edge" ownerId={id} ids={e.conditions} ownerNode={e.sourceNodeId} emptyText="Siempre deja pasar." />
         </Section>
       )}
       {(e.type === 'flow' || e.type === 'causal') && depth !== 'basic' && (
-        <Section title="Circuito" icon={<RefreshCcw />} defaultOpen={!!Object.values(doc.circuits).find((x) => x.returnEdgeId === id)}><CircuitBlock e={e} /></Section>
+        <Section title="Bucle" icon={<RefreshCcw />} defaultOpen={!!Object.values(doc.circuits).find((x) => x.returnEdgeId === id)}><CircuitBlock e={e} /></Section>
       )}
 
-      <Section title="Apariencia" icon={<Paintbrush />} defaultOpen={false}>
+      <Section title="Aspecto" icon={<Paintbrush />} defaultOpen={false}>
         <Field label="Trazado">
           <Segmented size="xs" label="Trazado" value={e.visualStyle.pathType} onChange={(pathType) => vs({ pathType })} options={[{ value: 'curve', label: 'Curva' }, { value: 'straight', label: 'Recta' }, { value: 'orthogonal', label: 'Ortogonal' }]} />
         </Field>

@@ -68,25 +68,25 @@ export function MonitorPanel() {
     <div className="h-full overflow-auto bg-bg p-5" data-testid="monitor">
       <div className="mx-auto max-w-[1400px] space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-[12px] text-ink-2">
-          <span className="size-2 rounded-full" style={{ background: scenario?.color }} />Escenario <b className="text-ink">{scenario?.name}</b>
-          <span className="text-ink-3">· {N} iteraciones</span>
-          {(k.hypotheses + k.approximations) > 0 && <Badge tone="cond"><TriangleAlert className="size-3" />{k.hypotheses + k.approximations} supuestos o valores cualitativos: lectura orientativa</Badge>}
+          <span className="size-2 rounded-full" style={{ background: scenario?.color }} />Mirando <b className="text-ink">{scenario?.name}</b>
+          <span className="text-ink-3">· {N} rondas</span>
+          {(k.hypotheses + k.approximations) > 0 && <Badge tone="cond"><TriangleAlert className="size-3" />{k.hypotheses + k.approximations} cosas supuestas: tómalo como orientación</Badge>}
           {busy && <Loader2 className="size-3.5 animate-spin text-ink-3" />}
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <Tile label="Resultado total" value={fmt(k.totalResult)} sub={`${unit} · última iteración ${fmt(k.lastResult)}`} testId="tile-result" />
-          <Tile label="Llega al final" value={pct(survival)} sub="de lo que entra por la entrada principal" tone={survival < 0.2 ? 'text-loss' : survival > 0.5 ? 'text-gain' : undefined} testId="tile-survival" />
-          <Tile label="Eficiencia global" value={pct(k.efficiency)} sub="resultado / todo lo generado" />
-          <Tile label="Se pierde" value={pct(k.lostPct)} sub="de lo generado" tone={k.lostPct > 0.5 ? 'text-loss' : undefined} />
-          <Tile label="Tendencia" value={k.trendPct == null ? '—' : pct(k.trendPct)} sub="2.ª mitad frente a 1.ª"
+          <Tile label="Llega a la meta" value={fmt(k.totalResult)} sub={`${unit} en total · última ronda ${fmt(k.lastResult)}`} testId="tile-result" />
+          <Tile label="Sobrevive" value={pct(survival)} sub="de lo que sale del inicio" tone={survival < 0.2 ? 'text-loss' : survival > 0.5 ? 'text-gain' : undefined} testId="tile-survival" />
+          <Tile label="Aprovechas" value={pct(k.efficiency)} sub="de todo lo que se mueve" />
+          <Tile label="Se pierde" value={pct(k.lostPct)} sub="por el camino" tone={k.lostPct > 0.5 ? 'text-loss' : undefined} />
+          <Tile label="Va a…" value={k.trendPct == null ? '—' : pct(k.trendPct)} sub="la 2.ª mitad frente a la 1.ª"
             icon={k.trendPct == null ? null : k.trendPct >= 0 ? <ArrowUpRight className="size-5 text-gain" /> : <ArrowDownRight className="size-5 text-loss" />} />
-          <Tile label="Puntos saturados" value={String(k.saturatedElements)} sub={`${k.activeLoops} circuito(s) activos`} tone={k.saturatedElements ? 'text-cond' : undefined} />
+          <Tile label="Atascos" value={String(k.saturatedElements)} sub={`${k.activeLoops} bucle(s) en marcha`} tone={k.saturatedElements ? 'text-cond' : undefined} />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[1.25fr_1fr]">
-          <Card title="Embudo de la ruta principal" aside={<span className="text-[11px] text-ink-3">% que sobrevive desde la entrada</span>}>
-            {m.funnel.length < 2 ? <Empty title="No hay una ruta de flujo completa">Conecta una entrada con una salida mediante conexiones de flujo.</Empty> : (
+          <Card title="Por dónde se va perdiendo" aside={<span className="text-[11px] text-ink-3">% que sigue vivo desde el inicio</span>}>
+            {m.funnel.length < 2 ? <Empty title="Todavía no hay un camino completo">Une el inicio con la meta, paso a paso.</Empty> : (
               <ol className="space-y-2" data-testid="funnel">
                 {m.funnel.map((f, i) => (
                   <li key={f.nodeId}>
@@ -107,8 +107,8 @@ export function MonitorPanel() {
               </ol>
             )}
           </Card>
-          <Card title="Termómetro: dónde y cuándo se calienta" aside={<Thermometer className="size-4 text-ink-3" />}>
-            {heatRows.length === 0 ? <Empty title="Sin datos de calor" /> : (
+          <Card title="Termómetro: qué se agobia y cuándo" aside={<Thermometer className="size-4 text-ink-3" />}>
+            {heatRows.length === 0 ? <Empty title="Aún no hay nada que medir" /> : (
               <div data-testid="heat-strip">
                 <div className="space-y-1">
                   {heatRows.map((id) => (
@@ -117,7 +117,7 @@ export function MonitorPanel() {
                       <div className="flex flex-1 gap-[2px]">
                         {data.heat.nodes[id].map((h, i) => (
                           <div key={i} className="h-5 flex-1 rounded-[4px]" style={{ background: HEAT_VAR[h.state], opacity: h.state === 'idle' ? 1 : 0.35 + Math.abs(h.temperature) * 0.65 }}
-                            title={`Iteración ${i + 1} · ${HEAT_LABEL[h.state]}${h.causes.length ? `: ${h.causes.join(' · ')}` : ''}`} />
+                            title={`Ronda ${i + 1} · ${HEAT_LABEL[h.state]}${h.causes.length ? `: ${h.causes.join(' · ')}` : ''}`} />
                         ))}
                       </div>
                       <span className="w-24 text-right text-[10.5px] text-ink-3">{HEAT_LABEL[data.heat.nodeAvg[id].state]}</span>
@@ -126,7 +126,7 @@ export function MonitorPanel() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-ink-2">
                   {(['cold', 'rhythm', 'warm', 'overheated'] as HeatState[]).map((s) => <span key={s} className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm" style={{ background: HEAT_VAR[s] }} />{HEAT_LABEL[s]}</span>)}
-                  <span className="text-ink-3">· columnas = iteraciones</span>
+                  <span className="text-ink-3">· cada columna es una ronda</span>
                 </div>
               </div>
             )}
@@ -134,38 +134,38 @@ export function MonitorPanel() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <Card title="Lo que más te frena" aside={<span className="text-[11px] text-ink-3">ganarías si se resolviera</span>}>
-            {m.frictions.filter((f) => f.impact > 1e-6).length === 0 ? <Empty title="Ninguna fricción con impacto medible" /> : (
+          <Card title="Lo que más te frena" aside={<span className="text-[11px] text-ink-3">lo que ganarías si lo arreglas</span>}>
+            {m.frictions.filter((f) => f.impact > 1e-6).length === 0 ? <Empty title="Nada te frena de forma clara" /> : (
               <BarList testId="frictions" unit={unit} signed items={m.frictions.filter((f) => f.impact > 1e-6).slice(0, 8).map((f) => ({
                 id: f.nodeId, label: f.title, value: f.impact, color: 'var(--loss)', badge: `${pct(f.impactPct)}${f.hypothesis ? ' ≈' : ''}`,
                 detail: `${f.reason}${f.category ? ` · fricción ${f.category === 'personal' ? 'propia' : f.category === 'external' ? 'externa' : 'del sistema'}` : ''}${f.hypothesis ? ' · basada en hipótesis' : ''}`, onClick: () => go([f.nodeId]),
               }))} />
             )}
-            <p className="mt-3 text-[10.5px] text-ink-3">Impacto calculado con el motor: se simula el sistema sin cada fricción y se compara. ≈ = depende de hipótesis.</p>
+            <p className="mt-3 text-[10.5px] text-ink-3">Calculado probando tu mapa sin cada freno y comparando. ≈ = depende de cosas que has supuesto.</p>
           </Card>
-          <Card title="Lo que más te impulsa" aside={<span className="text-[11px] text-ink-3">perderías sin ello</span>}>
-            {m.drivers.filter((d) => d.impact > 1e-6).length === 0 ? <Empty title="Sin impulsores con impacto medible" /> : (
+          <Card title="Lo que más te ayuda" aside={<span className="text-[11px] text-ink-3">lo que perderías sin ello</span>}>
+            {m.drivers.filter((d) => d.impact > 1e-6).length === 0 ? <Empty title="Nada destaca todavía" /> : (
               <BarList testId="drivers" unit={unit} items={m.drivers.filter((d) => d.impact > 1e-6).slice(0, 8).map((d) => ({
                 id: d.nodeId, label: d.title, value: d.impact, color: 'var(--gain)', badge: `${pct(d.impactPct)}${d.hypothesis ? ' ≈' : ''}`, detail: d.reason, onClick: () => go([d.nodeId]),
               }))} />
             )}
           </Card>
-          <Card title="Puntos neurálgicos a tratar">
-            {m.neuralgic.length === 0 ? <Empty title="Sin puntos críticos detectados" /> : <ul className="space-y-1.5" data-testid="neuralgic">{m.neuralgic.slice(0, 6).map((d) => <DiagnosticItem key={d.id} d={d} />)}</ul>}
+          <Card title="Lo primero que arreglaría">
+            {m.neuralgic.length === 0 ? <Empty title="No veo nada urgente" /> : <ul className="space-y-1.5" data-testid="neuralgic">{m.neuralgic.slice(0, 6).map((d) => <DiagnosticItem key={d.id} d={d} />)}</ul>}
           </Card>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-          <Card title="Evolución">
+          <Card title="Cómo va ronda a ronda">
             <LineChart height={170} unit={unit} series={[
               { id: 'r', label: 'Resultado', color: 'var(--gain)', values: m.series.result },
               { id: 'g', label: 'Generado', color: 'var(--flow)', values: m.series.generated, dashed: true },
               { id: 'l', label: 'Perdido', color: 'var(--loss)', values: m.series.lost, dashed: true },
             ]} />
           </Card>
-          <Card title="Fricciones identificadas y su resolución">
+          <Card title="Frenos que has encontrado">
             {m.frictionStatus.total === 0 ? (
-              <p className="text-[12px] text-ink-3">Cuando el Explorador o el Creador de estrategias proponen fricciones (propias, externas o del sistema), aquí ves cuántas has resuelto: eliminar, convivir, compensar u otra ruta.</p>
+              <p className="text-[12px] text-ink-3">Cuando «Ayúdame a pensar» te propone frenos (tuyos, de fuera o del propio sistema), aquí ves en cuántos ya has decidido qué hacer: quitarlo, convivir con él, compensarlo o ir por otro camino.</p>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-end gap-6">
@@ -178,7 +178,7 @@ export function MonitorPanel() {
           </Card>
         </div>
         {data.frameNotes.length > 0 && (
-          <Card title="Efectos del marco espacial">
+          <Card title="Lo que cambia por la cuadrícula del tiempo">
             <ul className="list-disc space-y-0.5 pl-4 text-[12px] text-ink-2">{data.frameNotes.slice(0, 12).map((n, i) => <li key={i}>{n}</li>)}</ul>
           </Card>
         )}

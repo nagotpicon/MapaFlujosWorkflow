@@ -27,7 +27,7 @@ test('Explorador (modo demostración): entrevista, comandos, propuesta e inserci
   await page.getByTestId('proposal-node').last().getByRole('checkbox').uncheck();
   await page.getByTestId('insert-proposal').click();
   await expect(page.getByTestId('explorer')).toBeHidden();
-  await expect(page.getByTestId('toast')).toContainText('elementos insertados');
+  await expect(page.getByTestId('toast')).toContainText('ideas metidas');
   const inserted = await page.locator('[data-testid="map-node"]').count();
   expect(inserted).toBeGreaterThan(8);
   // la inserción se puede deshacer
@@ -42,7 +42,7 @@ test('Explorador (modo demostración): entrevista, comandos, propuesta e inserci
 test('Creador de estrategias: texto espontáneo → contexto con fricciones estándar (plantilla sin IA)', async ({ page }) => {
   await newProject(page);
   await page.getByTestId('open-explorer').click();
-  await page.getByRole('radio', { name: /Creador de estrategias/ }).click();
+  await page.getByRole('radio', { name: /Te cuento mi plan/ }).click();
   await page.getByTestId('explorer-topic').fill('Vender un curso online');
   await page.getByTestId('explorer-start').click();
   await page.getByTestId('strategy-text').fill('Quiero vender un curso online de fotografía. No tengo audiencia. Puedo dedicar 5 horas a la semana.');

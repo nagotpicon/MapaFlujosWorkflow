@@ -35,8 +35,21 @@ function InlineTitle({ node, className, multiline }: { node: MapNode; className?
   const editing = useUI((s) => s.editingNodeId === node.id);
   const [draft, setDraft] = useState(node.title);
   const ref = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => { if (editing) { setDraft(node.title); requestAnimationFrame(() => { ref.current?.focus(); ref.current?.select(); }); } }, [editing]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!editing) return <div className={className}>{node.title || <span className="opacity-40">Sin título</span>}</div>;
+  useEffect(() => {
+    if (!editing) return;
+    setDraft(node.title);
+    // el lienzo dibuja la idea nueva un instante después: se reintenta hasta tener el foco
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const grab = () => {
+      const el = ref.current;
+      if (el && document.activeElement !== el) { el.focus(); if (document.activeElement === el) el.select(); }
+      if (document.activeElement !== el && tries++ < 15) timer = setTimeout(grab, 40);
+    };
+    const raf = requestAnimationFrame(grab);
+    return () => { cancelAnimationFrame(raf); if (timer) clearTimeout(timer); };
+  }, [editing]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!editing) return <div className={className}>{node.title || <span className="opacity-40">Escribe aquí…</span>}</div>;
   const commit = () => {
     useUI.setState({ editingNodeId: null });
     if (draft !== node.title) useProject.getState().apply((d) => op.updateNode(d, node.id, { title: draft.trim() || node.title }));
@@ -44,7 +57,7 @@ function InlineTitle({ node, className, multiline }: { node: MapNode; className?
   return (
     <textarea
       ref={ref}
-      aria-label="Título de la burbuja"
+      aria-label="Texto de la idea"
       data-testid="node-title-input"
       className={cx('nodrag nopan w-full resize-none bg-transparent outline-none', className)}
       value={draft}
@@ -121,13 +134,13 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const isIO = node.type === 'input' || node.type === 'output';
   const inactive = st && !st.active;
   const showState = view === 'simulation' && st && stepDone;
-  const radius = shape === 'pill' ? 999 : shape === 'circle' ? 9999 : shape === 'rect' ? 6 : 14;
-  const borderStyle = vs.borderStyle === 'none' ? 'none' : `1.5px ${vs.borderStyle} ${selected ? 'var(--accent)' : bd}`;
+  const radius = shape === 'pill' ? 999 : shape === 'circle' ? 9999 : shape === 'rect' ? 8 : 16;
+  const borderStyle = vs.borderStyle === 'none' ? 'none' : `1px ${vs.borderStyle} ${selected ? 'var(--accent)' : bd}`;
   const style: CSSProperties = {
     width: dims ? '100%' : undefined,
     height: dims ? '100%' : undefined,
-    minWidth: dims ? undefined : shape === 'circle' ? 120 : 132,
-    maxWidth: dims ? undefined : 280,
+    minWidth: dims ? undefined : shape === 'circle' ? 120 : 140,
+    maxWidth: dims ? undefined : 300,
     aspectRatio: shape === 'circle' && !dims ? '1 / 1' : undefined,
     background: svgShape ? 'transparent' : bg,
     border: svgShape ? 'none' : borderStyle,
@@ -135,7 +148,7 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
     fontFamily: FONT[vs.fontFamily],
     fontSize: vs.fontSize,
     fontWeight: vs.fontWeight,
-    boxShadow: selected ? '0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent), var(--shadow-md)' : 'var(--shadow-sm)',
+    boxShadow: selected ? '0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), var(--shadow-md)' : '0 1px 2px rgba(60, 45, 25, 0.05), 0 4px 12px -6px rgba(60, 45, 25, 0.12)',
     opacity: dimmed ? 0.18 : inactive && view === 'simulation' ? 0.55 : 1,
     ['--pulse' as string]: ac,
   };
@@ -159,9 +172,9 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
         <div className="absolute -left-[3px] top-2 bottom-2 w-[4px] rounded-full" style={{ background: heatColor }} title={`${HEAT_LABEL[heat.state]}: ${heat.causes.join(' · ')}`} aria-label={`Termómetro: ${HEAT_LABEL[heat.state]}`} />
       )}
       {vs.image && !svgShape && <img src={vs.image} alt="" className="w-full rounded-t-[13px] object-cover" style={{ maxHeight: dims ? '55%' : 110 }} draggable={false} />}
-      <div className={cx('relative flex min-w-0 items-start gap-2 px-3', svgShape ? 'max-w-[70%] py-1' : 'py-2.5', shape === 'circle' && 'flex-col items-center')}>
+      <div className={cx('relative flex min-w-0 items-start gap-2', shape === 'pill' ? 'px-4' : 'px-3.5', svgShape ? 'max-w-[70%] py-1' : 'py-3', shape === 'circle' && 'flex-col items-center')}>
         {Icon && <span className="mt-[1px] shrink-0" style={{ color: ac }}><Icon className="size-4" strokeWidth={1.75} /></span>}
-        {!Icon && isIO && <span className="mt-[5px] size-2 shrink-0 rounded-full" style={{ background: ac }} aria-hidden />}
+        {!Icon && isIO && <span className="mt-[6px] size-2 shrink-0 rounded-full" style={{ background: ac }} aria-hidden title={node.type === 'input' ? 'Inicio' : 'Meta'} />}
         <InlineTitle node={raw.aliasOf ? { ...node, id: raw.aliasOf } : node} className="min-w-0 flex-1 whitespace-pre-wrap break-words leading-snug" />
       </div>
       {(flowView || annCount > 0 || raw.aliasOf || raw.locked || node.branchCollapsed) && (
@@ -178,7 +191,7 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
           )}
           {view === 'system' && node.activationConditionId && <span className="text-cond" title="Tiene condición de activación">◆</span>}
           {(view === 'flow' || view === 'simulation') && st && (q > 0 || inQ > 0) && (
-            <span className="ml-auto rounded-md bg-[color-mix(in_srgb,var(--flow)_12%,transparent)] px-1.5 py-px font-semibold tabular text-flow" title="Flujo en esta iteración" data-testid="node-flow">
+            <span className="ml-auto rounded-md bg-[color-mix(in_srgb,var(--flow)_12%,transparent)] px-1.5 py-px font-semibold tabular text-flow" title="Lo que pasa por aquí en esta ronda" data-testid="node-flow">
               {fmt(q)}{unit ? ` ${unit}` : ''}
             </span>
           )}
@@ -223,16 +236,18 @@ export const GroupNodeView = memo(function GroupNodeView({ id, selected }: P) {
   return (
     <div className="relative size-full" data-testid="group-node" data-node-id={id} data-node-title={node.title}
       style={{
-        borderRadius: isContainer ? 18 : 14,
-        background: isContainer ? `color-mix(in srgb, var(--n-${color}-bg) 70%, transparent)` : `color-mix(in srgb, var(--n-${color}-bg) 35%, transparent)`,
-        border: `1.5px ${node.visualStyle.borderStyle === 'solid' ? 'solid' : 'dashed'} ${selected ? 'var(--accent)' : `var(--n-${color}-bd)`}`,
+        borderRadius: isContainer ? 22 : 18,
+        background: color === 'slate'
+          ? `color-mix(in srgb, var(--wood-soft) ${isContainer ? 75 : 45}%, transparent)`
+          : isContainer ? `color-mix(in srgb, var(--n-${color}-bg) 70%, transparent)` : `color-mix(in srgb, var(--n-${color}-bg) 35%, transparent)`,
+        border: `1px ${node.visualStyle.borderStyle === 'solid' ? 'solid' : 'dashed'} ${selected ? 'var(--accent)' : color === 'slate' ? 'var(--wood-line)' : `var(--n-${color}-bd)`}`,
         opacity: hl.active && !hl.nodes.has(id) ? 0.4 : 1,
       }}>
       <NodeResizer isVisible={selected && !node.collapsed && !node.locked} minWidth={160} minHeight={80} color="var(--accent)"
         onResizeStart={() => useProject.getState().begin()}
         onResizeEnd={() => useProject.getState().end()} />
       <div className="flex items-center gap-1.5 px-2.5 pt-2">
-        <button type="button" className="nodrag rounded p-0.5 text-ink-3 hover:bg-surface-2 hover:text-ink" onClick={toggle} aria-label={node.collapsed ? 'Desplegar grupo' : 'Plegar grupo'} data-testid="group-toggle">
+        <button type="button" className="nodrag rounded p-0.5 text-ink-3 hover:bg-surface-2 hover:text-ink" onClick={toggle} aria-label={node.collapsed ? 'Abrir grupo' : 'Cerrar grupo'} data-testid="group-toggle">
           {node.collapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
         </button>
         <InlineTitle node={node} className={cx('min-w-0 flex-1 truncate text-[12px] font-semibold tracking-wide', isContainer ? 'text-ink' : 'text-ink-2')} />

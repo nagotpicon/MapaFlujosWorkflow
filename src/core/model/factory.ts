@@ -179,7 +179,7 @@ const NODE_DEFAULT_COLOR: Record<NodeType, string> = {
 };
 
 const NODE_DEFAULT_TITLE: Record<NodeType, string> = {
-  bubble: 'Nueva idea', input: 'Entrada', output: 'Resultado', note: 'Nota', label: 'Etiqueta',
+  bubble: 'Nueva idea', input: 'Inicio', output: 'Meta', note: 'Nota', label: 'Etiqueta',
   comment: 'Comentario', group: 'Grupo', container: 'Contenedor',
 };
 

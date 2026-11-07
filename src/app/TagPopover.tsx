@@ -27,7 +27,7 @@ export function TagPopover({ trigger }: { trigger: ReactNode }) {
             <TextInput value={draft} onChange={setDraft} placeholder={`Etiquetar ${sel.length} elemento(s)…`} aria-label="Nueva etiqueta" list="mdf-tags" />
             <datalist id="mdf-tags">{tags.map((t) => <option key={t} value={t} />)}</datalist>
           </form>
-        ) : <p className="text-[11px] text-ink-3">Selecciona burbujas para etiquetarlas. Usa las etiquetas para filtrar el mapa.</p>}
+        ) : <p className="text-[11px] text-ink-3">Elige ideas para ponerles etiquetas. Luego puedes filtrar el mapa por etiqueta.</p>}
         {tags.length > 0 && (
           <div>
             <div className="mb-1 text-[10.5px] font-semibold uppercase tracking-wider text-ink-3">Filtrar por etiqueta</div>

@@ -9,6 +9,9 @@ import {
   ExplorerTurnSchema, PlanSummarySchema, ProposalSchema, type ExplorerTurn, type PlanSummary, type Proposal, type ProposalRequest, type TurnRequest,
 } from './shared/schemas';
 import { heuristicPlanSummary } from './shared/retrieval';
+import {
+  ClarifyTurnSchema, CopyPackageSchema, demoClarify, templateCopy, type ClarifyRequest, type ClarifyTurn, type CopyPackage, type CopyRequest,
+} from './shared/modes';
 
 export interface ExplorerStatus {
   reachable: boolean;
@@ -124,6 +127,25 @@ export async function explorerProposal(req: ProposalRequest, opts: { signal?: Ab
   }
   const j = await postJson<{ proposal: unknown; model: string }>('/api/explorer/proposal', req, opts.signal, 200_000);
   return { proposal: ProposalSchema.parse(j.proposal), source: 'ai', model: j.model };
+}
+
+/** Un turno del ACLARATOR (con IA del servidor o con el guion local). */
+export async function explorerClarify(req: ClarifyRequest, signal?: AbortSignal): Promise<{ turn: ClarifyTurn; demo: boolean }> {
+  const st = await explorerStatus();
+  if (!st.configured) {
+    await new Promise((r) => setTimeout(r, 200));
+    return { turn: ClarifyTurnSchema.parse(demoClarify(req)), demo: true };
+  }
+  const j = await postJson<{ turn: unknown }>('/api/explorer/clarify', req, signal, 120_000);
+  return { turn: ClarifyTurnSchema.parse(j.turn), demo: false };
+}
+
+/** Paquete del COPYWRITER. Sin IA (o si se pide) devuelve un esqueleto marcado como tal. */
+export async function explorerCopy(req: CopyRequest, opts: { signal?: AbortSignal; forceTemplate?: boolean } = {}): Promise<{ pkg: CopyPackage; source: 'ai' | 'template' }> {
+  const st = await explorerStatus();
+  if (opts.forceTemplate || !st.configured) return { pkg: CopyPackageSchema.parse(templateCopy(req)), source: 'template' };
+  const j = await postJson<{ pkg: unknown }>('/api/explorer/copy', req, opts.signal, 200_000);
+  return { pkg: CopyPackageSchema.parse(j.pkg), source: 'ai' };
 }
 
 export async function summarizePlan(name: string, text: string, signal?: AbortSignal): Promise<{ summary: PlanSummary; source: 'ai' | 'heuristic' }> {

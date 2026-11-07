@@ -5,12 +5,13 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowRight, BookOpen, CircleHelp, Eye, FileUp, Lightbulb, Loader2, Map as MapIcon, Mic, MicOff, Plus, RotateCcw, Send, ShieldAlert, Sparkles, Square, Trash2,
+  ArrowRight, BookOpen, CircleHelp, Eye, FileUp, Lightbulb, Loader2, Map as MapIcon, Mic, MicOff, Plus, RotateCcw, Send, Sparkles, Square, Trash2,
   TriangleAlert, Wand2, X, Check, Info, Waypoints,
 } from 'lucide-react';
 import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
 import * as A from '../app/actions';
+import { levelOf, setLevel } from '../app/levels';
 import { Badge, Button, ConfirmDeleteButton, Field, IconButton, Segmented, TextArea, TextInput, cx } from '../ui/primitives';
 import { AREA_LABEL, STAGE_LABEL, type Proposal } from './shared/schemas';
 import { DOMAIN_LABEL, detectDomain } from './shared/templates';
@@ -19,6 +20,7 @@ import { addKnowledgeDoc, deleteKnowledgeDoc, docText, listKnowledgeDocs, setDoc
 import { extractDocument, summarizePlan, transcribeAudio } from './client';
 import { browserDictationAvailable, splitAudioFile, startBrowserDictation, startSegmentedRecording, type SegmentRecorder } from './audio';
 import { insertProposal } from './insert';
+import { AclaratorView, CopywriterView } from './WorkModes';
 import type { KnowledgeDocRow } from '../persistence/db';
 import * as op from '../core/operations';
 import { pickFile } from '../app/io';
@@ -36,7 +38,7 @@ export function ExplorerPanel() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         {status && !status.configured && <DemoBanner />}
-        {!current ? <StartView /> : current.proposal ? <ProposalView s={current} /> : current.mode === 'strategy' && current.messages.length === 0 ? <StrategyView s={current} /> : <ConversationView s={current} />}
+        {!current ? <StartView /> : current.mode === 'aclarator' && current.clarify ? <AclaratorView s={current} /> : current.mode === 'copywriter' ? <CopywriterView s={current} /> : current.proposal ? <ProposalView s={current} /> : current.mode === 'strategy' && current.messages.length === 0 ? <StrategyView s={current} /> : <ConversationView s={current} />}
       </div>
     </div>
   );
@@ -48,8 +50,8 @@ function DemoBanner() {
     <div className="flex items-start gap-2 border-b border-[color-mix(in_srgb,var(--condition)_35%,transparent)] bg-[color-mix(in_srgb,var(--condition)_9%,transparent)] px-5 py-2 text-[12px] text-ink-2" data-testid="demo-banner">
       <TriangleAlert className="mt-0.5 size-4 shrink-0 text-cond" />
       <div>
-        <b className="text-ink">Modo demostración: no hay IA conectada.</b> Las preguntas salen de un guion local y las propuestas de plantillas estándar; nada se envía fuera del navegador. {status.reason && <span className="text-ink-3">({status.reason})</span>}
-        <div className="mt-0.5 text-ink-3">Para usar IA copia <code className="rounded bg-surface-2 px-1">.env.example</code> como <code className="rounded bg-surface-2 px-1">.env</code>, indica <code className="rounded bg-surface-2 px-1">GEMINI_API_KEY</code> (o <code className="rounded bg-surface-2 px-1">EXPLORER_PROVIDER=openai|anthropic</code> con su clave) y reinicia <code className="rounded bg-surface-2 px-1">npm run dev</code>.</div>
+        <b className="text-ink">Modo demostración: no hay IA conectada.</b> Las preguntas salen de un guion y las propuestas de plantillas; nada sale de tu navegador. {status.reason && <span className="text-ink-3">({status.reason})</span>}
+        <div className="mt-0.5 text-ink-3">Para que piense una IA de verdad, quien gestione la app tiene que ponerle una clave (por ejemplo <code className="rounded bg-surface-2 px-1">GEMINI_API_KEY</code>). Está explicado en el manual.</div>
       </div>
     </div>
   );
@@ -72,16 +74,16 @@ function Sidebar() {
         <div className="mt-1 text-ink-3">{status?.configured ? 'Lo que envías al proveedor: tus respuestas, un resumen de la exploración y solo los fragmentos relevantes de tus documentos.' : 'Sin conexión a IA. Todo queda en tu navegador.'}</div>
       </div>
       <div>
-        <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-ink-3">Exploraciones
+        <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-ink-3">Tus conversaciones
           <IconButton size="xs" label="Nueva exploración" onClick={() => useExplorer.setState({ current: null })}><Plus className="size-3.5" /></IconButton>
         </div>
-        {sessions.length === 0 ? <p className="text-[11.5px] text-ink-3">Aún no hay exploraciones en este proyecto.</p> : (
+        {sessions.length === 0 ? <p className="text-[11.5px] text-ink-3">Aún no hemos hablado de este mapa.</p> : (
           <ul className="space-y-0.5">
             {sessions.map((s) => (
               <li key={s.id} className={cx('group flex items-center gap-1 rounded-lg px-1.5 py-1', current?.id === s.id ? 'bg-accent-soft' : 'hover:bg-surface-2')}>
                 <button type="button" className="min-w-0 flex-1 text-left" onClick={() => useExplorer.setState({ current: s })}>
                   <span className="block truncate text-[12.5px] text-ink">{s.title}</span>
-                  <span className="block text-[10.5px] text-ink-3">{s.mode === 'strategy' ? 'Creador' : 'Entrevista'} · {s.messages.filter((m) => m.role === 'user').length} respuestas</span>
+                  <span className="block text-[10.5px] text-ink-3">{s.mode === 'aclarator' ? `Aclarator · ${(s.clarify?.index ?? 0) > 9 ? 'aclarado' : `paso ${(s.clarify?.index ?? 0) + 1}/10`}` : s.mode === 'copywriter' ? `Copywriter · ${s.copy ? 'guion listo' : 'sin guion'}` : `${s.mode === 'strategy' ? 'Tu plan' : 'Preguntas'} · ${s.messages.filter((m) => m.role === 'user').length} respuestas`}</span>
                 </button>
                 <ConfirmDeleteButton size="xs" label="Eliminar exploración y sus datos" confirmLabel="¿Borrar?" className="opacity-0 group-hover:opacity-100 focus:opacity-100" onConfirm={() => void deleteSession(s.id)} />
               </li>
@@ -143,10 +145,10 @@ function PlanDocs() {
   };
   return (
     <div data-testid="plan-docs">
-      <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-ink-3">Plan maestro y documentos
+      <div className="mb-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-ink-3">Tu plan (documentos)
         <IconButton size="xs" label="Añadir plan (Word, Excel, PDF, texto)" onClick={() => void upload()} data-testid="upload-plan">{busy === 'document' ? <Loader2 className="size-3.5 animate-spin" /> : <FileUp className="size-3.5" />}</IconButton>
       </div>
-      {docs.length === 0 ? <p className="text-[11.5px] text-ink-3">Sube tu plan (.docx, .xlsx, .pdf, .txt) para que el Explorador lo use como guía y fuente de datos.</p> : (
+      {docs.length === 0 ? <p className="text-[11.5px] text-ink-3">Sube tu plan (Word, Excel, PDF o texto) y lo usaré como guía.</p> : (
         <ul className="space-y-0.5">
           {docs.map((d) => {
             const on = !!current?.knowledgeDocIds.includes(d.id);
@@ -190,10 +192,19 @@ function DocViewer({ d, onClose }: { d: KnowledgeDocRow; onClose: () => void }) 
 
 /* ---------------- inicio ---------------- */
 
+type StartMode = 'interview' | 'strategy' | 'aclarator' | 'copywriter';
+const MODE_CARDS: { value: StartMode; title: string; text: string; icon: React.ReactNode }[] = [
+  { value: 'interview', title: 'Hazme preguntas', text: 'Una pregunta cada vez para descubrir qué quieres y qué te frena.', icon: <CircleHelp /> },
+  { value: 'strategy', title: 'Te cuento mi plan', text: 'Suéltalo con texto, voz o documentos y lo convierto en un mapa.', icon: <Wand2 /> },
+  { value: 'aclarator', title: 'Aclarator', text: 'Aclara lo esencial en doble capa (interno y externo), bloque a bloque, sin saltarse ninguno.', icon: <Lightbulb /> },
+  { value: 'copywriter', title: 'Copywriter', text: 'Guion de voz para YouTube, reels y stories, con un reto que se pueda practicar.', icon: <Sparkles /> },
+];
+
 function StartView() {
   const doc = useProject((s) => s.doc)!;
-  const [mode, setMode] = useState<'interview' | 'strategy'>('interview');
-  const [topic, setTopic] = useState('');
+  const [mode, setMode] = useState<StartMode>('interview');
+  // si el mapa ya tiene una idea principal, se usa como punto de partida
+  const [topic, setTopic] = useState(() => (['Mapa sin título', 'Exploración', 'Proyecto sin título'].includes(doc.project.name) ? '' : doc.project.name));
   const [objective, setObjective] = useState('');
   const [strategy, setStrategy] = useState('');
   const [context, setContext] = useState('');
@@ -203,41 +214,61 @@ function StartView() {
     await newSession(doc.project.id, mode, { topic: topic.trim(), objective, strategy, context }, docs.map((d) => d.id));
     if (mode === 'interview') await sendTurn('');
   };
-  const domain = topic.trim() ? detectDomain(`${topic} ${strategy}`) : null;
+  const domain = topic.trim() && (mode === 'interview' || mode === 'strategy') ? detectDomain(`${topic} ${strategy}`) : null;
+  const topicLabel = mode === 'aclarator' ? '¿Qué quieres aclarar?' : mode === 'copywriter' ? '¿De qué tema es el vídeo?' : '¿Sobre qué quieres pensar?';
+  const topicPh = mode === 'aclarator' ? 'Ej.: mi canal de YouTube sobre autoconocimiento' : mode === 'copywriter' ? 'Ej.: por qué dormimos mal aunque nos acostemos pronto' : 'Ej.: dar clases de guitarra en mi barrio';
   return (
     <div className="flex flex-1 items-start justify-center overflow-auto p-8">
-      <div className="w-full max-w-2xl space-y-5 mdf-slide-b">
+      <div className="w-full max-w-3xl space-y-5 mdf-slide-b">
         <div>
-          <h2 className="text-[24px] font-semibold tracking-tight text-ink">Explorador de flujos</h2>
-          <p className="text-[14px] text-ink-2">Descubre lo que necesitas pensar antes de empezar.</p>
+          <h2 className="font-display text-[30px] font-medium tracking-tight text-ink">Vamos a pensarlo juntos</h2>
+          <p className="text-[15px] text-ink-2">Elige cómo quieres trabajar. Todos los modos terminan en tu mapa.</p>
         </div>
-        <Segmented label="Modo" value={mode} onChange={setMode} options={[{ value: 'interview', label: 'Entrevista guiada' }, { value: 'strategy', label: 'Creador de estrategias (notas, audio, documentos)' }]} />
+        <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Modo de trabajo" data-testid="work-modes">
+          {MODE_CARDS.map((m) => (
+            <button key={m.value} type="button" role="radio" aria-checked={mode === m.value} onClick={() => setMode(m.value)} data-testid={`mode-${m.value}`}
+              className={cx('flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-colors [&_svg]:size-5', mode === m.value ? 'border-accent bg-accent-soft' : 'border-line bg-surface hover:border-line-strong')}>
+              <span className={cx('mt-0.5', mode === m.value ? 'text-accent-text' : 'text-ink-3')}>{m.icon}</span>
+              <span><span className="block font-display text-[16px] font-semibold text-ink">{m.title}</span><span className="block text-[12.5px] leading-snug text-ink-3">{m.text}</span></span>
+            </button>
+          ))}
+        </div>
         <div className="space-y-3 rounded-2xl border border-line bg-surface p-5">
-          <Field label="¿Qué quieres analizar?"><TextInput value={topic} onChange={setTopic} placeholder="Ej.: clases particulares de guitarra en mi barrio" data-testid="explorer-topic" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') void start(); }} /></Field>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="¿Qué quieres conseguir?" hint="opcional"><TextInput value={objective} onChange={setObjective} placeholder="Ej.: 5 alumnos recurrentes" /></Field>
-            <Field label="Idea o estrategia inicial" hint="opcional"><TextInput value={strategy} onChange={setStrategy} placeholder="Ej.: repartir flyers por mi zona" data-testid="explorer-strategy" /></Field>
-          </div>
-          <Field label="Contexto adicional" hint="opcional"><TextArea rows={2} value={context} onChange={setContext} placeholder="Lo que quieras que tenga en cuenta…" /></Field>
-          {domain && <p className="text-[11.5px] text-ink-3">Parece un caso de <b className="text-ink-2">{DOMAIN_LABEL[domain].toLowerCase()}</b>; el Explorador adaptará sus preguntas.</p>}
+          <Field label={topicLabel}><TextInput value={topic} onChange={setTopic} placeholder={topicPh} data-testid="explorer-topic" autoFocus onKeyDown={(e) => { if (e.key === 'Enter' && mode !== 'aclarator') void start(); }} /></Field>
+          {(mode === 'interview' || mode === 'strategy') && (
+            <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="¿Qué quieres conseguir?" hint="opcional"><TextInput value={objective} onChange={setObjective} placeholder="Ej.: tener 5 alumnos fijos" /></Field>
+                <Field label="¿Cómo lo harías?" hint="si lo sabes"><TextInput value={strategy} onChange={setStrategy} placeholder="Ej.: repartir carteles por mi zona" data-testid="explorer-strategy" /></Field>
+              </div>
+              <Field label="Algo más que deba saber" hint="opcional"><TextArea rows={2} value={context} onChange={setContext} placeholder="Tu tiempo, tu dinero, lo que te preocupa…" /></Field>
+            </>
+          )}
+          {mode === 'aclarator' && (
+            <Field label="Cuéntamelo todo, tal cual te salga" hint="lo ordenamos después, bloque a bloque">
+              <TextArea rows={5} value={context} onChange={setContext} placeholder="Qué quieres hacer, para quién, por qué, qué te preocupa… Sin orden. Luego iremos aclarando una cosa cada vez." data-testid="aclarator-dump" />
+            </Field>
+          )}
+          {mode === 'copywriter' && (
+            <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="¿Para quién es?" hint="opcional"><TextInput value={strategy} onChange={setStrategy} placeholder="Ej.: estudiantes que duermen mal" data-testid="copy-audience" /></Field>
+                <Field label="¿Qué quieres que se lleven?" hint="opcional"><TextInput value={objective} onChange={setObjective} placeholder="Ej.: que el móvil fuera del cuarto lo cambia todo" data-testid="copy-message" /></Field>
+              </div>
+              <Field label="Notas" hint="opcional"><TextArea rows={2} value={context} onChange={setContext} placeholder="Lo que quieras que tenga en cuenta…" /></Field>
+            </>
+          )}
+          {domain && <p className="text-[11.5px] text-ink-3">Parece un caso de <b className="text-ink-2">{DOMAIN_LABEL[domain].toLowerCase()}</b>; adaptaré mis preguntas.</p>}
           <div className="flex items-center gap-2 pt-1">
-            <Button variant="solid" size="md" disabled={!topic.trim()} onClick={() => void start()} data-testid="explorer-start">{mode === 'interview' ? <>Iniciar la exploración <ArrowRight className="size-4" /></> : <>Continuar <ArrowRight className="size-4" /></>}</Button>
-            <span className="text-[11.5px] text-ink-3">Puedes empezar con muy poca información.</span>
+            <Button variant="solid" size="md" disabled={!topic.trim()} onClick={() => void start()} data-testid="explorer-start">{mode === 'strategy' ? 'Continuar' : 'Empezar'} <ArrowRight className="size-4" /></Button>
+            <span className="text-[12px] text-ink-3">{mode === 'aclarator' ? 'Un bloque cada vez: no pasamos al siguiente hasta que esté claro.' : 'Vale con muy poquito. Lo demás lo vamos sacando.'}</span>
           </div>
-        </div>
-        <div className="grid gap-3 text-[12px] text-ink-2 sm:grid-cols-3">
-          <Hint icon={<CircleHelp />} title="Una pregunta cada vez">Pregunta lo que cambia decisiones, no un formulario.</Hint>
-          <Hint icon={<ShieldAlert />} title="Fricciones separadas">Propias, del entorno y del propio sistema.</Hint>
-          <Hint icon={<MapIcon />} title="Termina en un mapa">Revisas la propuesta y la insertas como elementos nativos.</Hint>
         </div>
       </div>
     </div>
   );
 }
 
-function Hint({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
-  return <div className="rounded-xl border border-line p-3"><div className="mb-1 flex items-center gap-1.5 font-medium text-ink [&>svg]:size-3.5 [&>svg]:text-accent">{icon}{title}</div><div className="text-ink-3">{children}</div></div>;
-}
 
 /* ---------------- grabación de voz ---------------- */
 
@@ -399,7 +430,7 @@ function ConversationView({ s }: { s: ExplorerSession }) {
           ))}
           {busy === 'turn' && (
             <div className="max-w-[86%] space-y-1.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-ink-3"><Loader2 className="size-3.5 animate-spin text-accent" />EXPLORADOR</div>
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-ink-3"><Loader2 className="size-3.5 animate-spin text-accent" />PENSANDO…</div>
               <div className="whitespace-pre-wrap text-[14.5px] leading-relaxed text-ink-2">{partial || 'Pensando la siguiente pregunta…'}</div>
             </div>
           )}
@@ -439,7 +470,7 @@ function Discoveries({ s }: { s: ExplorerSession }) {
   ) : null;
   return (
     <aside className="w-80 shrink-0 space-y-4 overflow-auto border-l border-line bg-surface p-4" data-testid="discoveries">
-      <div className="flex items-center gap-2"><Lightbulb className="size-4 text-accent" /><span className="flex-1 text-[13px] font-semibold text-ink">Descubrimientos</span><IconButton size="xs" label="Ocultar" onClick={() => setOpen(false)}><X className="size-3.5" /></IconButton></div>
+      <div className="flex items-center gap-2"><Lightbulb className="size-4 text-accent" /><span className="flex-1 text-[13px] font-semibold text-ink">Lo que vamos descubriendo</span><IconButton size="xs" label="Ocultar" onClick={() => setOpen(false)}><X className="size-3.5" /></IconButton></div>
       {s.systemNature && <p className="text-[11.5px] text-ink-3">Naturaleza del sistema: <b className="text-ink-2">{s.systemNature}</b></p>}
       <Group title="Lo que ya sabemos" items={m.known.map((k) => <span>{k.text} <Badge className="ml-0.5">{EVIDENCE_LABEL[k.evidence] ?? k.evidence}</Badge></span>)} />
       <Group title="Hemos descubierto" items={m.discovered} tone="text-gain" />
@@ -519,10 +550,13 @@ function ProposalView({ s }: { s: ExplorerSession }) {
       A.apply(() => res.doc);
     }
     update({ insertedNodeIds: res.nodeIds });
-    useUI.setState({ overlay: null, view: 'system' });
+    // lo que llega del Explorador ya tiene inicio, pasos y meta: como mínimo, nivel 2
+    const lvl = levelOf(useProject.getState().doc?.project.settings.depth);
+    if (lvl < 2) setLevel(2);
+    useUI.setState({ overlay: null, view: lvl === 3 ? 'system' : 'simulation' });
     useUI.getState().setSelection(res.nodeIds.slice(0, 1));
     setTimeout(() => A.fit(res.nodeIds), 120);
-    useUI.getState().notify(`${res.nodeIds.length} elementos insertados${mode === 'new' ? ' en un mapa nuevo' : ' (puedes deshacer con ⌘Z)'}`, 'success');
+    useUI.getState().notify(`${res.nodeIds.length} ideas metidas en el mapa${mode === 'new' ? ' nuevo' : ' (Ctrl+Z para deshacer)'}`, 'success');
   };
   const counts = { personal: p.frictions.personal.length, external: p.frictions.external.length, system: p.frictions.system.length };
   return (
@@ -578,11 +612,11 @@ function ProposalView({ s }: { s: ExplorerSession }) {
         </div>
         <div className="space-y-4">
           <section className="space-y-3 rounded-2xl border border-accent/40 bg-surface p-4">
-            <div className="text-[13px] font-semibold text-ink">Insertar en Mapa de Flujos</div>
-            <Segmented label="Destino" value={mode} onChange={setMode} options={[{ value: 'new', label: 'Mapa nuevo' }, { value: 'current', label: 'Mapa actual' }, { value: 'connect', label: 'Conectar a la burbuja seleccionada' }]} size="xs" />
+            <div className="text-[13px] font-semibold text-ink">Meterlo en mi mapa</div>
+            <Segmented label="Destino" value={mode} onChange={setMode} options={[{ value: 'new', label: 'En un mapa nuevo' }, { value: 'current', label: 'En este mapa' }, { value: 'connect', label: 'Unido a la idea elegida' }]} size="xs" />
             {mode === 'connect' && sel.length !== 1 && <p className="text-[11.5px] text-cond">Selecciona una burbuja en el lienzo (cierra este panel) o elige otra opción.</p>}
             <p className="text-[11.5px] text-ink-3">{accepted.size} de {p.nodes.length} elementos. Se crean como elementos nativos en una capa propia; no se sobrescribe nada y puedes deshacerlo.</p>
-            <Button variant="solid" size="md" className="w-full" disabled={!accepted.size || (mode === 'connect' && sel.length !== 1)} onClick={() => void insert()} data-testid="insert-proposal"><MapIcon className="size-4" />Insertar {accepted.size} elementos</Button>
+            <Button variant="solid" size="md" className="w-full" disabled={!accepted.size || (mode === 'connect' && sel.length !== 1)} onClick={() => void insert()} data-testid="insert-proposal"><MapIcon className="size-4" />Meter {accepted.size} ideas en el mapa</Button>
           </section>
           {p.experiments[0] && (
             <section className="rounded-2xl border border-line bg-surface p-4 text-[12.5px]">

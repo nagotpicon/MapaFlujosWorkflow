@@ -18,7 +18,7 @@ test.describe('Propiedades y motor desde la interfaz', () => {
 
     // comportamiento: filtro del 65 %
     await selectNode(page, 'Filtro útil');
-    await page.getByTestId('section-behaviors').getByRole('button', { name: 'Comportamientos' }).click();
+    await page.getByTestId('section-behaviors').getByRole('button', { name: 'Qué hace' }).click();
     await page.getByTestId('add-behavior').click();
     await page.getByTestId('behavior-option-filter').click();
     const card = page.getByTestId('behavior-card').first();
@@ -31,15 +31,15 @@ test.describe('Propiedades y motor desde la interfaz', () => {
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^65/);
 
     // peso / polaridad (influencia negativa)
-    await page.getByTestId('section-weights').getByRole('button', { name: 'Peso e influencia' }).click();
+    await page.getByTestId('section-weights').getByRole('button', { name: 'Cuánto empuja o frena' }).click();
     await page.getByRole('radio', { name: 'Pond.' }).nth(1).click();
     await expect(page.getByTestId('scale-Influencia')).toHaveText('0');
     // condición de activación
-    await page.getByTestId('section-conditions').getByRole('button', { name: /Condiciones de activación/ }).click();
+    await page.getByTestId('section-conditions').getByRole('button', { name: /Cuándo funciona/ }).click();
     await page.getByTestId('section-conditions').getByTestId('add-condition').click();
     await expect(page.getByTestId('condition-block')).toBeVisible();
     // mitigador
-    await page.getByTestId('section-mitigators').getByRole('button', { name: /Mitigadores/ }).click();
+    await page.getByTestId('section-mitigators').getByRole('button', { name: /Remedios/ }).click();
     await page.getByTestId('add-mitigator').click();
     await expect(page.getByTestId('mitigator-row')).toHaveCount(1);
     // modificar su efecto
@@ -56,15 +56,15 @@ test.describe('Propiedades y motor desde la interfaz', () => {
     await selectNode(page, 'Filtro útil');
     await expect(page.getByTestId('behavior-card')).toContainText('Deja pasar 65%');
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^79/);
-    await page.getByTestId('section-mitigators').getByRole('button', { name: /Mitigadores/ }).click();
+    await page.getByTestId('section-mitigators').getByRole('button', { name: /Remedios/ }).click();
     await expect(page.getByTestId('mitigator-row').locator('[data-param="compensation-amount"]')).toHaveValue('2');
   });
 
   test('vistas, termómetro, marco espacial y diagnóstico sobre la demostración', async ({ page }) => {
     await openDemo(page);
-    for (const v of ['Mental', 'Energía', 'Sistema', 'Simulación', 'Flujo']) {
-      await page.getByRole('radio', { name: v }).click();
-      await expect(page.getByTestId('canvas')).toHaveAttribute('data-view', { Mental: 'mental', Energía: 'energy', Sistema: 'system', Simulación: 'simulation', Flujo: 'flow' }[v]!);
+    for (const v of ['Ideas', 'Fuerzas', 'Piezas', 'Película', 'Recorrido']) {
+      await page.getByRole('radio', { name: v, exact: true }).click();
+      await expect(page.getByTestId('canvas')).toHaveAttribute('data-view', { Ideas: 'mental', Fuerzas: 'energy', Piezas: 'system', Película: 'simulation', Recorrido: 'flow' }[v]!);
     }
     // el cambio de vista no pierde elementos
     await expect(page.locator('[data-testid="map-node"]')).toHaveCount(19);

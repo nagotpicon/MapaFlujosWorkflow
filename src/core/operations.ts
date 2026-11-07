@@ -40,6 +40,25 @@ export function addNode(doc: ProjectDoc, type: NodeType, init: NodeInit = {}): {
   return { doc: touch(out), id: node.id };
 }
 
+/**
+ * Cambia el tipo de un elemento manteniendo el modelo coherente: un inicio
+ * (input) necesita un generador y una cantidad; al dejar de serlo, se quita.
+ */
+export function convertNodeType(doc: ProjectDoc, id: string, type: NodeType, visual?: Partial<MapNode['visualStyle']>): ProjectDoc {
+  const n = doc.nodes[id];
+  if (!n) return doc;
+  let out = updateNode(doc, id, { type, ...(visual ? { visualStyle: { ...n.visualStyle, ...visual } } : {}) });
+  if (type === 'input') {
+    if (!n.behaviorIds.some((b) => doc.behaviors[b]?.behaviorType === 'generator')) out = addBehavior(out, id, 'generator').doc;
+    if (!n.dimensionValues.quantity) {
+      out = updateNode(out, id, { dimensionValues: { ...out.nodes[id].dimensionValues, quantity: { value: 100, mode: 'numeric', unit: '', confidence: 'estimate', source: '', range: null } } });
+    }
+  } else if (n.type === 'input') {
+    for (const b of n.behaviorIds) if (doc.behaviors[b]?.behaviorType === 'generator') out = removeBehavior(out, b);
+  }
+  return out;
+}
+
 export function updateNode(doc: ProjectDoc, id: string, patch: Partial<MapNode>): ProjectDoc {
   const n = doc.nodes[id];
   if (!n) return doc;

@@ -20,8 +20,8 @@ import type { SimulationRunSummary } from '../core/model/schema';
 import { setView } from '../app/useShortcuts';
 
 const TABS: { id: BottomTab; label: string }[] = [
-  { id: 'simulation', label: 'Simulación' }, { id: 'results', label: 'Resultados' }, { id: 'diagnostics', label: 'Diagnóstico' },
-  { id: 'scenarios', label: 'Escenarios' }, { id: 'history', label: 'Iteraciones' }, { id: 'events', label: 'Eventos' },
+  { id: 'simulation', label: 'Probar' }, { id: 'results', label: 'Resultados' }, { id: 'diagnostics', label: 'Pistas' },
+  { id: 'scenarios', label: '¿Y si…?' }, { id: 'history', label: 'Rondas' }, { id: 'events', label: 'Qué ha pasado' },
 ];
 
 export function BottomPanel() {
@@ -118,18 +118,18 @@ function SimulationTab() {
           <IconButton label="Detener" side="top" onClick={stop} data-testid="sim-stop"><Square className="size-3.5" /></IconButton>
           <IconButton label="Reiniciar (recalcula desde el estado inicial)" side="top" onClick={reset} data-testid="sim-reset"><RotateCcw className="size-4" /></IconButton>
           <div className="mx-1 h-5 w-px bg-line" />
-          <IconButton label="Iteración anterior" side="top" disabled={cursor === 0} onClick={() => useSim.setState({ cursor: Math.max(0, cursor - 1), step: -1 })} data-testid="sim-prev"><ChevronsLeft className="size-4" /></IconButton>
-          <IconButton label="Siguiente iteración" side="top" disabled={!r || cursor >= r.iterationCount - 1} onClick={() => useSim.setState({ cursor: cursor + 1, step: -1 })} data-testid="sim-next"><ChevronsRight className="size-4" /></IconButton>
+          <IconButton label="Ronda anterior" side="top" disabled={cursor === 0} onClick={() => useSim.setState({ cursor: Math.max(0, cursor - 1), step: -1 })} data-testid="sim-prev"><ChevronsLeft className="size-4" /></IconButton>
+          <IconButton label="Ronda siguiente" side="top" disabled={!r || cursor >= r.iterationCount - 1} onClick={() => useSim.setState({ cursor: cursor + 1, step: -1 })} data-testid="sim-next"><ChevronsRight className="size-4" /></IconButton>
           <IconButton label="Paso a paso (elemento a elemento)" side="top" onClick={nextStep} active={step >= 0} data-testid="sim-step"><Footprints className="size-4" /></IconButton>
           <div className="mx-1 h-5 w-px bg-line" />
           <IconButton label="Guardar esta ejecución" side="top" onClick={() => { requestSimulation(getDoc(), { save: true, immediate: true }); useUI.getState().notify('Ejecución guardada en el historial', 'success'); }} data-testid="sim-save"><Save className="size-4" /></IconButton>
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-3">
-          Ritmo visual
+          Velocidad
           <Segmented size="xs" label="Velocidad visual" value={speed} onChange={(v: SpeedKey) => useSim.setState({ speed: v })} options={(Object.keys(SPEEDS) as SpeedKey[]).map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))} />
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-3">
-          Iteraciones
+          Rondas
           <NumberInput className="w-16" value={iterationsSetting} min={1} max={500} onChange={(v) => A.apply((d) => ({ ...d, project: { ...d.project, settings: { ...d.project.settings, simulation: { iterations: Math.round(v) } } } }))} data-testid="sim-iterations" />
           <Tip label="Experimentación manual: recalcula al instante cuando cambias un parámetro" side="top">
             <button type="button" onClick={() => useSim.setState({ live: !live })} className={cx('inline-flex items-center gap-1 rounded-md px-1.5 py-0.5', live ? 'bg-accent-soft text-accent-text' : 'bg-surface-2')} aria-pressed={live}>
@@ -138,25 +138,25 @@ function SimulationTab() {
           </Tip>
           {!live && <Button size="xs" variant="subtle" onClick={() => requestSimulation(getDoc(), { force: true, immediate: true })}>Calcular</Button>}
         </div>
-        <p className="max-w-[300px] text-[10.5px] leading-snug text-ink-3">El ritmo solo cambia la animación; el resultado matemático es siempre el mismo.</p>
+        <p className="max-w-[300px] text-[10.5px] leading-snug text-ink-3">La velocidad solo cambia la animación: el resultado es siempre el mismo.</p>
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-end gap-6">
-          <Kpi label="Iteración" value={r ? `${cursor + 1}/${r.iterationCount}` : '—'} testId="kpi-iteration" />
-          <Kpi label="Entrada" value={fmt(generated)} sub={unit} />
-          <Kpi label="Flujo activo" value={fmt(activeFlow)} sub="en conexiones" tone="text-flow" />
-          <Kpi label="Resultado" value={fmt(result)} sub="esta iteración" tone="text-gain" testId="kpi-result" />
-          <Kpi label="Acumulado" value={fmt(total)} sub={`eficiencia ${pct(r?.metrics.efficiency)}`} testId="kpi-total" />
+          <Kpi label="Ronda" value={r ? `${cursor + 1}/${r.iterationCount}` : '—'} testId="kpi-iteration" />
+          <Kpi label="Entra" value={fmt(generated)} sub={unit} />
+          <Kpi label="Moviéndose" value={fmt(activeFlow)} sub="por las uniones" tone="text-flow" />
+          <Kpi label="Llega a la meta" value={fmt(result)} sub="en esta ronda" tone="text-gain" testId="kpi-result" />
+          <Kpi label="Total en la meta" value={fmt(total)} sub={`aprovechas el ${pct(r?.metrics.efficiency)}`} testId="kpi-total" />
           {approx > 0 && (
             <Tip label="El resultado usa interpretaciones cualitativas o hipótesis. Ver Resultados.">
-              <span className="mb-1"><Badge tone="cond"><TriangleAlert className="size-3" />{approx} supuestos</Badge></span>
+              <span className="mb-1"><Badge tone="cond"><TriangleAlert className="size-3" />{approx} cosas supuestas</Badge></span>
             </Tip>
           )}
-          {r && r.metrics.maxUnexplained < 1e-6 && <span className="mb-1"><Badge tone="gain"><CircleCheck className="size-3" />Conservación verificada</Badge></span>}
+          {r && r.metrics.maxUnexplained < 1e-6 && <span className="mb-1"><Badge tone="gain"><CircleCheck className="size-3" />Las cuentas cuadran</Badge></span>}
         </div>
         {r && (
           <div className="flex items-center gap-3">
-            <input type="range" className="mdf-range flex-1" min={0} max={r.iterationCount - 1} value={cursor} aria-label="Iteración" onChange={(e) => useSim.setState({ cursor: Number(e.target.value), step: -1 })} data-testid="sim-scrubber" />
+            <input type="range" className="mdf-range flex-1" min={0} max={r.iterationCount - 1} value={cursor} aria-label="Ronda" onChange={(e) => useSim.setState({ cursor: Number(e.target.value), step: -1 })} data-testid="sim-scrubber" />
             <Sparkline values={r.metrics.resultSeries} cursor={cursor} color="var(--gain)" width={160} />
           </div>
         )}
@@ -186,9 +186,9 @@ function ResultsTab() {
     ['En tránsito (fin)', L.inFlightEnd[PRIMARY] ?? 0, ''], ['Sin explicar', L.unexplained[PRIMARY] ?? 0, Math.abs(L.unexplained[PRIMARY] ?? 0) > 1e-6 ? 'text-loss' : 'text-gain'],
   ];
   return (
-    <div className="grid h-full grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-[1.2fr_1fr_1fr]">
+    <div className="grid h-full grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
       <div>
-        <div className="mb-1 text-[11.5px] font-semibold text-ink-2">Resultado por iteración</div>
+        <div className="mb-1 text-[11.5px] font-semibold text-ink-2">Resultado por ronda</div>
         <LineChart height={150} unit={doc.dimensions.quantity?.unit} series={[
           { id: 'res', label: 'Resultado', color: 'var(--gain)', values: r.metrics.resultSeries },
           { id: 'gen', label: 'Generado', color: 'var(--flow)', values: r.iterations.map((x) => x.ledger.generated[PRIMARY] ?? 0), dashed: true },
@@ -196,28 +196,28 @@ function ResultsTab() {
         ]} testId="results-chart" />
       </div>
       <div className="space-y-2">
-        <div className="text-[11.5px] font-semibold text-ink-2">Salidas</div>
+        <div className="text-[11.5px] font-semibold text-ink-2">Metas</div>
         {outs.length ? outs.map(([id, o]) => (
           <div key={id} className="rounded-lg border border-line p-2 text-[12px]">
             <div className="font-medium text-ink">{doc.nodes[id]?.title}</div>
             <div className="flex gap-4 text-ink-2"><span>Total <b className="tabular text-ink">{fmt(o.total)}</b></span><span>Última <b className="tabular text-ink">{fmt(o.last)}</b></span></div>
             <div className="flex flex-wrap gap-x-3 text-[11px] text-ink-3">{Object.entries(o.int).map(([d, v]) => <span key={d}>{doc.dimensions[d]?.name ?? d}: <b className="tabular text-ink-2">{fmt(v, 2)}</b></span>)}</div>
           </div>
-        )) : <p className="text-[11.5px] text-ink-3">Añade un elemento de tipo «Salida» para medir resultados.</p>}
+        )) : <p className="text-[11.5px] text-ink-3">Añade una meta para medir resultados.</p>}
         {r.loops.length > 0 && (
           <div className="space-y-1 pt-1">
-            <div className="text-[11.5px] font-semibold text-ink-2">Circuitos detectados</div>
+            <div className="text-[11.5px] font-semibold text-ink-2">Bucles detectados</div>
             {r.loops.map((l) => (
               <button key={l.id} type="button" className="flex w-full items-center gap-2 rounded-md px-1 py-0.5 text-left text-[12px] hover:bg-surface-2" onClick={() => { useUI.getState().setSelection(l.nodeIds, l.edgeIds); A.fit(l.nodeIds); }}>
                 <Badge tone={l.polarity === 'balancing' ? 'loss' : l.polarity === 'mixed' ? 'cond' : 'gain'}>{l.label.split(' ')[0]}</Badge>
-                <span className="truncate text-ink-2">{l.nodeIds.map((n) => doc.nodes[n]?.title).join(' → ')}</span>
+                <span className="min-w-0 truncate text-ink-2" title={l.nodeIds.map((n) => doc.nodes[n]?.title).join(' → ')}>{l.nodeIds.map((n) => doc.nodes[n]?.title).join(' → ')}</span>
               </button>
             ))}
           </div>
         )}
       </div>
       <div className="space-y-2">
-        <div className="text-[11.5px] font-semibold text-ink-2">Libro de conservación · iteración {cursor + 1}</div>
+        <div className="text-[11.5px] font-semibold text-ink-2">Libro de conservación · ronda {cursor + 1}</div>
         <table className="w-full text-[12px]" data-testid="ledger">
           <tbody>{rows.map(([k, v, t]) => <tr key={k} className="border-b border-line/60"><td className="py-0.5 text-ink-3">{k}</td><td className={cx('py-0.5 text-right tabular font-medium', t || 'text-ink')}>{fmt(v)}</td></tr>)}</tbody>
         </table>
@@ -238,10 +238,10 @@ function ResultsTab() {
 }
 
 const SEV: Record<Diagnostic['severity'], { icon: typeof Info; cls: string; label: string }> = {
-  critical: { icon: CircleAlert, cls: 'text-loss', label: 'Crítico' },
-  warning: { icon: TriangleAlert, cls: 'text-cond', label: 'Atención' },
-  positive: { icon: CircleCheck, cls: 'text-gain', label: 'Favorable' },
-  info: { icon: Info, cls: 'text-ink-3', label: 'Información' },
+  critical: { icon: CircleAlert, cls: 'text-loss', label: 'Importante' },
+  warning: { icon: TriangleAlert, cls: 'text-cond', label: 'Ojo' },
+  positive: { icon: CircleCheck, cls: 'text-gain', label: 'Bien' },
+  info: { icon: Info, cls: 'text-ink-3', label: 'Para saber' },
 };
 
 export function DiagnosticItem({ d }: { d: Diagnostic }) {
@@ -283,7 +283,7 @@ function DiagnosticsTab() {
   return (
     <div className="space-y-2 px-4 py-3">
       <div className="flex items-center gap-2">
-        <p className="flex-1 text-[11.5px] text-ink-3">Observaciones descriptivas y explicables sobre la simulación actual. No son certezas: dependen de tus supuestos.</p>
+        <p className="flex-1 text-[11.5px] text-ink-3">Pistas sobre lo que pasa en tu mapa. No son verdades absolutas: dependen de lo que tú has supuesto.</p>
         <Button size="sm" variant="outline" disabled={busy} onClick={async () => {
           setBusy(true);
           const t = await runEngine('tornado', doc, doc.project.activeScenarioId, doc.project.settings.simulation.iterations);
@@ -312,29 +312,29 @@ function ScenariosTab() {
     <div className="grid h-full gap-4 px-4 py-3 lg:grid-cols-[1fr_1fr_1fr]">
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <div className="text-[11.5px] font-semibold text-ink-2">Escenarios</div>
+          <div className="text-[11.5px] font-semibold text-ink-2">Tus «¿y si…?»</div>
           <div className="flex gap-1">
-            <Button size="xs" variant="subtle" onClick={() => A.apply((d) => { const r = op.addScenario(d, `Escenario ${Object.keys(d.scenarios).length + 1}`); return op.setActiveScenario(r.doc, r.id); })} data-testid="scenario-new"><Plus className="size-3" />Nuevo</Button>
+            <Button size="xs" variant="subtle" onClick={() => A.apply((d) => { const r = op.addScenario(d, `¿Y si…? ${Object.keys(d.scenarios).length + 1}`); return op.setActiveScenario(r.doc, r.id); })} data-testid="scenario-new"><Plus className="size-3" />Nuevo</Button>
             <Button size="xs" variant="subtle" onClick={() => useUI.setState({ overlay: 'compare' })} data-testid="scenario-compare"><GitCompare className="size-3" />Comparar</Button>
           </div>
         </div>
         <ul className="space-y-1" data-testid="scenario-list">
           {scenarios.map((x) => (
             <li key={x.id} className={cx('flex items-center gap-1.5 rounded-lg border px-2 py-1', x.id === active ? 'border-accent bg-accent-soft/50' : 'border-line')}>
-              <button type="button" className="size-2.5 rounded-full" style={{ background: x.color }} aria-label="Activar escenario" onClick={() => A.apply((d) => op.setActiveScenario(d, x.id))} />
-              <input aria-label="Nombre del escenario" className="h-6 min-w-0 flex-1 bg-transparent text-[12px] font-medium text-ink outline-none" value={x.name}
+              <button type="button" className="size-2.5 rounded-full" style={{ background: x.color }} aria-label="Activar este «¿y si…?»" onClick={() => A.apply((d) => op.setActiveScenario(d, x.id))} />
+              <input aria-label="Nombre del «¿y si…?»" className="h-6 min-w-0 flex-1 bg-transparent text-[12px] font-medium text-ink outline-none" value={x.name}
                 onFocus={() => x.id !== active && A.apply((d) => op.setActiveScenario(d, x.id))}
                 onChange={(e) => A.apply((d) => op.updateScenario(d, x.id, { name: e.target.value }), `scn-${x.id}`)} data-testid="scenario-name" />
               <span className="text-[10.5px] tabular text-ink-3">{x.isBase ? 'base' : `${x.overrides.length} cambios`}</span>
               <IconButton size="xs" label="Duplicar" onClick={() => A.apply((d) => { const r = op.addScenario(d, `${x.name} (copia)`, x.id); return op.setActiveScenario(r.doc, r.id); })} data-testid="scenario-duplicate"><CopyPlus className="size-3" /></IconButton>
-              {!x.isBase && <IconButton size="xs" label="Eliminar escenario" variant="danger" onClick={() => A.apply((d) => op.deleteScenario(d, x.id))}><Trash2 className="size-3" /></IconButton>}
+              {!x.isBase && <IconButton size="xs" label="Borrar este «¿y si…?»" variant="danger" onClick={() => A.apply((d) => op.deleteScenario(d, x.id))}><Trash2 className="size-3" /></IconButton>}
             </li>
           ))}
         </ul>
         {s && !s.isBase && (
           <div className="space-y-1 pt-1">
-            <div className="flex items-center justify-between text-[11px] font-semibold text-ink-2">Cambios de «{s.name}» <Button size="xs" variant="ghost" onClick={() => A.apply((d) => op.updateScenario(d, s.id, { overrides: [], initialConditions: {} }))}><RotateCcw className="size-3" />Restaurar valores iniciales</Button></div>
-            {s.overrides.length === 0 ? <p className="text-[11px] text-ink-3">Edita cualquier parámetro en el inspector: se guardará solo en este escenario.</p> : s.overrides.map((o) => (
+            <div className="flex items-center justify-between text-[11px] font-semibold text-ink-2">Cambios de «{s.name}» <Button size="xs" variant="ghost" onClick={() => A.apply((d) => op.updateScenario(d, s.id, { overrides: [], initialConditions: {} }))}><RotateCcw className="size-3" />Quitar todos sus cambios</Button></div>
+            {s.overrides.length === 0 ? <p className="text-[11px] text-ink-3">Cambia cualquier valor en Detalles: se guarda solo en este «¿y si…?».</p> : s.overrides.map((o) => (
               <div key={o.id} className="flex items-center gap-1.5 text-[11.5px]">
                 <span className="min-w-0 flex-1 truncate text-ink-2">{title(o.targetType, o.targetId)} · <span className="font-mono text-[10.5px]">{o.path}</span></span>
                 <span className="tabular text-ink">{typeof o.value === 'object' ? '…' : String(o.value)}</span>
@@ -349,7 +349,7 @@ function ScenariosTab() {
           <div className="text-[11.5px] font-semibold text-ink-2">Incertidumbre</div>
           <Button size="xs" variant="subtle" onClick={async () => active && setBand(await runEngine('band', doc, active, doc.project.settings.simulation.iterations))} data-testid="run-band">Calcular banda</Button>
         </div>
-        {s && <Segmented size="xs" label="Variante del escenario" value={s.uncertainty} onChange={(uncertainty) => A.apply((d) => op.updateScenario(d, s.id, { uncertainty }))} options={[{ value: 'unfavorable', label: 'Desfavorable' }, { value: 'central', label: 'Central' }, { value: 'favorable', label: 'Favorable' }]} />}
+        {s && <Segmented size="xs" label="Variante" value={s.uncertainty} onChange={(uncertainty) => A.apply((d) => op.updateScenario(d, s.id, { uncertainty }))} options={[{ value: 'unfavorable', label: 'Desfavorable' }, { value: 'central', label: 'Central' }, { value: 'favorable', label: 'Favorable' }]} />}
         {band ? (
           <>
             <LineChart height={120} series={[{ id: 'c', label: 'Central', color: 'var(--flow)', values: band.central }]} band={{ low: band.unfavorable, high: band.favorable, color: 'var(--flow)' }} />
@@ -391,12 +391,12 @@ function HistoryTab() {
   const cursor = useSim((s) => s.cursor);
   const [runs, setRuns] = useState<SimulationRunSummary[]>([]);
   useEffect(() => { void repo.listRuns(doc.project.id).then(setRuns); }, [doc.project.id, r]);
-  if (!r) return <Empty title="Sin iteraciones" />;
+  if (!r) return <Empty title="Sin rondas todavía" />;
   return (
     <div className="grid gap-4 px-4 py-3 lg:grid-cols-[2fr_1fr]">
       <table className="w-full text-[12px]" data-testid="iterations-table">
         <thead className="text-left text-[10.5px] uppercase tracking-wider text-ink-3">
-          <tr><th className="py-1 font-medium">It.</th><th className="font-medium text-right">Generado</th><th className="font-medium text-right">Resultado</th><th className="font-medium text-right">Perdido</th><th className="font-medium text-right">En stock/cola</th><th className="font-medium text-right">En tránsito</th></tr>
+          <tr><th className="py-1 font-medium">Ronda</th><th className="font-medium text-right">Generado</th><th className="font-medium text-right">Resultado</th><th className="font-medium text-right">Perdido</th><th className="font-medium text-right">En stock/cola</th><th className="font-medium text-right">En tránsito</th></tr>
         </thead>
         <tbody>
           {r.iterations.map((it, i) => {
@@ -416,7 +416,7 @@ function HistoryTab() {
       </table>
       <div className="space-y-1">
         <div className="text-[11.5px] font-semibold text-ink-2">Ejecuciones guardadas</div>
-        {runs.length === 0 ? <p className="text-[11px] text-ink-3">Pulsa «Guardar ejecución» para conservar un resultado.</p> : runs.slice(0, 12).map((x) => (
+        {runs.length === 0 ? <p className="text-[11px] text-ink-3">Pulsa «Guardar esta ejecución» (el disquete) para conservar un resultado.</p> : runs.slice(0, 12).map((x) => (
           <div key={x.id} className="flex items-center gap-2 text-[11.5px]">
             <span className="text-ink-3">{new Date(x.executionDate).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}</span>
             <span className="flex-1 truncate text-ink-2">{doc.scenarios[x.scenarioId]?.name ?? 'escenario eliminado'}</span>
@@ -441,7 +441,7 @@ function EventsTab() {
   return (
     <div className="px-4 py-2">
       <div className="mb-1 flex items-center gap-2 text-[11.5px] text-ink-3">
-        Iteración {cursor + 1} · {evs.length} eventos
+        Ronda {cursor + 1} · {evs.length} cosas
         <label className="ml-auto inline-flex items-center gap-1"><input type="checkbox" checked={onlySel} onChange={(e) => setOnlySel(e.target.checked)} />Solo la selección</label>
       </div>
       <ol className="space-y-0.5 text-[12px]" data-testid="events-list">

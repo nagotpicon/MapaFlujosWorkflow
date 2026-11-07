@@ -6,7 +6,7 @@ Contiene:
 
 1. **Cómo usarlo**: instrucciones para la persona y para la IA.
 2. **Prompt maestro**: el contexto que la IA debe cargar siempre.
-3. **Biblioteca de prompts** (P1–P16): listos para copiar, con variables `{{ASÍ}}`.
+3. **Biblioteca de prompts** (P1–P18): listos para copiar, con variables `{{ASÍ}}`. Incluye los modos de trabajo **ACLARATOR** (P17) y **COPYWRITER** (P18).
 4. **Especificación exacta del formato de proyecto (JSON)**, para generar mapas que la aplicación importa sin errores.
 5. **Reglas del motor de simulación**, para razonar correctamente sobre los resultados.
 6. **Mapa de la interfaz con identificadores estables** (`data-testid`), para agentes que controlan el navegador.
@@ -33,7 +33,7 @@ Para la IA, la forma más fiable de leerlo completo es pedirle que lea la URL de
 1. Abre **https://mapa-flujos-workflow.vercel.app/manual-ia/**. Cada bloque tiene un botón **Copiar**.
 2. Abre tu IA y pega el bloque del **Prompt maestro** (sección 1) como primer mensaje (o en las «instrucciones personalizadas» o el «proyecto» de tu IA).
 3. Elige el prompt de la biblioteca (sección 2) que corresponda a lo que quieres. Cópialo, sustituye lo que está entre `{{ }}` y envíalo.
-4. Si la IA te devuelve un JSON, en la aplicación pulsa **Pegar JSON** (pantalla de inicio) o **Importar/exportar → Pegar proyecto (JSON)**. Pega todo lo que respondió la IA, aunque traiga texto o marcas ```json alrededor, y pulsa **Importar**.
+4. Si la IA te devuelve un JSON, en la aplicación pulsa **Pegar un mapa** (pantalla de inicio) o **Guardar o abrir archivos → Pegar proyecto (JSON)**. Pega todo lo que respondió la IA, aunque traiga texto o marcas ```json alrededor, y pulsa **Importar**.
 5. Si sale «No se pudo importar…», usa el prompt **P4** pegando el aviso.
 
 Para que la IA tenga la especificación completa, adjúntale también este archivo entero, pégalo o dale la URL https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md si puede leer webs. El prompt maestro le indica que lo use.
@@ -43,7 +43,8 @@ Para que la IA tenga la especificación completa, adjúntale también este archi
 - Lee este documento completo antes de responder. Es la fuente de verdad sobre la aplicación. Si algo no está aquí, **dilo**: no lo inventes.
 - Cuando generes un proyecto, cumple **al pie de la letra** la sección 3 y repasa la lista de comprobación 3.14 antes de entregar.
 - Cuando expliques pasos en la interfaz, usa **exactamente los nombres de botones y menús** de este manual, entre comillas o en negrita.
-- Nunca afirmes resultados numéricos de simulación que no hayas calculado con la propia aplicación o que la persona no te haya pegado. Si estimas, dilo: «estimación aproximada; pulsa ▶ para el valor exacto».
+- Nunca afirmes resultados numéricos de simulación que no hayas calculado con la propia aplicación o que la persona no te haya pegado. Si estimas, dilo: «estimación aproximada; pulsa **Probar** para el valor exacto».
+- La interfaz usa **nombres sencillos** (pensados para que los entienda alguien de 13 años) y **tres niveles**. El formato JSON usa los nombres técnicos. La tabla de equivalencias está en la sección 4.
 
 ---
 
@@ -52,31 +53,33 @@ Para que la IA tenga la especificación completa, adjúntale también este archi
 Copia este bloque completo como primer mensaje o como instrucciones del sistema:
 
 ````text
-Eres el copiloto experto de «Mapa de Flujos», una aplicación web (https://mapa-flujos-workflow.vercel.app) que combina un editor de mapas mentales con un motor que simula flujos por iteraciones. Tu trabajo: ayudar a la persona a pensar su idea, construir su mapa, simularlo e interpretar los resultados. Hablas en español, claro y directo.
+Eres el copiloto experto de «Mapa de Flujos», una aplicación web (https://mapa-flujos-workflow.vercel.app) que combina un editor de mapas mentales con un motor que simula flujos ronda a ronda (iteraciones). Tu trabajo: ayudar a la persona a pensar su idea, construir su mapa, probarlo e interpretar los resultados. Hablas en español, claro, directo y sencillo (que lo entienda alguien de 13 años).
 
 CONOCIMIENTO DE LA APLICACIÓN (resumen; la especificación completa está en el MANUAL-IA que te adjunto o pego):
-- Elementos: Burbuja (idea o paso; puede tener comportamientos), Entrada (genera flujo cada iteración), Salida (recibe el flujo; TODO lo que llega a cualquier Salida cuenta como «resultado»), Nota, Etiqueta (texto libre), Grupo, Contenedor.
-- Conexiones: Flujo (transporta), Causal (modula: refuerza o frena una dimensión del destino; o compensa una dificultad), Informativa y Conceptual (solo relacionan).
+- La interfaz tiene tres niveles: 1 · Ideas (solo escribir y unir ideas), 2 · Movimiento (inicio, meta, botón Probar, Dímelo claro y Marcador) y 3 · Todo (todas las herramientas). Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, en el 2.
+- Nombres en pantalla → nombre técnico (JSON): Idea → bubble; Inicio → input; Meta → output; Nota → note; Texto suelto → label; Grupo → group; Zona → container. Uniones: Pasa → flow; Influye → causal; Info → informative; Idea → conceptual. Ronda = iteración. «¿Y si…?» = escenario. Marcador = monitor. «Ayúdame a pensar» = explorador. Detalles = inspector. Pistas = diagnóstico. Qué ha pasado = eventos. Bucle = circuito.
+- Elementos: Idea (idea o paso; puede tener comportamientos), Inicio (genera flujo cada ronda), Meta (recibe el flujo; TODO lo que llega a cualquier Meta cuenta como «resultado»), Nota, Texto suelto, Grupo, Zona.
+- Uniones: Pasa (transporta), Influye (modula: refuerza o frena una dimensión del destino; o compensa una dificultad), Info e Idea (solo relacionan).
 - 14 comportamientos: Generador, Consumidor, Filtro, Transformador, Multiplicador, Reductor, Acelerador, Restrictor, Desviador, Acumulador, Liberador, Compensador, Detector y Controlador.
 - Dimensiones del flujo: Cantidad y Carga (se suman); Calidad, Velocidad y Potencial (se promedian). Se pueden crear dimensiones propias.
 - Influencia en escala ponderada de −5 a +5. Mitigadores o compensaciones reducen la influencia negativa y las pérdidas de un elemento problemático.
-- Circuitos (ciclos): lo que vuelve por la conexión de retorno se usa en la iteración siguiente; nunca hay bucles infinitos. Polaridad + alimenta y − inhibe.
-- Escenarios: guardan solo cambios (ruta → valor) sobre el modelo base. También hay variante favorable, central o desfavorable, comparación y sensibilidad.
-- Marco espacial opcional: cuadrícula donde la columna es el tiempo (retardos, fecha límite, «prisas») y la fila es apoyo (arriba) o fricción (abajo).
-- Termómetro de calor (frío, ritmo perfecto, caliente, recalentado), Monitor (KPIs, embudo, impulsores, frenos, puntos neurálgicos), «Dímelo claro» (veredicto coloquial calculado sin IA) y Explorador (entrevista o creador de estrategias; con IA del servidor o en modo demostración).
-- Todo se guarda en el navegador de la persona. Exportar o importar JSON, versiones, copia de seguridad. Importar por archivo o PEGANDO el JSON: «Pegar JSON» en la pantalla de inicio o «Importar/exportar → Pegar proyecto (JSON)».
+- Bucles (circuitos): lo que vuelve por la unión de vuelta se usa en la ronda siguiente; nunca hay bucles infinitos. Polaridad + alimenta y − inhibe.
+- «¿Y si…?» (escenarios): guardan solo cambios (ruta → valor) sobre el original. También hay variante favorable, central o desfavorable, comparación y sensibilidad.
+- Cuadrícula del tiempo (marco espacial) opcional: la columna es el tiempo (retardos, fecha límite, «prisas») y la fila es apoyo (arriba) o fricción (abajo).
+- Termómetro (Frío: le falta, A buen ritmo, Caliente, Agobiado), Marcador (indicadores, embudo, lo que ayuda, lo que frena, qué arreglar primero), «Dímelo claro» (veredicto coloquial calculado sin IA) y «Ayúdame a pensar» con cuatro modos de trabajo: Hazme preguntas, Te cuento mi plan, ACLARATOR (aclara un proyecto bloque a bloque en doble capa interno/externo) y COPYWRITER (guion de voz para YouTube, reels y stories con un reto tangible). Funciona con la IA del servidor o en modo demostración, y todos los modos terminan en un mapa.
+- Todo se guarda en el navegador de la persona. Guardar una copia o importar JSON, versiones, copia de seguridad. Importar por archivo o PEGANDO el JSON: «Pegar un mapa» en la pantalla de inicio o «Guardar o abrir archivos → Pegar proyecto (JSON)».
 
 Especificación completa (léela si puedes abrir webs): https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md
 
 REGLAS:
 1. No inventes botones, menús ni funciones. Usa los nombres exactos del manual. Si no sabes algo, dilo.
-2. No inventes resultados de simulación. Los números exactos solo salen al pulsar ▶ en la aplicación. Si estimas a mano, márcalo como estimación.
+2. No inventes resultados de simulación. Los números exactos solo salen al pulsar «Probar» en la aplicación. Si estimas a mano, márcalo como estimación.
 3. Separa siempre DATO (lo que la persona sabe o ha medido) de SUPUESTO (lo que se cree). En los JSON, marca los supuestos con metadata.confidence = "hypothesis" o con una anotación de tipo "hypothesis".
 4. Cuando generes un proyecto JSON:
    a) sigue la sección 3 del MANUAL-IA al pie de la letra;
    b) devuelve UN ÚNICO bloque ```json con el proyecto completo y válido (sin comentarios, sin «…», sin campos inventados);
    c) después del bloque, explica en 5–10 líneas qué modela, qué supuestos has hecho y qué debería comprobar la persona;
-   d) indica cómo importarlo: «Pegar JSON» → pegar → «Importar» → pulsar ▶.
+   d) indica cómo importarlo: «Pegar un mapa» → pegar → «Importar» → pulsar «Probar».
 5. Si te falta información esencial (qué entra, qué se quiere conseguir, qué limita), haz como máximo 3 preguntas concretas antes de construir; si la persona prefiere, construye con supuestos razonables y márcalos.
 6. Haz preguntas que cambien decisiones, no formularios. Detecta fricciones propias, externas y del sistema, y propone mitigadores.
 7. Si tienes control del navegador, opera la interfaz con los identificadores data-testid de la sección 6 del MANUAL-IA. Confirma con la persona antes de borrar proyectos, restaurar versiones o sobrescribir.
@@ -95,7 +98,7 @@ Cada prompt indica **cuándo usarlo**, el **texto para copiar** y **qué debe de
 
 ````text
 Quiero hacer esto en Mapa de Flujos: {{LO QUE QUIERES HACER}}.
-Dame los pasos numerados, con los nombres exactos de botones, menús y teclas (Windows: Ctrl; Mac: ⌘). Si hace falta subir la «Profundidad» (Básico / Avanzado / Experto), dímelo primero. Termina con cómo comprobar que ha funcionado.
+Dame los pasos numerados, con los nombres exactos de botones, menús y teclas (Windows: Ctrl; Mac: ⌘). Si hace falta cambiar de nivel (1 · Ideas, 2 · Movimiento, 3 · Todo, arriba en la barra), dímelo primero. Termina con cómo comprobar que ha funcionado.
 ````
 
 **Debe devolver:** una lista de pasos exactos y una comprobación final. Nada de funciones inventadas.
@@ -110,8 +113,8 @@ Construye un proyecto de Mapa de Flujos importable (formato JSON de la sección 
 - Qué quiero conseguir (meta medible, si la hay): {{OBJETIVO}}
 - Qué hago o haré para conseguirlo: {{ESTRATEGIA}}
 - Datos que tengo (cifras, capacidades, tiempos): {{DATOS O "ninguno"}}
-- Unidad de tiempo de cada iteración: {{semana / mes / día}}
-- Número de iteraciones a simular: {{p.ej. 12}}
+- Unidad de tiempo de cada ronda (iteración): {{semana / mes / día}}
+- Número de rondas a probar: {{p.ej. 12}}
 
 Requisitos:
 1. Una ruta principal de flujo desde al menos una Entrada hasta al menos una Salida (la Salida es el resultado que quiero).
@@ -126,7 +129,7 @@ Requisitos:
 Devuelve un único bloque ```json y después un resumen de supuestos y de qué medir primero.
 ````
 
-**Debe devolver:** un JSON que cumpla la sección 3 y su explicación. Para comprobarlo: **Pegar JSON → Importar → ▶**.
+**Debe devolver:** un JSON que cumpla la sección 3 y su explicación. Para comprobarlo: **Pegar un mapa → Importar → Probar**.
 
 ### P3 · Convertir un plan o documento en proyecto importable
 
@@ -145,7 +148,7 @@ Plan:
 """
 ````
 
-**Alternativa sin IA externa:** dentro de la aplicación, **Explorador → Nueva exploración → Creador de estrategias**: subir el plan y luego **Construir contexto con IA** o **Plantilla estándar (sin IA)**.
+**Alternativa sin IA externa:** dentro de la aplicación, **Ayúdame a pensar → Nueva exploración → Te cuento mi plan**: subir el plan y luego **Construir contexto con IA** o **Plantilla estándar (sin IA)**.
 
 ### P4 · Reparar un JSON que no se importa
 
@@ -165,7 +168,7 @@ JSON:
 
 **Cuándo:** ya tienes un mapa y quieres que la IA lo cambie.
 
-**Antes:** en la aplicación, **Importar/exportar → Proyecto completo (.json)**. Abre el archivo descargado con un editor de texto y copia su contenido.
+**Antes:** en la aplicación, **Guardar o abrir archivos → Proyecto completo (.json)**. Abre el archivo descargado con un editor de texto y copia su contenido.
 
 ````text
 Este es mi proyecto exportado de Mapa de Flujos. Quiero estos cambios: {{CAMBIOS}}.
@@ -188,7 +191,7 @@ Devuelve el proyecto completo en ```json y, para cada escenario, qué esperas qu
 ```
 ````
 
-**Después:** usa **Comparar escenarios** en la aplicación para ver los resultados reales.
+**Después:** en la aplicación (nivel 3), usa **Comparar «¿y si…?»** para ver los resultados reales.
 
 ### P7 · Fricciones y mitigadores
 
@@ -221,12 +224,12 @@ Devuelve el JSON completo.
 
 ### P10 · Interpretar resultados
 
-**Antes:** copia lo que veas en la aplicación: el texto de **Dímelo claro** (botón **Copiar**), los avisos de la pestaña **Diagnóstico** o los números del **Monitor**.
+**Antes:** copia lo que veas en la aplicación: el texto de **Dímelo claro** (botón **Copiar**), las **Pistas** del panel de abajo (nivel 3) o los números del **Marcador**.
 
 ````text
 Estos son los resultados de mi mapa en Mapa de Flujos:
 """
-{{PEGA AQUÍ «Dímelo claro», Diagnóstico o Monitor}}
+{{PEGA AQUÍ «Dímelo claro», las Pistas o el Marcador}}
 """
 1) Explícame en lenguaje llano qué está pasando.
 2) ¿Dónde está el cuello de botella y cuál es la fricción que más me cuesta?
@@ -252,13 +255,13 @@ Da una lista priorizada (crítico / atención / mejora) con la corrección exact
 ```
 ````
 
-### P12 · Preparar una sesión del Explorador
+### P12 · Preparar una sesión de «Ayúdame a pensar»
 
-**Cuándo:** vas a usar el Explorador de la aplicación y quieres llegar preparado.
+**Cuándo:** vas a usar «Ayúdame a pensar» en la aplicación y quieres llegar preparado.
 
 ````text
-Voy a usar el «Explorador de flujos» de Mapa de Flujos sobre: {{TEMA}}. Prepárame:
-1) Qué escribir en «¿Qué quieres analizar?», «¿Qué quieres conseguir?», «Idea o estrategia inicial» y «Contexto adicional» (frases cortas).
+Voy a usar «Ayúdame a pensar» de Mapa de Flujos (modo «Hazme preguntas») sobre: {{TEMA}}. Prepárame:
+1) Qué escribir en «¿Sobre qué quieres pensar?», «¿Qué quieres conseguir?», «¿Cómo lo harías?» y «Algo más que deba saber» (frases cortas).
 2) Qué datos tener a mano (cifras, tiempos, capacidades) porque me los va a preguntar.
 3) Qué comandos rápidos usar y cuándo («No lo sé», «Cuestiona mi planteamiento», «Busca alternativas», «Prepara el flujo»…).
 4) Qué fricciones típicas de este tipo de idea debería esperar, para no olvidarlas.
@@ -272,8 +275,8 @@ Voy a usar el «Explorador de flujos» de Mapa de Flujos sobre: {{TEMA}}. Prepá
 Tienes control del navegador. Abre https://mapa-flujos-workflow.vercel.app y haz esto: {{TAREA}}.
 Usa los selectores [data-testid="…"] de la sección 6 del MANUAL-IA y los nombres de menú exactos. Procedimiento:
 1) Si aparece la pantalla de inicio (data-testid="start-screen"), elige la opción adecuada.
-2) Para crear un mapa completo, genera el JSON (sección 3), pulsa data-testid="start-paste" (o io-menu → «Pegar proyecto (JSON)»), escribe el JSON en data-testid="paste-json" y pulsa data-testid="paste-import-run".
-3) Simula con data-testid="sim-play" y lee los resultados en la pestaña data-testid="tab-results" y en Monitor (data-testid="open-monitor").
+2) Para crear un mapa completo, genera el JSON (sección 3), pulsa data-testid="start-paste" (o, en el nivel 3, io-menu → «Pegar proyecto (JSON)»), escribe el JSON en data-testid="paste-json" y pulsa data-testid="paste-import-run".
+3) Ten en cuenta los niveles: si necesitas la barra lateral, el panel de abajo o los «¿Y si…?», pulsa data-testid="level-3". En el nivel 2 prueba con data-testid="simple-play" y lee data-testid="simple-result"; en el nivel 3 usa data-testid="sim-play" y la pestaña data-testid="tab-results". El Marcador se abre con data-testid="open-monitor".
 4) Antes de acciones destructivas (borrar proyectos, restaurar versiones), pide confirmación.
 5) Al terminar, resume qué hiciste y qué viste, sin inventar cifras.
 ````
@@ -281,8 +284,8 @@ Usa los selectores [data-testid="…"] de la sección 6 del MANUAL-IA y los nomb
 ### P14 · Configurar la IA del servidor (proveedor)
 
 ````text
-Quiero activar la IA real del Explorador de Mapa de Flujos con {{PROVEEDOR: Gemini / OpenAI / Anthropic / Ollama / otro compatible con OpenAI}} en {{Vercel / mi ordenador}}.
-Dime exactamente qué variables de entorno poner (sección 7 del MANUAL-IA), dónde (Vercel: Settings → Environment Variables y Redeploy; local: archivo .env y reiniciar) y cómo comprobar que funciona (el Explorador deja de decir «Modo demostración» y muestra «Modelo: …»). No me pidas la clave en el chat.
+Quiero activar la IA real de «Ayúdame a pensar» de Mapa de Flujos con {{PROVEEDOR: Gemini / OpenAI / Anthropic / Ollama / otro compatible con OpenAI}} en {{Vercel / mi ordenador}}.
+Dime exactamente qué variables de entorno poner (sección 7 del MANUAL-IA), dónde (Vercel: Settings → Environment Variables y Redeploy; local: archivo .env y reiniciar) y cómo comprobar que funciona («Ayúdame a pensar» deja de decir «Modo demostración» y muestra «Modelo: …»). No me pidas la clave en el chat.
 ````
 
 ### P15 · Desarrollador: cambiar el código de la aplicación
@@ -299,6 +302,75 @@ Antes de terminar ejecuta: npm run typecheck · npm test · npm run build · npm
 Antes de modelar nada: tengo esta idea {{IDEA}} y este objetivo {{OBJETIVO}}.
 Hazme como mucho 5 preguntas, una cada vez, que cambien la decisión (no un formulario). Después dime: punto de entrada del flujo, dónde se perderá más, la fricción más probable de cada tipo (propia, entorno, sistema), el primer experimento barato (qué hacer, cuánto tiempo, cuándo confirma, cuándo cuestiona, cuándo parar, qué registrar) y si ya merece la pena construir el mapa (usa entonces P2).
 ````
+
+### P17 · ACLARATOR: aclarar lo esencial, bloque a bloque
+
+**Cuándo:** quieres entender lo más abstracto y esencial de un proyecto (o de cualquier pretensión) antes de hacer nada. Es el mismo modo que **Ayúdame a pensar → Aclarator** de la aplicación, para usarlo en tu IA.
+
+````text
+Actúa como el ACLARATOR de Mapa de Flujos. Mi proyecto: {{PROYECTO}}.
+Esto es todo lo que tengo en la cabeza, sin orden: {{LO QUE TE SALGA}}
+
+FUNCIONAMIENTO: diálogo progresivo, paso a paso. Me haces pasar por estos diez bloques, en este orden, cada uno en DOBLE CAPA (INTERNO = cómo está hecho o qué se construye; EXTERNO = qué tiene que pasar fuera, en la realidad o en quien lo recibe):
+1 OBJETIVO — interno: qué se está construyendo exactamente; externo: qué debe ocurrir en la realidad después.
+2 PRIORIDAD — interno: qué pesa más en cómo está hecho; externo: qué pesa más en el efecto que debe generar.
+3 SUBOBJETIVOS — interno: condiciones que debe cumplir el contenido; externo: condiciones que deben cumplirse en la reacción del receptor.
+4 ELEMENTOS CRÍTICOS — interno: qué no puede faltar en el contenido; externo: qué necesita el receptor para actuar o decidir.
+5 TONO — interno: cómo debe sonar el contenido; externo: cómo debe sentirse el receptor al recibirlo.
+6 RECEPTOR — interno: quién es y qué le importa; externo: qué le genera rechazo y qué le da confianza.
+7 LÍMITES — interno: qué no debe aparecer en el contenido; externo: qué efecto negativo no puede provocar.
+8 CONTEXTO — interno: factores que afectan a la construcción; externo: factores que afectan a la interpretación.
+9 DETALLE — interno: nivel de desarrollo del contenido; externo: nivel de información necesario para que el receptor actúe.
+10 ÉXITO — interno: cuándo el contenido está perfecto; externo: qué debe pasar fuera para validar que funciona.
+
+REGLA DE ORO: no pasamos a la siguiente cuestión hasta que la presente esté aclarada y yo la valide. Por tanto:
+- Trabaja SOLO el bloque actual. No adelantes, no nombres y no rellenes los siguientes. Nunca respondas con «el total» del proceso.
+- Puedes ayudarme a desarrollar el punto actual (reformular, proponer opciones, dar un ejemplo), pero no avances.
+- Si no llegamos a la claridad, busca otra manera: una pregunta más sencilla, dos o tres opciones para elegir, un ejemplo cotidiano. Fomenta la concreción: quién, qué, cuánto, cuándo y cómo se comprobaría.
+- Una capa no está clara si está vacía, es muy corta o usa palabras vagas («algo», «mejor», «muchos», «cosas»…).
+- Cuando las dos capas estén claras, muéstramelas con mis palabras y pregúntame si lo validamos. Solo con mi «sí» pasamos al siguiente bloque.
+- Una sola pregunta por turno, frases cortas y sencillas (que lo entienda alguien de 13 años).
+- Mis palabras: tómalas tal cual llegan, también si vienen de un dictado. No las deletrees, no comentes la pronunciación y no las corrijas.
+- No inventes datos míos: lo que propongas, preséntalo como propuesta para que lo confirme.
+
+AL TERMINAR LOS DIEZ (solo entonces): dame una tabla con los diez bloques y sus dos capas. Si te lo pido, genera además un proyecto importable (sección 3 del MANUAL-IA) con mi proyecto en el centro, los diez bloques alrededor y, de cada uno, su capa interna y su capa externa, unidos con uniones "conceptual".
+
+Empieza por el bloque 1.
+````
+
+**Debe devolver:** solo el bloque 1 y una pregunta. Nunca la lista completa ni un borrador de todos los bloques. En la aplicación, el mismo proceso termina con **Crear el mapa** (31 ideas).
+
+### P18 · COPYWRITER: guion para YouTube, Instagram y TikTok
+
+**Cuándo:** quieres convertir un tema (o lo aclarado con P17) en un guion que se escuche hasta el final. Es el mismo modo que **Ayúdame a pensar → Copywriter** de la aplicación.
+
+````text
+Actúa como el COPYWRITER de Mapa de Flujos: guionista senior especializado en contenido digital de alto impacto para YouTube, Instagram y TikTok.
+Tema: {{TEMA}}. Para quién: {{PÚBLICO}}. Lo que deben llevarse: {{MENSAJE}}. Notas: {{NOTAS O «ninguna»}}.
+{{OPCIONAL: pega aquí lo aclarado con el ACLARATOR y respétalo}}
+
+MISIÓN: no te limitas a informar. Transforma el tema en una experiencia narrativa que mantenga la atención, genere reflexión y aumente la percepción de autoridad del creador, para que se quiera escuchar hasta el final.
+
+REGLA DE ORO: cristaliza al menos una vez, en la parte importante, un EJEMPLO, EJERCICIO o RETO TANGIBLE para el público: algo práctico, común y entretenido.
+
+PRINCIPIOS:
+1. Suena humano: una persona inteligente hablando con otra. Nada de profesor, libro o IA; nada de frases artificiales ni estructuras repetitivas.
+2. Retención constante: cada 20–30 segundos, una idea inesperada, una contradicción, una pregunta, una curiosidad, un cambio de perspectiva, una revelación, una historia breve o una analogía potente.
+3. No expliques: haz entender. Ejemplos, metáforas, comparaciones y situaciones cotidianas antes que teoría.
+4. Sin sensacionalismo: ni clickbait, ni alarmismo, ni exageraciones, ni falsas promesas.
+
+ENTREGA:
+A) Guion de YouTube, unos 5 minutos, ENTRE 700 Y 900 PALABRAS, en este orden: gancho (10–20 s; nunca empieces saludando ni con «En este vídeo…» u «Hoy vamos a hablar de…»); A) lo que cree normalmente la gente; B) por qué esa visión se queda corta; C) la nueva perspectiva; D) consecuencias, ejemplos e implicaciones; E) cómo aplicarlo a la vida real; cierre (no resumas: deja una idea que permanezca); llamada a la acción: una pregunta poderosa y una invitación natural a comentar, compartir o seguir, sin mendigar.
+B) El reto tangible, por separado, en una o dos frases.
+C) Tres reels de 30–60 s: principal (la idea más potente), contraste (rompe una creencia común) y reflexión (genera conversación).
+D) Entre 3 y 5 stories consecutivas: cada una con una idea, progresión y un cierre que invite a la siguiente.
+
+FORMATO: solo guion de voz, listo para leer ante la cámara. Sin instrucciones de cámara, edición, planos ni acotaciones. Sin etiquetas de sección dentro del texto que se lee. No inventes cifras, estudios ni citas. Indica al final el número de palabras del guion de YouTube.
+
+TONO: autoridad intelectual, cercanía humana, claridad absoluta, energía conversacional y profundidad, como un gran divulgador hablando con amigos. Antes de cada frase pregúntate: «¿Esto es solo información o es una idea que merece ser escuchada?».
+````
+
+**Debe devolver:** el guion (700–900 palabras), el reto, tres reels y 3–5 stories, solo voz. En la aplicación, el resultado se puede convertir en mapa con **Crear el mapa del guion**.
 
 ---
 
@@ -437,7 +509,7 @@ Valores permitidos:
 | `resolution` | `pending` · `eliminate` · `accept` · `compensate` · `reroute` |
 | `evidence` | `confirmed` · `observed` · `estimate` · `hypothesis` · `preference` · `unknown` |
 
-El Monitor cuenta estas fricciones y sus decisiones.
+El Marcador cuenta estas fricciones y sus decisiones («Frenos que has encontrado»).
 
 #### 3.3.2 `dimensionValues` (entradas)
 
@@ -690,7 +762,7 @@ El motor detecta ciclos aunque no declares el circuito. Declararlo permite confi
 | Ajuste | Valores |
 |---|---|
 | `simulation.iterations` | 1–500. |
-| `depth` | `basic` · `advanced` · `expert`. Usa `expert` si el mapa usa rangos, fórmulas o puertos, para que se vean en el inspector. |
+| `depth` | Nivel con el que se abre el mapa: `basic` (1 · Ideas), `advanced` (2 · Movimiento, el predeterminado) o `expert` (3 · Todo). Usa `expert` si el mapa usa rangos, fórmulas, puertos o «¿Y si…?», para que se vean en Detalles sin que la persona tenga que cambiar de nivel. |
 | `frame` | Si lo incluyes, escribe el objeto **completo** como en el ejemplo. `mode: "free"` = la posición no cuenta. |
 
 **Colocación exacta en la cuadrícula** (nodos sin `dimensions` explícitas, tamaño ≈ 190 × 64). Para la columna `c` (1, 2, 3…; 1 = primera) y la fila `f` (0 = eje; +1, +2 = apoyo por encima; −1, −2 = fricción por debajo):
@@ -770,35 +842,61 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
 
 ## 4. Glosario de la interfaz (nombres exactos)
 
-Úsalos tal cual al dar instrucciones.
+Úsalos tal cual al dar instrucciones. La interfaz habla **muy sencillo** (para que la entienda alguien de 13 años) y se amplía por **niveles**.
 
-- **Pantalla de inicio:** «Empezar en blanco», «Ver la demostración», «Explorar una idea», «Proyectos guardados», «Pegar JSON», «Importar».
+### 4.1 Equivalencias: nombre en pantalla → nombre técnico
+
+| En pantalla | Técnico (y en el JSON) |
+|---|---|
+| Idea | Burbuja (`bubble`) |
+| Inicio | Entrada (`input`) |
+| Meta | Salida (`output`) |
+| Nota · Texto suelto · Grupo · Zona | `note` · `label` · `group` · `container` |
+| Unión: Pasa · Influye · Info · Idea | Conexión: `flow` · `causal` · `informative` · `conceptual` |
+| Ronda | Iteración |
+| «¿Y si…?» | Escenario |
+| Bucle · vuelta | Circuito · retorno |
+| Remedios | Mitigadores y compensaciones |
+| Detalles | Inspector |
+| Marcador | Monitor |
+| Ayúdame a pensar | Explorador |
+| Pistas · Qué ha pasado | Diagnóstico · Eventos |
+| Cuadrícula del tiempo | Marco espacial |
+| Vistas Ideas · Recorrido · Fuerzas · Piezas · Película | `mental` · `flow` · `energy` · `system` · `simulation` |
+| Niveles 1 · Ideas · 2 · Movimiento · 3 · Todo | `project.settings.depth`: `basic` · `advanced` · `expert` |
+
+### 4.2 Niveles
+
+- **1 · Ideas**: lienzo, ideas, bandeja de madera (Idea, Unir, Nota, Ordenar) y la guía. Solo vista Ideas.
+- **2 · Movimiento**: además **Inicio**, **Meta**, la barra **Probar**, **Dímelo claro** y **Marcador**. Vista Película.
+- **3 · Todo**: barra lateral, panel de abajo, «¿Y si…?», vistas, cuadrícula, termómetro, buscador, versiones y todo Detalles.
+- El selector está arriba, en la bandeja de madera. Bajar de nivel no borra nada. Un mapa nuevo empieza en el 1; uno con inicio y meta (importado, de ejemplo o hecho con «Ayúdame a pensar»), en el 2.
+
+### 4.3 Nombres exactos por zona
+
+- **Pantalla de inicio:** «¿Qué te ronda la cabeza?», cuadro «Tu idea», botón «Empezar»; «Prefiero que me hagas preguntas», «Ver un ejemplo», «Pegar un mapa», «Abrir un archivo»; «Tus mapas»; enlaces «Manual de usuario» y «Manual para IA».
 - **Barra superior:**
-  - Logotipo → «Proyectos».
-  - Nombre del proyecto (clic para renombrar) e indicador de guardado.
-  - Selector de escenario: «Nuevo escenario», «Duplicar «…»», «Restaurar valores iniciales», «Comparar escenarios…».
-  - Vista: «Mental», «Flujo», «Energía», «Sistema», «Simulación».
-  - «Explorador», «Monitor», «Dímelo claro», «Manual».
-  - Cuadrícula «Marco espacial» y «Termómetro de calor».
-  - «Deshacer», «Rehacer», «Buscar y comandos», «Historial de versiones».
-  - «Importar / exportar»:
-    - «Proyecto completo (.json)», «Imagen PNG», «Imagen SVG», «Documento PDF»;
-    - «Importar proyecto (.json)», «Pegar proyecto (JSON)»;
-    - «Copia de seguridad completa», «Restaurar copia de seguridad».
-  - «Tema» (Claro / Oscuro / Sistema), «Mostrar u ocultar panel de simulación», «Mostrar u ocultar inspector».
-  - «Menú»: «Proyectos…», «Nuevo proyecto», «Duplicar proyecto», «Abrir proyecto de demostración», «Ajustes del proyecto», «Ayuda y atajos», «Manual de usuario», «Manual para IA (prompts)», «Guardar versión ahora».
-- **Barra de herramientas:** «Seleccionar» (V), «Crear burbuja» (B), «Crear conexión» (C; tipos Flujo / Causal / Info / Idea), «Agrupar selección» (Ctrl+G), «Crear entrada» (I), «Crear salida» (O), «Añadir nota» (N), «Añadir comentario», «Añadir etiqueta a la selección», «Texto libre», «Crear contenedor», «Crear circuito», «Administrar capas».
-- **Inspector de nodo** (secciones): «Peso e influencia», «Comportamientos» («Añadir comportamiento»), «Condiciones de activación», «Mitigadores y compensaciones» («Vincular», «Nueva medida compensatoria»), «Dimensiones del flujo» («Definir»), «Bifurcación y convergencia», «Relaciones», «Estilo», «Comentarios y notas», «Documentos adjuntos», «Avanzado».
-- **Inspector de conexión:** «Tipo de conexión», «Dirección», «Comportamiento del flujo», «Influencia», «Condiciones de paso», «Circuito» («Configurar como circuito»), «Apariencia», «Comentarios».
-- **Profundidad** (inspector sin selección → Ajustes): «Básico», «Avanzado», «Experto».
-- **Panel inferior:**
-  - Pestañas «Simulación», «Resultados», «Diagnóstico», «Escenarios», «Iteraciones» y «Eventos».
-  - Controles: ▶ «Reproducir», «Detener», «Reiniciar», «Iteración anterior / siguiente», «Paso a paso», «Guardar esta ejecución», «Velocidad visual», «Iteraciones», «En vivo», «Calcular».
-  - En Escenarios: «Sensibilidad … Barrer» e «Incertidumbre … Calcular banda».
-- **Explorador:**
-  - Inicio: «Nueva exploración», modo «Entrevista guiada» o «Creador de estrategias (notas, audio, documentos)», «Destino», «Añadir plan (Word, Excel, PDF, texto)», «Iniciar la exploración» / «Continuar».
+  - Logotipo → «Mis mapas»; nombre del mapa (clic para cambiarlo) y punto de guardado.
+  - Selector de nivel: «1 · Ideas», «2 · Movimiento», «3 · Todo».
+  - Nivel 3: selector «¿Y si…?» («Nuevo «¿y si…?»», «Duplicar «…»», «Quitar todos sus cambios», «Comparar…») y «Vista» («Ideas», «Recorrido», «Fuerzas», «Piezas», «Película»).
+  - «Ayúdame a pensar» (todos), «Dímelo claro» y «Marcador» (nivel 2 o más), «Manual».
+  - Nivel 3: «Cuadrícula del tiempo», «Termómetro», «Buscar», «Versiones guardadas», «Guardar o abrir archivos» («Guardar una copia»: «Proyecto completo (.json)», «Imagen PNG», «Imagen SVG», «Documento PDF»; «Abrir»: «Importar proyecto (.json)», «Pegar proyecto (JSON)»; «Copias de seguridad»: «Copia de seguridad completa», «Restaurar copia de seguridad»), «Mostrar/Ocultar el panel de abajo», «Mostrar/Ocultar detalles».
+  - «Deshacer», «Rehacer», «Claro u oscuro» («Claro», «Oscuro», «Como mi ordenador»).
+  - «Más opciones» (···): «Mis mapas…», «Mapa nuevo», «Duplicar este mapa», «Ver un ejemplo», «Guardar o abrir archivos» (niveles 1 y 2), «Guardar versión ahora», «Versiones guardadas…», «Ajustes del mapa», «Ayuda y atajos», «Manual de usuario», «Manual para IA (prompts)».
+- **Bandeja de madera (niveles 1 y 2):** «Idea» (B), «Inicio» (I, nivel 2), «Meta» (O, nivel 2), «Unir» (C), «Nota» (N), «Ordenar».
+- **Guía:** una tarjeta con el siguiente paso y su botón («Es el inicio», «Es mi meta», «Probar», «Pasar a Movimiento»…) y el enlace «¿Atascado? Ayúdame a pensar».
+- **Barra Probar (nivel 2):** «Probar» / «Pausa», «Volver a empezar», «Ronda N de [12]», «Han llegado a la meta», «¿Por qué?».
+- **Barra lateral (nivel 3):** «Mover y elegir» (V), «Nueva idea» (B), «Unir ideas» (C; tipos «Pasa», «Influye», «Info», «Idea»), «Juntar en un grupo» (Ctrl+G), «Inicio» (I), «Meta» (O), «Nota» (N), «Comentario», «Etiquetas», «Texto suelto», «Zona», «Bucle», «Capas».
+- **Menú del clic derecho:** en el lienzo: «Nueva idea», «Nuevo inicio», «Nueva meta», «Nota», «Texto suelto», «Zona», «Pegar», «Deshacer», «Verlo todo», «Ordenar el mapa», «Mostrar lo oculto». En una idea: «Escribir», «Añadir idea unida», «Duplicar», «Clonar (la misma idea en otro sitio)», «Copiar», «Cortar», «Juntar en un grupo», «Deshacer el grupo», «Esconder/Mostrar lo que cuelga», «¿A qué afecta?», «¿De dónde le viene?», «Centrarme en esto», «Añadir comentario», «Bloquear/Desbloquear», «Ocultar», «Borrar». En una unión: «Darle la vuelta», «Que vaya en los dos sentidos / en un solo sentido», «Duplicar unión», «Añadir comentario», «Borrar unión».
+- **Detalles de una idea, niveles 1 y 2:** «Qué es», «Notas», «Esta idea es…» («Un paso», «El inicio», «Mi meta»), «¿Cuánto sale de aquí en cada ronda?», «Color» (Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua, Rosa), «Qué pasa en este paso» → «¿Qué pasa aquí?» («Colador», «Límite», «Se escapa algo», «Multiplica», «Hucha», «Suelta lo guardado»), «Comentarios».
+- **Detalles de una idea, nivel 3:** «Nombre», «Descripción», «Tipo», «Categoría», «Etiquetas», «Grado de confianza»; secciones «Cuánto empuja o frena», «Qué hace» («Añadir comportamiento»), «Cuándo funciona», «Remedios» («Vincular», «Nueva medida compensatoria»), «Qué genera (dimensiones)» («Definir»), «Cómo reparte y cómo junta», «Con quién está unida», «Aspecto», «Comentarios», «Archivos», «Más opciones».
+- **Detalles de una unión:** niveles 1 y 2: «Texto sobre la línea», «¿Se pierde algo por el camino?», «Darle la vuelta», «Borrar esta unión». Nivel 3: «Tipo de unión», «Etiqueta», «Dirección», «Qué pasa por esta unión», «Cómo influye», «Cuándo deja pasar», «Bucle» («Convertir en bucle»), «Aspecto», «Comentarios».
+- **Panel de abajo (nivel 3):** pestañas «Probar», «Resultados», «Pistas», «¿Y si…?», «Rondas» y «Qué ha pasado». Controles: «Reproducir», «Detener», «Reiniciar», «Ronda anterior / siguiente», «Paso a paso (elemento a elemento)», «Guardar esta ejecución», «Velocidad», «Rondas», «En vivo», «Calcular». En «¿Y si…?»: «Sensibilidad: altera un parámetro y observa» → «Barrer», e «Incertidumbre» → «Calcular banda».
+- **Ayúdame a pensar:** «Nueva exploración»; cuatro modos: «Hazme preguntas», «Te cuento mi plan», «Aclarator», «Copywriter»; campos «¿Sobre qué quieres pensar?», «¿Qué quieres conseguir?», «¿Cómo lo harías?», «Algo más que deba saber» (Aclarator: «¿Qué quieres aclarar?» y «Cuéntamelo todo, tal cual te salga»; Copywriter: «¿De qué tema es el vídeo?», «¿Para quién es?», «¿Qué quieres que se lleven?», «Notas»); «Empezar» / «Continuar»; «Añadir plan (Word, Excel, PDF, texto)».
   - Comandos rápidos: «No lo sé», «Dame ejemplos», «Profundiza», «Cuestiona mi planteamiento», «Busca alternativas», «Simplifica», «Cambia de perspectiva», «Compara opciones», «Prepara el flujo», «Volver a una pregunta anterior».
-  - Propuesta: «Crear el flujo inicial», «Construir contexto con IA», «Plantilla estándar (sin IA)», «Insertar en Mapa de Flujos», «Seguir preguntando».
+  - Propuesta: «Crear el flujo inicial», «Construir contexto con IA», «Plantilla estándar (sin IA)», «Meterlo en mi mapa» («En un mapa nuevo», «En este mapa», «Unido a la idea elegida»), «Meter N ideas en el mapa», «Seguir preguntando».
+  - Aclarator: «Dame un ejemplo», «Ayúdame a concretar», «Está claro: validar y seguir» (último: «Está claro: terminar»), «Paso anterior»; al final «Crear el mapa», «Copiar», «.md», «Escribir guiones con el Copywriter».
+  - Copywriter: «Escribir el guion con IA», «Esqueleto sin IA», «Usar lo aclarado con el Aclarator», «Copiar guion», «Copiar todo», «.md», «Volver a escribir», «Crear el mapa del guion».
 
 ---
 
@@ -807,7 +905,7 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
 ### 5.1 Principios
 
 - **Determinista:** misma configuración, mismo resultado. La velocidad de animación no influye.
-- **Iteraciones discretas.** Los ciclos se rompen con una dependencia de retorno: lo que vuelve se usa en la iteración siguiente.
+- **Rondas (iteraciones) discretas.** Los ciclos se rompen con una dependencia de retorno: lo que vuelve se usa en la ronda siguiente.
 - **Conservación** por iteración y dimensión extensiva:
   `stock inicial + en tránsito inicial + generado = stock final + en tránsito final + consumido + perdido + terminal + deduplicado`.
   La diferencia («Sin explicar») es siempre 0. Multiplicadores y réplicas cuentan como «generado».
@@ -846,18 +944,23 @@ Temperatura de −1 a 1:
 
 | Temperatura | Estado |
 |---|---|
-| > 0,75 | **Recalentado** |
+| > 0,75 | **Agobiado** (técnico: recalentado) |
 | > 0,33 | **Caliente** |
-| < −0,33 | **Frío** |
-| resto | **Ritmo perfecto** |
+| < −0,33 | **Frío: le falta** |
+| resto | **A buen ritmo** |
 | sin actividad | «Sin actividad» |
 
 Causas: presión sobre la capacidad, infrautilización, caudal bajo, cola creciendo, saturación, pérdidas mayores del 5 %, bloqueo, llegada fuera de plazo y «prisas».
 
-### 5.6 Monitor y «Dímelo claro»
+### 5.6 Marcador y «Dímelo claro»
 
-- El **impacto** de cada elemento se calcula simulando el sistema **sin** él y comparando.
-- «Dímelo claro» se genera solo con datos calculados (sin IA). «Pulir redacción con IA» reescribe el texto sin añadir cifras.
+- El **impacto** de cada idea se calcula simulando el sistema **sin** ella y comparando («lo que ganarías si lo arreglas», «lo que perderías sin ello»).
+- «Dímelo claro» se genera solo con datos calculados (sin IA). «Que la IA lo cuente mejor» lo reescribe con los mismos datos, sin añadir cifras.
+
+### 5.7 Modos de trabajo: ACLARATOR y COPYWRITER
+
+- **ACLARATOR**: diez bloques en este orden: OBJETIVO, PRIORIDAD, SUBOBJETIVOS, ELEMENTOS CRÍTICOS, TONO, RECEPTOR, LÍMITES, CONTEXTO, DETALLE y ÉXITO. Cada uno con capa INTERNA y EXTERNA. Regla de oro: no se pasa al siguiente hasta que el actual esté aclarado y validado, y nunca se muestra «el total». Una capa no cuenta como clara si está vacía, tiene menos de 4 palabras o usa palabras vagas («algo», «mejor», «muchos», «cosas»…) en menos de 14 palabras. No deletrea: lee las palabras tal cual vienen. Al final crea un mapa radial de 31 ideas (centro + 10 bloques + 20 capas).
+- **COPYWRITER**: regla de oro: al menos un ejemplo, ejercicio o reto tangible. Entrega un guion de YouTube solo voz de 700–900 palabras (gancho; A situación, B fricción, C descubrimiento, D profundización, E integración; cierre; llamada a la acción con reflexión y acción), tres reels (principal, contraste, reflexión; 30–60 s) y 3–5 stories encadenadas. Sin notas de cámara ni sensacionalismo. Con IA, el servidor exige entre 600 y 1100 palabras y repara el texto si no cumple. Al final crea el mapa del guion.
 
 ---
 
@@ -865,34 +968,42 @@ Causas: presión sobre la capacidad, infrautilización, caudal bajo, cola crecie
 
 Selectores estables: `[data-testid="…"]`.
 
+**Muy importante: los niveles.** La interfaz muestra más o menos cosas según el nivel del mapa (1 · Ideas, 2 · Movimiento, 3 · Todo). Muchos identificadores **solo existen en el nivel 3**: la barra lateral (`tool-*`), el panel de abajo (`bottom-panel`, `tab-*`, `sim-*`), `io-menu`, `open-palette`, `open-versions`, `scenario-switcher`, `frame-toggle`, `heat-toggle`, `toggle-bottom` y `toggle-inspector`. Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, o el de ejemplo, en el 2. **Para tenerlo todo, pulsa `level-3` nada más abrir el mapa.**
+
 | Zona | Identificadores |
 |---|---|
-| Inicio | `start-screen`, `new-project`, `open-demo`, `start-explorer`, `start-paste`, `project-list`, `confirm-delete`, `start-manuals` |
+| Inicio | `start-screen`, `start-idea` (cuadro «Tu idea»), `new-project` (botón **Empezar**), `start-explorer` (Prefiero que me hagas preguntas), `open-demo` (Ver un ejemplo), `start-paste` (Pegar un mapa), `start-import` (Abrir un archivo), `project-list`, `confirm-delete`, `start-manuals` |
 | Pegar JSON | `paste-import` (diálogo), `paste-json` (cuadro de texto), `paste-import-run` (botón Importar) |
-| Aplicación | `app`, `topbar`, `toolbar`, `canvas`, `inspector`, `bottom-panel`, `legend`, `toast` |
-| Barra superior | `project-name`, `save-state` (atributo `data-state`: idle/pending/saving/saved/error), `scenario-switcher`, `open-explorer`, `open-monitor`, `open-verdict`, `open-manual`, `frame-toggle`, `heat-toggle`, `undo`, `redo`, `open-palette`, `open-versions`, `io-menu`, `theme-menu`, `toggle-bottom`, `toggle-inspector`, `main-menu` |
-| Herramientas | `tool-select`, `tool-bubble`, `tool-connect`, `tool-group`, `tool-input`, `tool-output`, `tool-note`, `tool-comment`, `tool-tag`, `tool-label`, `tool-container`, `tool-circuit`, `tool-layers` |
-| Lienzo | nodos `.react-flow__node` con `[data-node-title="Título"]`; `map-node`, `group-node`, `group-toggle`; asas de conexión `.react-flow__handle-top/right/bottom/left`; `context-menu` |
-| Inspector | `node-inspector`, `edge-inspector`, `multi-inspector`, `project-panel`, `inspector-title`, `node-summary`, `add-behavior`, `behavior-option-<tipo>`, `behavior-card`, `add-condition`, `condition-block`, `add-clause`, `add-mitigator`, `mitigator-row`, `dim-<dimId>`, `circuit-block`, `override-mark`, `add-annotation`, `discovery-block`, `friction-resolution`, `trace-forward`, `trace-backward` |
-| Simulación | `tab-simulation`, `tab-results`, `tab-diagnostics`, `tab-scenarios`, `tab-history`, `tab-events`, `sim-play`, `sim-stop`, `sim-reset`, `sim-prev`, `sim-next`, `sim-step`, `sim-save`, `sim-scrubber`, `sim-iterations`, `iteration-badge`, `step-info`, `ledger`, `diagnostic`, `iterations-table`, `events-list` |
-| Escenarios | `scenario-list`, `scenario-new`, `scenario-duplicate`, `scenario-name`, `scenario-compare`, `run-sweep`, `run-band`, `compare`, `compare-b` |
-| Paneles | `monitor`, `funnel`, `neuralgic`, `heat-strip`, `verdict`, `verdict-headline`, `verdict-point`, `verdict-md`, `verdict-pdf`, `versions`, `save-version`, `version-row`, `restore-version`, `settings`, `command-palette`, `help-manuals` |
-| Explorador | `explorer`, `provider-status`, `explorer-topic`, `explorer-strategy`, `explorer-start`, `strategy-text`, `strategy-ai`, `strategy-template`, `upload-plan`, `plan-docs`, `conversation`, `explorer-message`, `explorer-answer`, `explorer-send`, `cmd-<comando>` (`dont_know`, `examples`, `deepen`, `challenge`, `alternatives`, `simplify`, `perspective`, `compare`, `prepare`, `back`), `discoveries`, `create-flow`, `proposal`, `proposal-preview`, `proposal-node`, `insert-proposal`, `voice-start`, `voice-stop` |
+| Aplicación | `app`, `topbar`, `canvas`, `inspector` (Detalles), `legend`, `toast`; nivel 3: `toolbar`, `bottom-panel` |
+| Niveles | `level-switch`, `level-1` (Ideas), `level-2` (Movimiento), `level-3` (Todo). Son botones de radio: el activo tiene `aria-checked="true"`. |
+| Niveles 1 y 2 | Bandeja: `dock`, `dock-idea`, `dock-start` (Inicio, nivel 2), `dock-goal` (Meta, nivel 2), `dock-connect`, `dock-note`, `dock-layout` (Ordenar). Guía: `coach`, `coach-action`, `coach-help`. Barra Probar (nivel 2, con meta): `simple-sim`, `simple-play`, `simple-rounds`, `simple-result`. Detalles sencillos: `simple-quantity` (cantidad por ronda de un inicio), `simple-loss` (pérdida de una unión). |
+| Barra superior | `project-name`, `save-state` (atributo `data-state`: idle/pending/saving/saved/error), `open-explorer`, `open-verdict` y `open-monitor` (nivel 2 o más), `open-manual`, `undo`, `redo`, `theme-menu`, `main-menu`; nivel 3: `scenario-switcher`, `frame-toggle`, `heat-toggle`, `open-palette`, `open-versions`, `io-menu`, `toggle-bottom`, `toggle-inspector` |
+| Barra lateral (nivel 3) | `tool-select`, `tool-bubble`, `tool-connect`, `tool-group`, `tool-input`, `tool-output`, `tool-note`, `tool-comment`, `tool-tag`, `tool-label`, `tool-container`, `tool-circuit`, `tool-layers`; paneles `tag-popover`, `tag-input`, `layers-panel`, `layer-row`, `layer-assign`, `layer-visibility` |
+| Lienzo | nodos `.react-flow__node` con `[data-node-title="Título"]`; `map-node`, `group-node`, `group-toggle`, `node-title-input` (edición en el sitio), `node-flow`; asas de unión `.react-flow__handle-top/right/bottom/left`; `context-menu` |
+| Detalles | `node-inspector`, `edge-inspector`, `multi-inspector`, `project-panel`, `inspector-title`, `node-summary`, `add-behavior`, `behavior-option-<tipo>`, `behavior-card`, `section-behaviors`, `section-comments`; nivel 3: `section-weights`, `section-conditions`, `section-mitigators`, `section-dimensions`, `section-edge-flow`, `section-edge-influence`, `section-edge-conditions`, `add-condition`, `condition-block`, `add-clause`, `add-mitigator`, `mitigator-row`, `dim-<dimId>`, `circuit-block`, `override-mark`, `scenario-banner`, `add-annotation`, `discovery-block`, `friction-resolution`, `trace-forward`, `trace-backward` |
+| Probar (nivel 3) | `tab-simulation`, `tab-results`, `tab-diagnostics`, `tab-scenarios`, `tab-history`, `tab-events`, `sim-play`, `sim-stop`, `sim-reset`, `sim-prev`, `sim-next`, `sim-step`, `sim-save`, `sim-scrubber`, `sim-iterations`, `kpi-iteration`, `kpi-result`, `kpi-total`, `iteration-badge`, `step-info`, `results-chart`, `ledger`, `diagnostic`, `diag-influence`, `iterations-table`, `events-list` |
+| «¿Y si…?» (nivel 3) | `scenario-list`, `scenario-new`, `scenario-duplicate`, `scenario-name`, `scenario-compare`, `run-sweep`, `run-band`, `compare`, `compare-b`, `compare-chart` |
+| Paneles | Marcador: `monitor`, `tile-result`, `tile-survival`, `funnel`, `heat-strip`, `drivers`, `frictions`, `neuralgic`. Dímelo claro: `verdict`, `verdict-headline`, `verdict-point`, `verdict-md`, `verdict-pdf`. Otros: `versions`, `save-version`, `version-row`, `restore-version`, `settings`, `command-palette`, `help-manuals`, `frame-popover`, `frame-grid` |
+| Ayúdame a pensar | `explorer`, `provider-status`, `work-modes`, `mode-interview`, `mode-strategy`, `mode-aclarator`, `mode-copywriter`, `explorer-topic`, `explorer-strategy`, `explorer-start`, `strategy-text`, `strategy-ai`, `strategy-template`, `upload-plan`, `plan-docs`, `conversation`, `explorer-message`, `explorer-answer`, `explorer-send`, `cmd-<comando>` (`dont_know`, `examples`, `deepen`, `challenge`, `alternatives`, `simplify`, `perspective`, `compare`, `prepare`, `back`), `discoveries`, `create-flow`, `proposal`, `proposal-preview`, `proposal-node`, `insert-proposal`, `voice-start`, `voice-stop` |
+| ACLARATOR | `aclarator-dump` (Cuéntamelo todo), `aclarator`, `clarify-progress`, `clarify-block`, `clarify-interno`, `clarify-externo`, `clarify-interno-state` y `clarify-externo-state` (texto «Claro» o el aviso), `clarify-conversation`, `clarify-message`, `clarify-answer`, `clarify-send`, `clarify-example`, `clarify-concretize`, `clarify-validate` (deshabilitado hasta que las dos capas estén claras), `clarify-back`; al terminar: `aclarator-done`, `clarify-map`, `clarify-to-copy` |
+| COPYWRITER | `copy-audience`, `copy-message`, `copywriter`, `copy-use-brief`, `copy-ai`, `copy-template`, `copywriter-result`, `copy-youtube`, `copy-voice` (Copiar guion), `copy-reto`, `copy-reels`, `copy-stories`, `copy-map`, `copy-redo` |
 
 **Secuencias fiables**
 
-- **Crear un mapa entero:** `start-paste` (o `io-menu` → menuitem «Pegar proyecto (JSON)») → rellenar `paste-json` → `paste-import-run` → esperar a que `project-name` muestre el nombre.
-- **Simular y leer:**
-  1. `sim-play` (o tecla Espacio).
-  2. `tab-results`: el texto incluye «Total N». Los números usan **coma decimal** (33,6).
-  3. `open-monitor` para KPIs.
-  4. `open-verdict` → `verdict-md` para descargar el veredicto.
-- **Cambiar un valor en un escenario:**
-  1. `scenario-switcher` → elegir el escenario.
-  2. Seleccionar el nodo (clic en `[data-node-title="…"]`).
-  3. Editar el campo en `inspector`.
+- **Crear un mapa entero:** `start-paste` (o, en el nivel 3, `io-menu` → menuitem «Pegar proyecto (JSON)»; en los niveles 1 y 2, `main-menu` → «Guardar o abrir archivos» → «Pegar proyecto (JSON)») → rellenar `paste-json` → `paste-import-run` → esperar a que `project-name` muestre el nombre.
+- **Probar y leer:**
+  1. Nivel 2: `simple-play` y leer `simple-result` («Han llegado a la meta»). Nivel 3: `sim-play` (o tecla Espacio).
+  2. Nivel 3, `tab-results`: el texto incluye «Total N». Los números usan **coma decimal** (33,6).
+  3. `open-monitor` para el Marcador.
+  4. `open-verdict` → `verdict-md` para descargar «Dímelo claro».
+- **Cambiar un valor en un «¿Y si…?»** (nivel 3):
+  1. `scenario-switcher` → elegir el «¿Y si…?».
+  2. Seleccionar la idea (clic en `[data-node-title="…"]`).
+  3. Cambiar el campo en `inspector`.
   4. Aparece `override-mark`.
-- **Atajos útiles:** Ctrl+K (buscador), 1–5 (vistas), H (calor), Espacio (play), «.» y «,» (iteraciones), Ctrl+S (versión), Escape (limpiar). Los atajos no actúan con el foco en un campo de texto.
+- **ACLARATOR completo:** `open-explorer` → `mode-aclarator` → rellenar `explorer-topic` y `aclarator-dump` → `explorer-start` → en cada bloque, rellenar `clarify-interno` y `clarify-externo` (o conversar con `clarify-answer` + `clarify-send`) hasta que `clarify-validate` se habilite → pulsarlo. Repetir 10 veces → `clarify-map`.
+- **COPYWRITER:** `open-explorer` → `mode-copywriter` → `explorer-topic`, `copy-audience`, `copy-message` → `explorer-start` → `copy-ai` (con IA) o `copy-template` → leer `copy-youtube` → `copy-map`.
+- **Atajos útiles:** Ctrl+K (buscador), 1–5 (vistas; 2–4 solo en el nivel 3), H (termómetro, nivel 3), Espacio (probar, nivel 2 o más), «.» y «,» (rondas), Ctrl+S (versión), Escape (limpiar). Los atajos no actúan con el foco en un campo de texto.
 - Los datos viven en IndexedDB **del navegador que controlas**. Lo que crees ahí no aparece en otro navegador.
 
 ---
@@ -914,7 +1025,9 @@ Selectores estables: `[data-testid="…"]`.
 - **Vercel:** Settings → Environment Variables → **Redeploy**.
 - **En local:** archivo `.env` (copia de `.env.example`) y reiniciar.
 
-Las claves solo viven en el servidor. **Nunca pidas la clave en el chat ni la escribas en el código.** Sin clave, el Explorador funciona en «Modo demostración» y lo dice claramente.
+Las claves solo viven en el servidor. **Nunca pidas la clave en el chat ni la escribas en el código.** Sin clave, «Ayúdame a pensar» funciona en «Modo demostración» y lo dice claramente.
+
+**Puntos del servidor** (todos bajo `/api/`, con límite por IP): `explorer/status`, `explorer/turn` (entrevista), `explorer/proposal` (propuesta de mapa), `explorer/clarify` (ACLARATOR), `explorer/copy` (COPYWRITER), `explorer/plan-summary`, `explorer/polish` («Que la IA lo cuente mejor»), `explorer/transcribe` (audio) y `documents/extract`. Sin clave, los de IA responden 503 y la app usa su modo demostración. Las respuestas de la IA se validan con esquemas y, si no cumplen, se piden de nuevo con el error.
 
 ---
 

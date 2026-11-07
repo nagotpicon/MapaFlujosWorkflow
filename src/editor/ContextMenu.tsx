@@ -8,6 +8,7 @@ import * as op from '../core/operations';
 import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
 import { cx } from '../ui/primitives';
+import { levelOf } from '../app/levels';
 
 export interface MenuState { kind: 'node' | 'edge' | 'pane' | 'selection'; id: string | null; x: number; y: number; flow: { x: number; y: number } }
 
@@ -41,50 +42,55 @@ export function ContextMenu({ state, onClose }: { state: MenuState; onClose: () 
   const top = Math.min(state.y, window.innerHeight - 420);
   const isGroup = node && (node.type === 'group' || node.type === 'container');
 
+  const level = levelOf(doc?.project.settings.depth);
+  const pro = level === 3;
+
   return (
-    <div ref={ref} role="menu" aria-label="Menú contextual" data-testid="context-menu"
-      className="fixed z-[90] w-56 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in" style={{ left, top }}>
+    <div ref={ref} role="menu" aria-label="Menú" data-testid="context-menu"
+      className="fixed z-[90] w-60 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in" style={{ left, top }}>
       {state.kind === 'pane' && (<>
-        <Item icon={<Plus />} onClick={run(() => A.createNodeAt('bubble', state.flow))} shortcut="Doble clic">Nueva burbuja</Item>
-        <Item icon={<LogIn />} onClick={run(() => A.createNodeAt('input', state.flow))}>Nueva entrada</Item>
-        <Item icon={<LogOut />} onClick={run(() => A.createNodeAt('output', state.flow))}>Nueva salida</Item>
+        <Item icon={<Plus />} onClick={run(() => A.createNodeAt('bubble', state.flow))} shortcut="Doble clic">Nueva idea</Item>
+        {level >= 2 && <Item icon={<LogIn />} onClick={run(() => A.createNodeAt('input', state.flow))}>Nuevo inicio</Item>}
+        {level >= 2 && <Item icon={<LogOut />} onClick={run(() => A.createNodeAt('output', state.flow))}>Nueva meta</Item>}
         <Item icon={<StickyNote />} onClick={run(() => A.createNodeAt('note', state.flow))}>Nota</Item>
-        <Item icon={<Type />} onClick={run(() => A.createNodeAt('label', state.flow))}>Etiqueta de texto</Item>
-        <Item icon={<BoxSelect />} onClick={run(() => A.createNodeAt('container', state.flow))}>Contenedor</Item>
+        {pro && <Item icon={<Type />} onClick={run(() => A.createNodeAt('label', state.flow))}>Texto suelto</Item>}
+        {pro && <Item icon={<BoxSelect />} onClick={run(() => A.createNodeAt('container', state.flow))}>Zona</Item>}
         <Sep />
         <Item icon={<ClipboardPaste />} onClick={run(() => void A.pasteClipboard())} shortcut="⌘V">Pegar</Item>
         <Item icon={<Undo2 />} onClick={run(A.undo)} shortcut="⌘Z">Deshacer</Item>
-        <Item icon={<Focus />} onClick={run(() => A.fit())} shortcut="F">Ajustar al contenido</Item>
-        <Item icon={<RefreshCw />} onClick={run(A.autoLayout)}>Distribución automática</Item>
-        <Item icon={<EyeOff />} onClick={run(A.showAllHidden)}>Mostrar ocultos</Item>
+        <Item icon={<Focus />} onClick={run(() => A.fit())} shortcut="F">Verlo todo</Item>
+        <Item icon={<RefreshCw />} onClick={run(A.autoLayout)}>Ordenar el mapa</Item>
+        {pro && <Item icon={<EyeOff />} onClick={run(A.showAllHidden)}>Mostrar lo oculto</Item>}
       </>)}
       {(state.kind === 'node' || state.kind === 'selection') && (<>
-        {node && <Item icon={<Type />} onClick={run(() => useUI.setState({ editingNodeId: node.id }))} shortcut="↵">Editar texto</Item>}
-        {node && !isGroup && <Item icon={<MoveRight />} onClick={run(() => A.createConnectedNode(node.id))} shortcut="Tab">Añadir burbuja conectada</Item>}
+        {node && <Item icon={<Type />} onClick={run(() => useUI.setState({ editingNodeId: node.id }))} shortcut="↵">Escribir</Item>}
+        {node && !isGroup && <Item icon={<MoveRight />} onClick={run(() => A.createConnectedNode(node.id))} shortcut="Tab">Añadir idea unida</Item>}
         <Item icon={<CopyPlus />} onClick={run(A.duplicateSelection)} shortcut="⌘D">Duplicar</Item>
-        {node && !isGroup && <Item icon={<Link2 />} onClick={run(A.cloneSelection)}>Clonar (misma identidad)</Item>}
+        {pro && node && !isGroup && <Item icon={<Link2 />} onClick={run(A.cloneSelection)}>Clonar (la misma idea en otro sitio)</Item>}
         <Item icon={<Copy />} onClick={run(() => void A.copySelection())} shortcut="⌘C">Copiar</Item>
         <Item icon={<Scissors />} onClick={run(() => void A.copySelection(true))} shortcut="⌘X">Cortar</Item>
-        <Sep />
-        <Item icon={<Group />} onClick={run(() => A.groupSelection('group'))} shortcut="⌘G">Agrupar</Item>
-        {isGroup && <Item icon={<Ungroup />} onClick={run(A.ungroupSelection)} shortcut="⇧⌘G">Desagrupar</Item>}
-        {node && !isGroup && <Item icon={<Waypoints />} onClick={run(() => A.apply((d) => op.updateNode(d, node.id, { branchCollapsed: !node.branchCollapsed })))}>{node.branchCollapsed ? 'Desplegar rama' : 'Plegar rama'}</Item>}
-        {node && <Item icon={<Route />} onClick={run(() => useUI.setState({ trace: { rootId: node.id, direction: 'forward', isolate: false } }))}>Rastrear hacia delante</Item>}
-        {node && <Item icon={<ScanSearch />} onClick={run(() => useUI.setState({ trace: { rootId: node.id, direction: 'backward', isolate: false } }))}>Rastrear hacia atrás</Item>}
-        {node && <Item icon={<Focus />} onClick={run(() => { useUI.setState({ focusNodeId: node.id }); A.fit([node.id]); })}>Modo enfoque</Item>}
+        {pro && (<>
+          <Sep />
+          <Item icon={<Group />} onClick={run(() => A.groupSelection('group'))} shortcut="⌘G">Juntar en un grupo</Item>
+          {isGroup && <Item icon={<Ungroup />} onClick={run(A.ungroupSelection)} shortcut="⇧⌘G">Deshacer el grupo</Item>}
+          {node && !isGroup && <Item icon={<Waypoints />} onClick={run(() => A.apply((d) => op.updateNode(d, node.id, { branchCollapsed: !node.branchCollapsed })))}>{node.branchCollapsed ? 'Mostrar lo que cuelga' : 'Esconder lo que cuelga'}</Item>}
+          {node && <Item icon={<Route />} onClick={run(() => useUI.setState({ trace: { rootId: node.id, direction: 'forward', isolate: false } }))}>¿A qué afecta?</Item>}
+          {node && <Item icon={<ScanSearch />} onClick={run(() => useUI.setState({ trace: { rootId: node.id, direction: 'backward', isolate: false } }))}>¿De dónde le viene?</Item>}
+          {node && <Item icon={<Focus />} onClick={run(() => { useUI.setState({ focusNodeId: node.id }); A.fit([node.id]); })}>Centrarme en esto</Item>}
+        </>)}
         <Item icon={<MessageSquarePlus />} onClick={run(A.addCommentToSelection)}>Añadir comentario</Item>
         <Sep />
-        <Item icon={<Lock />} onClick={run(A.toggleLockSelection)}>{node?.locked ? 'Desbloquear' : 'Bloquear'}</Item>
-        <Item icon={<EyeOff />} onClick={run(A.toggleHideSelection)}>Ocultar</Item>
-        <Item icon={<Trash2 />} onClick={run(A.deleteSelection)} shortcut="Supr" danger>Eliminar</Item>
+        {pro && <Item icon={<Lock />} onClick={run(A.toggleLockSelection)}>{node?.locked ? 'Desbloquear' : 'Bloquear'}</Item>}
+        {pro && <Item icon={<EyeOff />} onClick={run(A.toggleHideSelection)}>Ocultar</Item>}
+        <Item icon={<Trash2 />} onClick={run(A.deleteSelection)} shortcut="Supr" danger>Borrar</Item>
       </>)}
       {state.kind === 'edge' && edge && (<>
-        <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.reverseEdge(d, edge.id)))}>Invertir dirección</Item>
-        <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.updateEdge(d, edge.id, { direction: edge.direction === 'both' ? 'forward' : 'both' })))}>{edge.direction === 'both' ? 'Hacer unidireccional' : 'Hacer bidireccional'}</Item>
-        <Item icon={<CopyPlus />} onClick={run(() => A.apply((d) => op.duplicateEdge(d, edge.id).doc))}>Duplicar conexión</Item>
+        <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.reverseEdge(d, edge.id)))}>Darle la vuelta</Item>
+        {pro && <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.updateEdge(d, edge.id, { direction: edge.direction === 'both' ? 'forward' : 'both' })))}>{edge.direction === 'both' ? 'Que vaya en un solo sentido' : 'Que vaya en los dos sentidos'}</Item>}
+        {pro && <Item icon={<CopyPlus />} onClick={run(() => A.apply((d) => op.duplicateEdge(d, edge.id).doc))}>Duplicar unión</Item>}
         <Item icon={<MessageSquarePlus />} onClick={run(A.addCommentToSelection)}>Añadir comentario</Item>
         <Sep />
-        <Item icon={<Trash2 />} onClick={run(A.deleteSelection)} danger shortcut="Supr">Eliminar conexión</Item>
+        <Item icon={<Trash2 />} onClick={run(A.deleteSelection)} danger shortcut="Supr">Borrar unión</Item>
       </>)}
     </div>
   );

@@ -45,15 +45,15 @@ const pct = (key: string, label: string, def: number, help?: string): ParamSpec 
 export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
   generator: {
     type: 'generator', label: 'Generador', verb: 'Genera', family: 'source', phase: 'generate', icon: 'Sparkles',
-    description: 'Produce flujo nuevo en cada iteración con las dimensiones definidas en el nodo.',
+    description: 'Produce flujo nuevo en cada ronda con las dimensiones definidas en el nodo.',
     params: [
-      { key: 'amount', label: 'Cantidad por iteración', kind: 'number', default: 100, min: 0, step: 1, help: 'Se usa si el nodo no define la dimensión Cantidad.' },
+      { key: 'amount', label: 'Cantidad por ronda', kind: 'number', default: 100, min: 0, step: 1, help: 'Se usa si el nodo no define la dimensión Cantidad.' },
       { key: 'mode', label: 'Emisión', kind: 'select', default: 'continuous', options: [
-        { value: 'continuous', label: 'Continua (cada iteración)' }, { value: 'once', label: 'Pulso único' },
+        { value: 'continuous', label: 'Continua (cada ronda)' }, { value: 'once', label: 'Pulso único' },
       ] },
-      { key: 'startIteration', label: 'Desde iteración', kind: 'number', default: 1, min: 1, step: 1, advanced: true },
-      { key: 'endIteration', label: 'Hasta iteración (0 = sin fin)', kind: 'number', default: 0, min: 0, step: 1, advanced: true },
-      { key: 'growth', label: 'Crecimiento por iteración', kind: 'percent', default: 0, min: -1, max: 1, step: 0.01, advanced: true },
+      { key: 'startIteration', label: 'Desde la ronda', kind: 'number', default: 1, min: 1, step: 1, advanced: true },
+      { key: 'endIteration', label: 'Hasta la ronda (0 = sin fin)', kind: 'number', default: 0, min: 0, step: 1, advanced: true },
+      { key: 'growth', label: 'Crecimiento por ronda', kind: 'percent', default: 0, min: -1, max: 1, step: 0.01, advanced: true },
     ],
     defaultDimensions: ['quantity'],
   },
@@ -127,12 +127,12 @@ export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
   },
   restrictor: {
     type: 'restrictor', label: 'Restrictor', verb: 'Limita', family: 'loss', phase: 'capacity', icon: 'Minimize2',
-    description: 'Limita la capacidad de paso por iteración. El exceso se pierde, se encola o se desborda a otra ruta.',
+    description: 'Limita la capacidad de paso por ronda. El exceso se pierde, se encola o se desborda a otra ruta.',
     params: [
-      { key: 'capacity', label: 'Capacidad por iteración', kind: 'number', default: 50, min: 0, step: 1 },
+      { key: 'capacity', label: 'Capacidad por ronda', kind: 'number', default: 50, min: 0, step: 1 },
       { key: 'excess', label: 'Exceso', kind: 'select', default: 'queue', options: [
-        { value: 'queue', label: 'Encolar para la siguiente iteración' }, { value: 'lose', label: 'Se pierde' },
-        { value: 'overflow', label: 'Desbordar a conexiones de desborde' },
+        { value: 'queue', label: 'Encolar para la siguiente ronda' }, { value: 'lose', label: 'Se pierde' },
+        { value: 'overflow', label: 'Desbordar a las uniones de desborde' },
       ] },
     ],
     defaultDimensions: ['quantity'],
@@ -149,7 +149,7 @@ export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
     params: [
       pct('ratio', 'Proporción almacenada', 1),
       { key: 'maxStock', label: 'Stock máximo (0 = sin límite)', kind: 'number', default: 0, min: 0 },
-      { ...pct('leak', 'Fuga del stock por iteración', 0), advanced: true },
+      { ...pct('leak', 'Fuga del stock por ronda', 0), advanced: true },
       { key: 'initialStock', label: 'Stock inicial', kind: 'number', default: 0, min: 0, advanced: true },
     ],
     defaultDimensions: ['quantity'],

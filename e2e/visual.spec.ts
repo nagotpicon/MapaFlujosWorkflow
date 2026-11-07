@@ -1,14 +1,25 @@
 import { expect, test } from '@playwright/test';
 import { openDemo } from './helpers';
 
+test('por defecto se abre en blanco roto (paleta de Claude), aunque el sistema esté en oscuro', async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: 'dark', viewport: { width: 1280, height: 800 } });
+  const page = await ctx.newPage();
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(250, 249, 245)');
+  await ctx.close();
+});
+
 for (const scheme of ['light', 'dark'] as const) {
   test(`tema ${scheme}: interfaz, paneles e inspector`, async ({ browser }) => {
     const ctx = await browser.newContext({ colorScheme: scheme, viewport: { width: 1440, height: 900 } });
     const page = await ctx.newPage();
+    // «Como mi ordenador»: sigue al sistema
+    await page.addInitScript(() => { try { localStorage.setItem('mdf.theme.v2', JSON.stringify('system')); } catch { /* */ } });
     await openDemo(page);
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-    expect(bg).toBe(scheme === 'light' ? 'rgb(246, 246, 243)' : 'rgb(18, 19, 22)');
+    expect(bg).toBe(scheme === 'light' ? 'rgb(250, 249, 245)' : 'rgb(38, 38, 36)');
     await page.locator('[data-node-title="Cierre"]').click();
     await expect(page.getByTestId('node-inspector')).toBeVisible();
     await page.screenshot({ path: `test-results/visual-${scheme}.png` });

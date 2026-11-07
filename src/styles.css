@@ -3,100 +3,114 @@
 
 /* ------------------------------------------------------------------
    MAPA DE FLUJOS — sistema visual
-   Dos temas diseñados expresamente (no invertidos). Misma identidad:
-   tinta grafito + cobalto de flujo + semántica de color contenida.
+   Paleta de Claude (marfil #FAF9F5, tinta #141413, arcilla #D97757,
+   azul #6A9BCC, oliva #788C5D) con toques de madera clara (abedul y
+   roble), al estilo minimal escandinavo. Dos temas diseñados a mano.
    ------------------------------------------------------------------ */
 
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f6f3;
-  --canvas: #fafaf8;
-  --grid-dot: #dcdad4;
+  --bg: #faf9f5;
+  --canvas: #faf9f5;
+  --grid-dot: #e3e0d5;
   --surface: #ffffff;
-  --surface-2: #f2f2ee;
-  --surface-3: #e9e8e3;
-  --overlay: rgba(28, 27, 25, 0.28);
-  --border: #e5e3dd;
-  --border-strong: #cfccc4;
-  --text: #1b1b19;
-  --text-2: #57554f;
-  --text-3: #8b8880;
-  --accent: #3f51e6;
-  --accent-soft: #eceefe;
-  --accent-text: #2f3fc4;
+  --surface-2: #f4f2ec;
+  --surface-3: #ebe8df;
+  --overlay: rgba(20, 20, 19, 0.22);
+  --border: #e8e6dc;
+  --border-strong: #d3cfc2;
+  --text: #141413;
+  --text-2: #4b4a45;
+  --text-3: #73716a;
+  --accent: #d97757;
+  --accent-soft: #f8ebe4;
+  --accent-text: #b04f2c;
   --on-accent: #ffffff;
-  --focus: #3f51e6;
-  --shadow-sm: 0 1px 2px rgba(20, 18, 14, 0.05);
-  --shadow-md: 0 4px 16px -4px rgba(20, 18, 14, 0.10), 0 1px 3px rgba(20, 18, 14, 0.05);
-  --shadow-lg: 0 18px 48px -12px rgba(20, 18, 14, 0.18), 0 2px 6px rgba(20, 18, 14, 0.05);
+  --focus: #d97757;
+  --shadow-sm: 0 1px 2px rgba(60, 45, 25, 0.06);
+  --shadow-md: 0 6px 20px -8px rgba(60, 45, 25, 0.16), 0 1px 3px rgba(60, 45, 25, 0.05);
+  --shadow-lg: 0 24px 60px -18px rgba(60, 45, 25, 0.24), 0 2px 8px rgba(60, 45, 25, 0.06);
 
-  --flow: #2a78d6;
-  --gain: #0f9f74;
-  --loss: #d9464c;
-  --condition: #c98306;
-  --transform: #7c4ce6;
-  --concept: #9a978f;
+  /* madera clara: abedul y roble */
+  --wood: #d9c4a0;
+  --wood-soft: #f2e9da;
+  --wood-line: #e4d4b9;
+  --wood-deep: #a8865c;
+  --wood-text: #6f5232;
 
-  --heat-cold: #4f8ff7;
-  --heat-rhythm: #18a874;
-  --heat-warm: #f59e0b;
-  --heat-hot: #e5484d;
+  --flow: #6a9bcc;
+  --gain: #788c5d;
+  --loss: #bf4d43;
+  --condition: #b98a45;
+  --transform: #9b7bb0;
+  --concept: #a19e93;
 
-  /* paleta de nodos: fondo / borde / acento */
-  --n-slate-bg: #ffffff;   --n-slate-bd: #dedcd6;  --n-slate-ac: #6b6a64;
-  --n-blue-bg: #f1f5ff;    --n-blue-bd: #cddcfd;   --n-blue-ac: #2f6ff0;
-  --n-emerald-bg: #eefaf4; --n-emerald-bd: #c4ebd8; --n-emerald-ac: #0f9f74;
-  --n-rose-bg: #fff2f2;    --n-rose-bd: #f6cfd0;   --n-rose-ac: #d9464c;
-  --n-amber-bg: #fff8ea;   --n-amber-bd: #f3dfb0;  --n-amber-ac: #c98306;
-  --n-violet-bg: #f6f2ff;  --n-violet-bd: #dfd3fb; --n-violet-ac: #7c4ce6;
-  --n-cyan-bg: #eefbfd;    --n-cyan-bd: #c3eaf1;   --n-cyan-ac: #0e94ad;
-  --n-pink-bg: #fff1f8;    --n-pink-bd: #f6cde3;   --n-pink-ac: #cf3b8b;
+  --heat-cold: #6a9bcc;
+  --heat-rhythm: #788c5d;
+  --heat-warm: #d9a15b;
+  --heat-hot: #bf4d43;
+
+  /* paleta de las ideas: papel / borde / acento */
+  --n-slate-bg: #ffffff;   --n-slate-bd: #e3e0d6;  --n-slate-ac: #73716a;
+  --n-blue-bg: #f2f6fa;    --n-blue-bd: #d4e2ef;   --n-blue-ac: #4f80b0;
+  --n-emerald-bg: #f2f4ec; --n-emerald-bd: #d9e1cb; --n-emerald-ac: #62774a;
+  --n-rose-bg: #fbefe9;    --n-rose-bd: #f0d3c6;   --n-rose-ac: #c05c3a;
+  --n-amber-bg: #f7efe2;   --n-amber-bd: #e8d8bc;  --n-amber-ac: #94713f;
+  --n-violet-bg: #f5f1f7;  --n-violet-bd: #e2d8e9; --n-violet-ac: #846798;
+  --n-cyan-bg: #eef5f4;    --n-cyan-bd: #d0e3df;   --n-cyan-ac: #4a8680;
+  --n-pink-bg: #faeff1;    --n-pink-bd: #eed4da;   --n-pink-ac: #b25d75;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #121316;
-  --canvas: #16171b;
-  --grid-dot: #2a2c33;
-  --surface: #1c1e23;
-  --surface-2: #23252b;
-  --surface-3: #2b2e35;
-  --overlay: rgba(0, 0, 0, 0.5);
-  --border: #2c2f36;
-  --border-strong: #3b3f48;
-  --text: #e9eaee;
-  --text-2: #a7aab4;
-  --text-3: #767a86;
-  --accent: #8090ff;
-  --accent-soft: #252a4a;
-  --accent-text: #aab5ff;
-  --on-accent: #0f1020;
-  --focus: #8f9cff;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 6px 18px -6px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 22px 56px -14px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --bg: #262624;
+  --canvas: #262624;
+  --grid-dot: #3a3935;
+  --surface: #30302e;
+  --surface-2: #383835;
+  --surface-3: #42413d;
+  --overlay: rgba(10, 10, 9, 0.5);
+  --border: #3e3d39;
+  --border-strong: #55534d;
+  --text: #f5f4ee;
+  --text-2: #cbc8be;
+  --text-3: #9e9b91;
+  --accent: #d97757;
+  --accent-soft: #432f27;
+  --accent-text: #eb9c7e;
+  --on-accent: #141413;
+  --focus: #e58a6c;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 22px -8px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 26px 60px -16px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.35);
 
-  --flow: #3f8de8;
-  --gain: #1fa877;
-  --loss: #e66767;
-  --condition: #c98500;
-  --transform: #9085e9;
-  --concept: #6f7380;
+  --wood: #7d6448;
+  --wood-soft: #3a332b;
+  --wood-line: #4d4234;
+  --wood-deep: #b8956a;
+  --wood-text: #dcc29d;
 
-  --heat-cold: #6ea7ff;
-  --heat-rhythm: #3ccf9a;
-  --heat-warm: #f5b545;
-  --heat-hot: #ff6b70;
+  --flow: #7faad6;
+  --gain: #97aa76;
+  --loss: #dc7262;
+  --condition: #d0a96c;
+  --transform: #b69ac8;
+  --concept: #8c897f;
 
-  --n-slate-bg: #202228;   --n-slate-bd: #353841;  --n-slate-ac: #a7aab4;
-  --n-blue-bg: #1b2335;    --n-blue-bd: #2f4370;   --n-blue-ac: #6aa1ff;
-  --n-emerald-bg: #17271f; --n-emerald-bd: #255640; --n-emerald-ac: #3ccf9a;
-  --n-rose-bg: #2a1c1f;    --n-rose-bd: #5c3036;   --n-rose-ac: #ff7a7e;
-  --n-amber-bg: #29231a;   --n-amber-bd: #5a4520;  --n-amber-ac: #f2b84b;
-  --n-violet-bg: #221d33;  --n-violet-bd: #45366f;  --n-violet-ac: #a98bff;
-  --n-cyan-bg: #172528;    --n-cyan-bd: #24515a;   --n-cyan-ac: #4fc9de;
-  --n-pink-bg: #2a1b25;    --n-pink-bd: #5a2f4a;   --n-pink-ac: #f07ab8;
+  --heat-cold: #7faad6;
+  --heat-rhythm: #97aa76;
+  --heat-warm: #e0ad6a;
+  --heat-hot: #dc7262;
+
+  --n-slate-bg: #33332f;   --n-slate-bd: #4a4843;  --n-slate-ac: #b7b4a9;
+  --n-blue-bg: #2f3439;    --n-blue-bd: #44515e;   --n-blue-ac: #8fb5dc;
+  --n-emerald-bg: #31352b; --n-emerald-bd: #4a553c; --n-emerald-ac: #a5b886;
+  --n-rose-bg: #3a2f2a;    --n-rose-bd: #614236;   --n-rose-ac: #ec9a7c;
+  --n-amber-bg: #38322a;   --n-amber-bd: #5b4b34;  --n-amber-ac: #d9b682;
+  --n-violet-bg: #353039;  --n-violet-bd: #524459; --n-violet-ac: #c2a8d4;
+  --n-cyan-bg: #2d3534;    --n-cyan-bd: #405754;   --n-cyan-ac: #8cc4bd;
+  --n-pink-bg: #382e31;    --n-pink-bd: #5b414a;   --n-pink-ac: #e19bb0;
 }
 
 @theme inline {
@@ -120,7 +134,13 @@
   --color-cond: var(--condition);
   --color-transform: var(--transform);
   --color-concept: var(--concept);
+  --color-wood: var(--wood);
+  --color-wood-soft: var(--wood-soft);
+  --color-wood-line: var(--wood-line);
+  --color-wood-deep: var(--wood-deep);
+  --color-wood-text: var(--wood-text);
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Lora Variable", ui-serif, Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --shadow-soft: var(--shadow-md);
   --shadow-float: var(--shadow-lg);
@@ -132,8 +152,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 13.5px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "cv11", "ss01";
 }
@@ -225,3 +245,25 @@ input[type="range"].mdf-range::-moz-range-thumb { width: 12px; height: 12px; bor
 @media print {
   .no-print { display: none !important; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Piezas de madera y papel (estilo minimal escandinavo)               */
+/* ------------------------------------------------------------------ */
+.font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+/* bandeja de madera clara: la base del dock y de los selectores de nivel */
+.mdf-wood {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 6px, color-mix(in srgb, var(--wood-line) 28%, transparent) 6px 7px, transparent 7px 13px, color-mix(in srgb, var(--wood-line) 16%, transparent) 13px 14px),
+    linear-gradient(180deg, color-mix(in srgb, var(--wood-soft), white 30%), var(--wood-soft));
+  border: 1px solid var(--wood-line);
+}
+:root[data-theme="dark"] .mdf-wood {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 6px, color-mix(in srgb, var(--wood-line) 30%, transparent) 6px 7px, transparent 7px 14px),
+    var(--wood-soft);
+}
+/* hoja de papel flotante */
+.mdf-paper { background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+@keyframes mdf-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.mdf-rise { animation: mdf-rise 320ms cubic-bezier(.2,.8,.2,1); }
+@media (prefers-reduced-motion: reduce) { .mdf-rise { animation: none; } }

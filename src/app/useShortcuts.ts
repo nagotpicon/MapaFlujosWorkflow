@@ -3,6 +3,7 @@ import { useProject } from '../store/projectStore';
 import { useSim } from '../store/simStore';
 import { useUI, writeLS, type ViewMode } from '../store/uiStore';
 import * as A from './actions';
+import { levelOf } from './levels';
 import { SHORTCUTS, comboFromEvent } from './shortcuts';
 import * as repo from '../persistence/repository';
 
@@ -13,9 +14,16 @@ export function setView(v: ViewMode) {
   writeLS('mdf.view', v);
 }
 
+const LEVEL3_ONLY = ['group', 'ungroup', 'heat', 'view2', 'view3', 'view4'];
+const LEVEL2_PLUS = ['toolInput', 'toolOutput', 'play', 'nextIt', 'prevIt', 'view5'];
+
 export function runShortcut(id: string): boolean {
   const ui = useUI.getState();
   const sel = ui.selection.nodes;
+  // en los niveles sencillos, los atajos de herramientas avanzadas no hacen nada
+  const level = levelOf(useProject.getState().doc?.project.settings.depth);
+  if (level < 3 && LEVEL3_ONLY.includes(id)) return false;
+  if (level < 2 && LEVEL2_PLUS.includes(id)) return false;
   switch (id) {
     case 'undo': A.undo(); return true;
     case 'redo': A.redo(); return true;

@@ -1,15 +1,23 @@
 import { expect, type Page } from '@playwright/test';
 
+/** Mapa en blanco en el nivel 3 («Todo»), con todas las herramientas a la vista. */
 export async function newProject(page: Page) {
   await page.goto('/');
   await page.getByTestId('new-project').click();
   await expect(page.getByTestId('app')).toBeVisible();
+  await setLevel(page, 3);
+}
+
+export async function setLevel(page: Page, level: 1 | 2 | 3) {
+  await page.getByTestId(`level-${level}`).click();
+  await expect(page.getByTestId(`level-${level}`)).toHaveAttribute('aria-checked', 'true');
 }
 
 export async function openDemo(page: Page) {
   await page.goto('/');
   await page.getByTestId('open-demo').click();
   await expect(page.locator('[data-node-title="Ventas"]')).toBeVisible();
+  await setLevel(page, 3);
 }
 
 export const node = (page: Page, title: string) => page.locator(`.react-flow__node:has([data-node-title="${title}"])`).first();
