@@ -21,6 +21,7 @@ import { ConditionsList } from './ConditionEditor';
 import { KV, NodeSelect, OverrideMark, ScaleValueEditor, useInspector, useParam } from './fields';
 import { download } from '../app/io';
 import { levelOf } from '../app/levels';
+import { KidNodeInspector } from '../kid/KidInspector';
 
 const TYPE_LABEL: Record<MapNode['type'], string> = {
   bubble: 'Idea', input: 'Inicio', output: 'Meta', note: 'Nota', label: 'Texto suelto', comment: 'Comentario', group: 'Grupo', container: 'Zona',
@@ -58,44 +59,6 @@ function Identity({ n }: { n: MapNode }) {
 }
 
 
-const QTY = (value: number): DimensionValue => ({ value, mode: 'numeric', unit: '', confidence: 'estimate', source: '', range: null });
-
-/** Identidad sencilla (niveles 1 y 2): qué es, notas, tipo y color. */
-function SimpleIdentity({ n, level }: { n: MapNode; level: number }) {
-  const upd = (patch: Partial<MapNode>, key?: string) => A.apply((d) => op.updateNode(d, n.id, patch), key);
-  const content = ['bubble', 'input', 'output'].includes(n.type);
-  const setKind = (type: 'bubble' | 'input' | 'output') => A.apply((d) => op.convertNodeType(d, n.id, type, {
-    color: type === 'input' ? 'blue' : type === 'output' ? 'emerald' : n.visualStyle.color === 'blue' || n.visualStyle.color === 'emerald' ? 'slate' : n.visualStyle.color,
-    shape: type === 'bubble' ? (n.visualStyle.shape === 'pill' ? 'rounded' : n.visualStyle.shape) : 'pill',
-  }));
-  return (
-    <div className="space-y-3">
-      <Field label="Qué es"><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${n.id}`)} data-testid="inspector-title" /></Field>
-      <Field label="Notas"><TextArea rows={3} value={n.description} onChange={(description) => upd({ description }, `desc-${n.id}`)} placeholder="Lo que quieras apuntar sobre esta idea…" /></Field>
-      {level >= 2 && content && (
-        <Field label="Esta idea es…">
-          <Segmented label="Esta idea es" value={n.type as 'bubble' | 'input' | 'output'} onChange={setKind}
-            options={[{ value: 'bubble', label: 'Un paso', title: 'Algo por donde pasa' }, { value: 'input', label: 'El inicio', title: 'De aquí sale todo' }, { value: 'output', label: 'Mi meta', title: 'Lo que quieres conseguir' }]} />
-        </Field>
-      )}
-      {level >= 2 && n.type === 'input' && (
-        <Field label="¿Cuánto sale de aquí en cada ronda?" hint="por ejemplo: 100 personas a la semana">
-          <NumberInput value={n.dimensionValues.quantity?.value ?? null} min={0} onChange={(v) => upd({ dimensionValues: { ...n.dimensionValues, quantity: { ...(n.dimensionValues.quantity ?? QTY(0)), value: Math.max(0, v) } } })} data-testid="simple-quantity" />
-        </Field>
-      )}
-      <Field label="Color">
-        <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Color">
-          {NODE_COLORS.map((c) => (
-            <button key={c} type="button" role="radio" aria-checked={n.visualStyle.color === c} aria-label={COLOR_LABEL[c]} title={COLOR_LABEL[c]}
-              onClick={() => upd({ visualStyle: { ...n.visualStyle, color: c, background: null } })}
-              className={cx('size-7 rounded-full border transition-transform hover:scale-110', n.visualStyle.color === c && 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--surface)]')}
-              style={{ background: `var(--n-${c}-bg)`, borderColor: `var(--n-${c}-ac)` }} />
-          ))}
-        </div>
-      </Field>
-    </div>
-  );
-}
 
 function SimSummary({ n, simple }: { n: MapNode; simple?: boolean }) {
   const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[n.aliasOf ?? n.id]);
@@ -572,25 +535,7 @@ export function NodeInspector({ id }: { id: string }) {
     );
   }
   const level = levelOf(depth);
-  if (level < 3) {
-    return (
-      <div data-testid="node-inspector">
-        <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-          <span className="font-display text-[16px] font-medium text-ink">Detalles</span>
-          <span className="flex-1" />
-          <IconButton size="xs" label="Borrar esta idea" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
-        </div>
-        <div className="space-y-3 border-b border-line px-4 py-4">
-          <SimpleIdentity n={n} level={level} />
-          {level === 2 && !isMeta && !isGroup && <SimSummary n={n} simple />}
-        </div>
-        {level === 2 && !isMeta && !isGroup && n.type !== 'output' && (
-          <Section title="Qué pasa en este paso" icon={<Workflow />} count={behaviorsCount} defaultOpen testId="section-behaviors"><BehaviorList nodeId={n.id} simple /></Section>
-        )}
-        <Section title="Comentarios" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0} testId="section-comments"><Annotations ownerType="node" ownerId={n.id} /></Section>
-      </div>
-    );
-  }
+  if (level < 3) return <KidNodeInspector id={n.id} />;
   return (
     <div data-testid="node-inspector">
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">

@@ -11,6 +11,7 @@ import { ConditionsList } from './ConditionEditor';
 import { DimSelect, KV, OverrideMark, ParamNumber, ParamSelect, useInspector, useParam } from './fields';
 import { useUI } from '../store/uiStore';
 import { levelOf } from '../app/levels';
+import { KidEdgeInspector } from '../kid/KidInspector';
 
 const TYPES: { value: MapEdge['type']; label: string }[] = [
   { value: 'flow', label: 'Pasa' }, { value: 'causal', label: 'Influye' }, { value: 'informative', label: 'Info' }, { value: 'conceptual', label: 'Idea' },
@@ -71,29 +72,7 @@ export function EdgeInspector({ id }: { id: string }) {
   const annCount = Object.values(doc.annotations).filter((a) => a.ownerId === id).length;
   void role; void oRole;
   const level = levelOf(depth);
-  if (level < 3) {
-    return (
-      <div data-testid="edge-inspector">
-        <div className="space-y-3 border-b border-line px-4 py-4">
-          <div className="flex items-center gap-2">
-            <span className="font-display text-[16px] font-medium text-ink">Unión</span>
-            <span className="flex-1" />
-            <IconButton size="xs" label="Darle la vuelta" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
-            <IconButton size="xs" label="Borrar esta unión" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
-          </div>
-          <p className="text-[13px] text-ink-2">De <b className="text-ink">{src}</b> a <b className="text-ink">{tgt}</b></p>
-          <Field label="Texto sobre la línea"><TextInput value={e.visualStyle.label} onChange={(label) => vs({ label }, `elabel-${id}`)} placeholder="Ej.: me escriben, compran…" data-edge-label-input /></Field>
-          {level === 2 && e.type === 'flow' && (
-            <Field label="¿Se pierde algo por el camino?" hint="0 % = llega todo">
-              <NumberInput percent value={ee.behavior.loss} min={0} max={1} onChange={(v) => upd({ behavior: { ...e.behavior, loss: Math.max(0, Math.min(1, v)) } })} data-testid="simple-loss" />
-            </Field>
-          )}
-          {level === 2 && st && e.type === 'flow' && <p className="text-[12.5px] text-ink-3">En esta ronda pasan <b className="tabular text-flow">{fmt(qty(st.delivered))}</b>.</p>}
-        </div>
-        <Section title="Comentarios" icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0}><Annotations ownerType="edge" ownerId={id} /></Section>
-      </div>
-    );
-  }
+  if (level < 3) return <KidEdgeInspector id={id} />;
   return (
     <div data-testid="edge-inspector">
       <div className="space-y-3 border-b border-line px-4 py-3">

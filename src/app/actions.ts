@@ -11,6 +11,16 @@ import * as repo from '../persistence/repository';
 import { createEmptyDoc } from '../core/model/factory';
 import { buildInsuranceDemo } from '../demo/insuranceDemo';
 import { findSimpleCycles } from '../engine/graph';
+import { buildKidDemo } from '../demo/kidDemo';
+import * as kid from '../kid/kidActions';
+
+/** Estilo de la idea del centro: más grande y en letra de libro. */
+export const ROOT_STYLE = { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid' } as const;
+
+/** La idea del centro de un mapa nuevo. */
+export function rootIdea(d: ProjectDoc, title: string) {
+  return op.addNode(d, 'bubble', { title: title.trim() || 'Mi idea', position: { x: -150, y: -40 }, visualStyle: { ...ROOT_STYLE } });
+}
 
 export const apply = (fn: (d: ProjectDoc) => ProjectDoc, coalesceKey?: string) => useProject.getState().apply(fn, { coalesceKey });
 export const getDoc = () => useProject.getState().doc;
@@ -44,19 +54,20 @@ export async function newProject(name = 'Mapa sin título', idea?: string) {
   let doc = createEmptyDoc(name);
   doc = { ...doc, project: { ...doc.project, settings: { ...doc.project.settings, depth: 'basic' } } };
   const text = idea?.trim();
-  if (text) {
-    const r = op.addNode(doc, 'bubble', {
-      title: text, position: { x: -150, y: -40 },
-      visualStyle: { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid' },
-    });
-    doc = r.doc;
-  }
+  if (text) doc = rootIdea(doc, text).doc;
   await openProject(doc);
 }
 
+/** Ejemplo sencillo (modo fácil): un camino con pasos, piedras y ayudas. */
 export async function openDemo() {
+  await openProject(buildKidDemo());
+  ui().notify('Mapa de ejemplo: «Vender mis dibujos»', 'info');
+}
+
+/** Ejemplo completo para el nivel experto (valores inventados). */
+export async function openExpertDemo() {
   await openProject(buildInsuranceDemo());
-  ui().notify('Proyecto de demostración cargado (valores ficticios)', 'info');
+  ui().notify('Ejemplo para expertos cargado (valores inventados)', 'info');
 }
 
 /* ---------------- creación ---------------- */
@@ -84,6 +95,7 @@ export function createNodeAt(type: NodeType, position?: { x: number; y: number }
 export function createConnectedNode(fromId: string, sibling = false) {
   const doc = getDoc();
   if (!doc) return;
+  if (kid.isEasy()) { kid.siguienteDe(fromId); return; }
   const from = doc.nodes[fromId];
   if (!from) return;
   const s = sizeOf(fromId);
@@ -107,6 +119,13 @@ export function createConnectedNode(fromId: string, sibling = false) {
 
 export function connect(source: string, target: string, type?: EdgeType, anchors?: { sourceAnchor?: string | null; targetAnchor?: string | null }) {
   let id = '';
+  const doc = getDoc();
+  if (!type && doc && kid.isEasy()) {
+    // en el modo fácil el significado sale solo: una piedra frena, una ayuda ayuda, un paso sigue al otro
+    const t = kid.tipoDeUnion(doc, source, target);
+    if (t === 'causal') { kid.unir(source, target); return ''; }
+    type = t;
+  }
   apply((d) => {
     const r = op.addEdge(d, source, target, type ?? ui().connectType, {
       visualStyle: {
@@ -126,6 +145,7 @@ export function deleteSelection() {
   const { nodes, edges } = ui().selection;
   if (!nodes.length && !edges.length) return;
   const doc = getDoc();
+  if (kid.isEasy()) { kid.borrar(nodes.filter((n) => !doc?.nodes[n]?.locked), edges); return; }
   const locked = nodes.filter((n) => doc?.nodes[n]?.locked).length;
   apply((d) => op.deleteElements(d, nodes, edges));
   ui().setSelection([]);
@@ -225,6 +245,12 @@ export function selectAll() {
 
 export function align(mode: Parameters<typeof op.alignNodes>[2]) {
   apply((d) => op.alignNodes(d, ui().selection.nodes, mode, sizeOf));
+}
+
+/** «Ordenar» en el modo fácil: el camino en fila, las piedras encima y las ayudas sobre ellas. */
+export function tidyEasy() {
+  apply((d) => kid.relayout(d));
+  setTimeout(() => fit(), 50);
 }
 
 export function autoLayout() {

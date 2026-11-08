@@ -141,9 +141,9 @@ function page({ title, description, md, active, rawPath }) {
 function llmsTxt() {
   return `# Mapa de Flujos
 
-> Aplicación web (${APP_URL}) que combina un editor de mapas mentales con un motor que simula flujos ronda a ronda: comportamientos (filtros, multiplicadores, restrictores, acumuladores…), uniones que influyen, remedios, bucles de retroalimentación, «¿Y si…?» (escenarios), cuadrícula del tiempo, termómetro, Marcador, veredicto «Dímelo claro» y «Ayúdame a pensar» con IA y cuatro modos de trabajo (preguntas, plan, ACLARATOR y COPYWRITER). La interfaz es muy sencilla y crece en tres niveles (1 · Ideas, 2 · Movimiento, 3 · Todo). Todo se guarda en el navegador del usuario. Los mapas se pueden crear pegando un JSON (Pegar un mapa / Guardar o abrir archivos → Pegar proyecto (JSON)).
+> Aplicación web (${APP_URL}) que combina un editor de mapas mentales con un motor que simula flujos ronda a ronda: comportamientos (filtros, multiplicadores, restrictores, acumuladores…), uniones que influyen, remedios, bucles de retroalimentación, «¿Y si…?» (escenarios), cuadrícula del tiempo, termómetro, Marcador, veredicto «Dímelo claro» y «Ayúdame a pensar» con IA y cuatro modos de trabajo (preguntas, plan, ACLARATOR y COPYWRITER). La interfaz es muy sencilla (un niño de 8 años la usa sin explicaciones: una «Brújula» pregunta de una en una y el mapa es un camino de Hoy a lo que quiero, con piedras que frenan y ayudas) y crece en tres niveles (1 · Pensar, 2 · Camino, 3 · Experto). Todo se guarda en el navegador del usuario. Los mapas se pueden crear pegando un JSON (Pegar un mapa / Guardar o abrir archivos → Pegar proyecto (JSON)).
 
-Si eres una IA: lee primero el Manual para IA (texto completo). Contiene el prompt maestro, 18 prompts (incluidos ACLARATOR y COPYWRITER), la especificación exacta del JSON importable, las reglas del motor y los identificadores data-testid de la interfaz por nivel.
+Si eres una IA: lee primero el Manual para IA (texto completo). Contiene el prompt maestro, 19 prompts (incluidos ACLARATOR, COPYWRITER y el mapa del modo fácil), la especificación exacta del JSON importable, las reglas del motor y los identificadores data-testid de la interfaz por nivel.
 
 ## Manuales
 - [Manual para IA (Markdown)](${APP_URL}/MANUAL-IA.md): prompts, formato JSON importable verificado, reglas del motor, selectores para agentes.
@@ -154,6 +154,7 @@ Si eres una IA: lee primero el Manual para IA (texto completo). Contiene el prom
 ## Ejemplos validados (importables)
 - [Ejemplo básico: captar alumnos de guitarra](${APP_URL}/ejemplos/mapa-ejemplo-ia.json)
 - [Ejemplo avanzado: tienda online](${APP_URL}/ejemplos/mapa-ejemplo-ia-avanzado.json)
+- [Ejemplo del modo fácil: sacar un 8 en mates](${APP_URL}/ejemplos/mapa-ejemplo-camino.json)
 
 ## Código
 - [Repositorio en GitHub](${REPO_URL})

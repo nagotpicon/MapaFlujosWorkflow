@@ -131,12 +131,17 @@ export function TopBar() {
       <Button variant="ghost" size="sm" onClick={() => open('explorer')} data-testid="open-explorer" className="text-accent-text" title="Te hago preguntas para que descubras lo que quieres">
         <Sparkles className="size-4" /><span className={labels}>Ayúdame a pensar</span>
       </Button>
-      {level >= 2 && (
+      {level < 3 && (
+        <Button variant="ghost" size="sm" onClick={() => open('discover')} data-testid="open-discover" title="Lo que he visto en tu mapa, contado fácil">
+          <Search className="size-4" /><span className={labels}>Lo que he descubierto</span>
+        </Button>
+      )}
+      {level === 3 && (
         <Button variant="ghost" size="sm" onClick={() => open('verdict')} data-testid="open-verdict" title="Lo que sale de tu mapa, sin rodeos">
           <MessageCircleHeart className="size-4" /><span className={labels}>Dímelo claro</span>
         </Button>
       )}
-      {level >= 2 && (
+      {level === 3 && (
         <Button variant="ghost" size="sm" onClick={() => open('monitor')} data-testid="open-monitor" title="Qué te ayuda, qué te frena y qué arreglar primero">
           <Activity className="size-4" /><span className={labels}>Marcador</span>
         </Button>
@@ -177,6 +182,7 @@ export function TopBar() {
           <Menu.Item icon={<Plus />} onSelect={() => void A.newProject()}>Mapa nuevo</Menu.Item>
           <Menu.Item icon={<Copy />} onSelect={async () => { const d = useProject.getState().doc; if (d) { await A.openProject(reassignProjectId(d, `${d.project.name} (copia)`)); useUI.getState().notify('Mapa duplicado', 'success'); } }}>Duplicar este mapa</Menu.Item>
           <Menu.Item icon={<Layers3 />} onSelect={() => void A.openDemo()}>Ver un ejemplo</Menu.Item>
+          <Menu.Item icon={<Layers3 />} onSelect={() => void A.openExpertDemo()}>Ejemplo para expertos</Menu.Item>
           {level < 3 && (
             <Menu.Sub>
               <Menu.SubTrigger icon={<Download />}>Guardar o abrir archivos</Menu.SubTrigger>

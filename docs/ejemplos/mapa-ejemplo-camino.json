@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "prj_camino_mates",
+    "name": "Sacar un 8 en mates",
+    "description": "Mapa del modo fácil (el camino) hecho siguiendo el MANUAL-IA.",
+    "createdAt": 1767225600000,
+    "updatedAt": 1767225600000,
+    "activeScenarioId": "scn_base",
+    "settings": {
+      "depth": "advanced"
+    }
+  },
+  "nodes": [
+    {
+      "id": "n_hoy",
+      "projectId": "prj_camino_mates",
+      "type": "input",
+      "title": "Saco un 5 y me agobio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "blue",
+        "shape": "pill"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "hoy"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "dimensionValues": {
+        "quantity": {
+          "value": 10
+        }
+      },
+      "behaviorIds": [
+        "b_gen"
+      ]
+    },
+    {
+      "id": "n_p1",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Repasar 20 minutos cada día",
+      "position": {
+        "x": 290,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso",
+          "primero": "1"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_p2",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Hacer los ejercicios del libro",
+      "position": {
+        "x": 580,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_p3",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Preguntar lo que no entiendo",
+      "position": {
+        "x": 870,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_meta",
+      "projectId": "prj_camino_mates",
+      "type": "output",
+      "title": "Sacar un 8 en mates",
+      "position": {
+        "x": 1160,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "emerald",
+        "shape": "pill"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "meta"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_piedra",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Me distraigo con el móvil",
+      "position": {
+        "x": 290,
+        "y": -170
+      },
+      "visualStyle": {
+        "color": "rose",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "piedra",
+          "tamano": "grande"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": -5
+        }
+      }
+    },
+    {
+      "id": "n_ayuda",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Dejar el móvil en otra habitación",
+      "position": {
+        "x": 290,
+        "y": -340
+      },
+      "visualStyle": {
+        "color": "cyan",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "ayuda",
+          "fuerza": "mucho"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_piedra2",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Me da vergüenza preguntar",
+      "position": {
+        "x": 870,
+        "y": -170
+      },
+      "visualStyle": {
+        "color": "rose",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "piedra",
+          "tamano": "mediana"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": -3
+        }
+      }
+    },
+    {
+      "id": "n_razon",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Quiero ir tranquilo a los exámenes",
+      "position": {
+        "x": 1160,
+        "y": 170
+      },
+      "visualStyle": {
+        "color": "pink",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "razon"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_hoy",
+      "targetNodeId": "n_p1",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e2",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p1",
+      "targetNodeId": "n_p2",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e3",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p2",
+      "targetNodeId": "n_p3",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e4",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p3",
+      "targetNodeId": "n_meta",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e5",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_piedra",
+      "targetNodeId": "n_p1",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.5
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e6",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_ayuda",
+      "targetNodeId": "n_piedra",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "compensate",
+          "compensationType": "partial",
+          "compensationUnit": "points",
+          "amount": 4
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e7",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_piedra2",
+      "targetNodeId": "n_p3",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.5
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e8",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_meta",
+      "targetNodeId": "n_razon",
+      "type": "conceptual",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      },
+      "direction": "none"
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "b_gen",
+      "ownerId": "n_hoy",
+      "behaviorType": "generator",
+      "parameters": {
+        "amount": 10,
+        "mode": "continuous"
+      }
+    }
+  ],
+  "conditions": [],
+  "annotations": [],
+  "layers": [],
+  "dimensions": [],
+  "scenarios": [
+    {
+      "id": "scn_base",
+      "projectId": "prj_camino_mates",
+      "name": "Situación inicial",
+      "isBase": true,
+      "color": "#6366f1",
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    }
+  ],
+  "circuits": []
+}

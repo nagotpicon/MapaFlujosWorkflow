@@ -1,4 +1,4 @@
-import { Activity, FolderOpen, GitCompare, HelpCircle, History, MessageCircleHeart, Settings, Sparkles } from 'lucide-react';
+import { Activity, FolderOpen, GitCompare, HelpCircle, History, ListChecks, MessageCircleHeart, Search, Settings, Sparkles } from 'lucide-react';
 import { useUI } from '../store/uiStore';
 import { Modal } from '../ui/primitives';
 import { MonitorPanel } from '../panels/Monitor';
@@ -10,6 +10,7 @@ import { HelpPanel } from '../panels/Help';
 import { ProjectList } from './StartScreen';
 import { ExplorerPanel } from '../explorer/ExplorerPanel';
 import { PasteImportDialog } from './PasteImport';
+import { DiscoverPanel, PlanPanel } from '../kid/Discoveries';
 
 export default function Overlays() {
   const overlay = useUI((s) => s.overlay);
@@ -39,6 +40,12 @@ export default function Overlays() {
       </Modal>
       <Modal open={overlay === 'help'} onOpenChange={close} width="max-w-3xl" title="Ayuda" subtitle="Cómo se usa, paso a paso" icon={<HelpCircle />}>
         {overlay === 'help' && <HelpPanel />}
+      </Modal>
+      <Modal open={overlay === 'discover'} onOpenChange={close} width="max-w-2xl" title="Lo que he descubierto" subtitle="He mirado tu mapa y esto es lo que veo" icon={<Search />}>
+        {overlay === 'discover' && <DiscoverPanel />}
+      </Modal>
+      <Modal open={overlay === 'plan'} onOpenChange={close} width="max-w-2xl" title="Mi plan" subtitle="Tu mapa en pocas líneas, para tenerlo a mano" icon={<ListChecks />}>
+        {overlay === 'plan' && <PlanPanel />}
       </Modal>
       <PasteImportDialog open={overlay === 'paste'} onOpenChange={close} />
     </>

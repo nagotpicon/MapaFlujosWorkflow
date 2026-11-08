@@ -17,23 +17,22 @@ export function HelpPanel() {
           <span><b className="block text-ink">Manual para IA</b><span className="text-[12px] text-ink-3">Prompts listos para copiar y el formato JSON para que una IA cree mapas.</span></span>
         </a>
       </div>
-      <Section title="Nivel 1 · Ideas: suelta lo que tienes en la cabeza">
+      <Section title="1 · Pensar: suelta lo que tienes en la cabeza">
         <ul className="list-disc space-y-1 pl-4">
-          <li><b className="text-ink">Doble clic</b> en cualquier sitio del lienzo: idea nueva. <b className="text-ink">Doble clic</b> en una idea: escribir en ella.</li>
-          <li>Con una idea elegida, <b className="text-ink">Tab</b> crea otra unida a ella y <b className="text-ink">⇧↵</b> una «hermana» debajo.</li>
-          <li>Para unir dos ideas, arrastra desde el <b className="text-ink">borde</b> de una hasta la otra (o usa «Unir»).</li>
-          <li>«Ordenar» coloca todo en su sitio. Clic derecho: más opciones. Ctrl+Z: deshacer.</li>
+          <li>La <b className="text-ink">🧭 Brújula</b> (abajo) te hace <b className="text-ink">una pregunta cada vez</b> y te dice por qué. Contesta ahí mismo: lo que escribes aparece en el mapa, ya colocado.</li>
+          <li><b className="text-ink">💡 Idea</b> añade una idea unida a la que tengas elegida. <b className="text-ink">Tab</b> hace lo mismo con el teclado.</li>
+          <li>Para unir dos cosas, arrastra desde el <b className="text-ink">borde</b> de una hasta la otra (o usa «🔗 Unir»). «🧹 Ordenar» coloca todo. Ctrl+Z: deshacer.</li>
         </ul>
       </Section>
-      <Section title="Nivel 2 · Movimiento: mira qué llega a tu meta" defaultOpen={false}>
+      <Section title="2 · Camino: de cómo está hoy a lo que quieres" defaultOpen={false}>
         <ul className="list-disc space-y-1 pl-4">
-          <li>Marca dónde empieza todo (<b className="text-ink">Inicio</b>) y qué quieres conseguir (<b className="text-ink">Meta</b>). Une los pasos en orden.</li>
-          <li>Pulsa <b className="text-ink">Probar</b>: ronda a ronda (semana, mes…) verás cuánto llega a la meta.</li>
-          <li>En cada paso puedes decir qué pasa: <b className="text-ink">Colador</b> (solo pasa una parte), <b className="text-ink">Límite</b> (solo caben unos cuantos), <b className="text-ink">Hucha</b> (lo guarda), <b className="text-ink">Multiplica</b>…</li>
-          <li>«Dímelo claro» te cuenta, sin rodeos, dónde se pierde lo demás.</li>
+          <li>El mapa es un camino: <b className="text-ink">🌱 Hoy → 👣 pasos → 🎯 Lo que quiero</b>. De Hoy salen 10 «empujones».</li>
+          <li>Las <b className="text-ink">🪨 piedras</b> te frenan: se quedan con parte de los empujones. Las <b className="text-ink">🤝 ayudas</b> hacen más pequeñas las piedras.</li>
+          <li>Arriba, el medidor dice cuántos <b className="text-ink">llegan de cada 10</b>. «¿Por qué?» abre <b className="text-ink">Lo que he descubierto</b> y tu <b className="text-ink">plan</b>.</li>
+          <li>Toca cualquier cosa para decir qué es (paso, piedra, ayuda…), lo grande que es una piedra, o marcar ⭐ tu primer paso y ✅ lo que ya has hecho.</li>
         </ul>
       </Section>
-      <Section title="Nivel 3 · Todo: para cuando quieras afinar" defaultOpen={false}>
+      <Section title="3 · Experto: para cuando quieras afinar mucho" defaultOpen={false}>
         <ul className="list-disc space-y-1 pl-4">
           <li><b className="text-ink">¿Y si…?</b>: prueba cambios (más tiempo, otro precio…) sin estropear tu mapa original, y compáralos.</li>
           <li><b className="text-ink">Frenos y remedios</b>: una idea puede frenar a otra; un remedio le quita fuerza al freno.</li>

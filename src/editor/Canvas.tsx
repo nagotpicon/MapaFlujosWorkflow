@@ -8,6 +8,7 @@ import { useProject } from '../store/projectStore';
 import { useSim } from '../store/simStore';
 import { useUI } from '../store/uiStore';
 import * as A from '../app/actions';
+import { levelOf } from '../app/levels';
 import { NODE_TYPES } from './nodes';
 import { EDGE_TYPES, EdgeMarkers } from './edges';
 import { useFlowElements, type RFEdgeData, type RFNodeData } from './derive';
@@ -49,8 +50,11 @@ export function Canvas({ resolvedTheme, level = 3 }: { resolvedTheme: 'light' | 
       return rf.screenToFlowPosition({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
     });
     A.registerFit((ids) => {
-      if (ids?.length) void rf.fitView({ nodes: ids.map((id) => ({ id })), duration: 400, padding: 0.5, maxZoom: 1.4 });
-      else void rf.fitView({ duration: 400, padding: 0.15, maxZoom: 1.2 });
+      // en el modo fácil se deja sitio arriba para el medidor y abajo para la Brújula y la bandeja
+      const easy = levelOf(useProject.getState().doc?.project.settings.depth) < 3;
+      const padding = easy ? { top: '84px', bottom: '270px', left: '48px', right: '48px' } as const : undefined;
+      if (ids?.length) void rf.fitView({ nodes: ids.map((id) => ({ id })), duration: 400, padding: padding ?? 0.5, maxZoom: 1.4 });
+      else void rf.fitView({ duration: 400, padding: padding ?? 0.15, maxZoom: 1.2 });
     });
   }, [rf]);
 

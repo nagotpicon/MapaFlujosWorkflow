@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { parseProjectDoc } from '../src/core/model/migrations';
 import { simulate } from '../src/engine/simulate';
+import { analizarCamino } from '../src/engine/kid';
+import { leerCamino } from '../src/kid/model';
 
 const raw = JSON.parse(readFileSync(new URL('../docs/ejemplos/mapa-ejemplo-ia.json', import.meta.url), 'utf8'));
 
@@ -68,13 +70,32 @@ describe('Ejemplo avanzado del manual para IA', () => {
   });
 });
 
+describe('Ejemplo del modo fácil (mapa-ejemplo-camino.json)', () => {
+  const raw = JSON.parse(readFileSync(new URL('../docs/ejemplos/mapa-ejemplo-camino.json', import.meta.url), 'utf8'));
+  it('se importa sin reparaciones y se lee como un camino', () => {
+    const { doc, repairs } = parseProjectDoc(raw);
+    expect(repairs).toEqual([]);
+    const c = leerCamino(doc);
+    expect(c.pasos.map((p) => p.title)).toEqual(['Repasar 20 minutos cada día', 'Hacer los ejercicios del libro', 'Preguntar lo que no entiendo']);
+    expect(c.piedras).toHaveLength(2);
+    expect(c.ayudas).toHaveLength(1);
+    expect(c.razones).toHaveLength(1);
+  });
+  it('la cuenta del MANUAL-IA es exacta: 0,9 × 0,7 → llegan 6,3 de cada 10', () => {
+    const a = analizarCamino(parseProjectDoc(raw).doc);
+    expect(a.llegan).toBe(6.3);
+    expect(a.sinPiedras).toBe(10);
+    expect(a.piedras.map((s) => s.id)).toEqual(['n_piedra2', 'n_piedra']);
+  });
+});
+
 describe('MANUAL-IA.md', () => {
   const md = readFileSync(new URL('../docs/MANUAL-IA.md', import.meta.url), 'utf8');
   const blocks = [...md.matchAll(/```json\n([\s\S]*?)\n```/g)].map((m) => m[1]);
 
   it('todos los proyectos completos incluidos en el manual se importan sin reparaciones', () => {
     const projects = blocks.map((b) => { try { return JSON.parse(b); } catch { return null; } }).filter((j) => j?.project?.id);
-    expect(projects.length).toBe(2);
+    expect(projects.length).toBe(3);
     for (const p of projects) {
       const { repairs } = parseProjectDoc(p);
       expect(repairs).toEqual([]);

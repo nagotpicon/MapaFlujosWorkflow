@@ -2,9 +2,9 @@
  * Niveles de la interfaz: se empieza casi en blanco y se va ampliando.
  * Se guardan en el proyecto (settings.depth) para que cada mapa recuerde
  * hasta dónde has llegado.
- *   1 · Ideas       → solo escribir y unir ideas (mapa mental)
- *   2 · Movimiento  → dónde empieza, a dónde quieres llegar y qué se pierde por el camino
- *   3 · Todo        → todas las herramientas
+ *   1 · Pensar   → soltar ideas; la Brújula pregunta de una en una
+ *   2 · Camino   → de hoy a lo que quiero, con pasos, piedras y ayudas
+ *   3 · Experto  → todas las herramientas
  */
 import { useProject } from '../store/projectStore';
 import { useUI, type ViewMode } from '../store/uiStore';
@@ -14,9 +14,9 @@ export type Depth = ProjectDoc['project']['settings']['depth'];
 export type Level = 1 | 2 | 3;
 
 export const LEVELS: { depth: Depth; level: Level; label: string; hint: string }[] = [
-  { depth: 'basic', level: 1, label: 'Ideas', hint: 'Escribe y une ideas. Nada más.' },
-  { depth: 'advanced', level: 2, label: 'Movimiento', hint: 'Mira qué entra, qué se pierde y qué llega a tu meta.' },
-  { depth: 'expert', level: 3, label: 'Todo', hint: 'Todas las herramientas: «¿y si…?», frenos, bucles, tiempo…' },
+  { depth: 'basic', level: 1, label: 'Pensar', hint: 'Suelta tus ideas, sin orden. La Brújula te pregunta.' },
+  { depth: 'advanced', level: 2, label: 'Camino', hint: 'De cómo está hoy a lo que quieres: pasos, piedras y ayudas.' },
+  { depth: 'expert', level: 3, label: 'Experto', hint: 'Todas las herramientas, para quien quiera afinar mucho.' },
 ];
 
 export const levelOf = (depth: Depth | undefined): Level => (depth === 'basic' ? 1 : depth === 'expert' ? 3 : 2);

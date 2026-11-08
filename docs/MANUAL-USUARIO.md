@@ -1,6 +1,6 @@
 # Mapa de Flujos — Manual de usuario
 
-Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la aplicación: desde abrirla por primera vez hasta probar tu mapa, comparar «¿Y si…?», leer el Marcador, usar «Ayúdame a pensar» (con el ACLARATOR y el COPYWRITER) y guardar tu trabajo.
+Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la aplicación: desde abrirla por primera vez y dejar que la **Brújula** te pregunte (modo fácil: secciones 3 y 4, pensado para que lo entienda un niño de 8 años) hasta las herramientas del nivel experto (probar, «¿Y si…?», Marcador, «Ayúdame a pensar» con el ACLARATOR y el COPYWRITER…) y guardar tu trabajo.
 
 > **Dónde leer este manual:** en la web, en **https://mapa-flujos-workflow.vercel.app/manual/**. Dentro de la aplicación, con el botón **Manual** de la barra superior, en **Menú (···) → Manual de usuario**, en **Ayuda** o en la pantalla de inicio. En GitHub, en `docs/MANUAL-USUARIO.md`. El manual para IA está en **/manual-ia/**.
 
@@ -13,7 +13,7 @@ Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la
 1. [Qué es Mapa de Flujos](#1-qué-es-mapa-de-flujos)
 2. [Cómo abrir la aplicación](#2-cómo-abrir-la-aplicación)
 3. [Pantalla de inicio](#3-pantalla-de-inicio)
-4. [Los tres niveles y las zonas de la pantalla](#4-los-tres-niveles-y-las-zonas-de-la-pantalla)
+4. [El modo fácil: Pensar y Camino](#4-el-modo-fácil-pensar-y-camino)
 5. [Crear y editar elementos](#5-crear-y-editar-elementos)
 6. [Uniones (conexiones)](#6-uniones-conexiones)
 7. [Organizar el mapa](#7-organizar-el-mapa)
@@ -37,7 +37,7 @@ Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la
 25. [Ajustes del mapa](#25-ajustes-del-mapa)
 26. [Buscador de comandos](#26-buscador-de-comandos)
 27. [Atajos de teclado](#27-atajos-de-teclado)
-28. [El mapa de ejemplo](#28-el-mapa-de-ejemplo)
+28. [Los mapas de ejemplo](#28-los-mapas-de-ejemplo)
 29. [Activar la IA real](#29-activar-la-ia-real)
 30. [Instalarla en tu ordenador (opcional)](#30-instalarla-en-tu-ordenador-opcional)
 31. [Problemas frecuentes](#31-problemas-frecuentes)
@@ -72,9 +72,13 @@ La aplicación usa palabras sencillas. En algunos apartados técnicos de este ma
 
 | En pantalla | Nombre clásico |
 |---|---|
+| 🌱 Hoy (modo fácil) · Inicio (nivel 3) | Entrada |
+| 🎯 Lo que quiero (modo fácil) · Meta (nivel 3) | Salida |
+| 👣 Paso | Burbuja en el camino |
+| 🪨 Piedra | Burbuja con influencia negativa (fricción) |
+| 🤝 Ayuda | Remedio (mitigador) |
+| Empujones | Cantidad de flujo (10 por vuelta) |
 | Idea | Burbuja |
-| Inicio | Entrada |
-| Meta | Salida |
 | Unir / unión | Conexión |
 | Pasa · Influye · Info · Idea (tipos de unión) | Flujo · Causal · Informativa · Conceptual |
 | Probar · Ronda | Simular · Iteración |
@@ -116,59 +120,193 @@ Se abre en **blanco roto** (la paleta cálida de Claude, con detalles de madera 
 Al abrir la aplicación casi no hay nada: una pregunta y un cuadro para escribir.
 
 1. Arriba pone **«¿Qué te ronda la cabeza?»**.
-2. Escribe tu idea como te salga, aunque no la tengas clara. Por ejemplo: «quiero ganar dinero con mis dibujos».
+2. Escribe tu idea como te salga, aunque no la tengas clara: un problema, un sueño, algo que quieres. Si no se te ocurre nada, toca uno de los ejemplos de debajo (**Por ejemplo:** «Quiero sacar mejor nota en mates», «Quiero ganar dinero con mis dibujos», «Me cuesta hacer amigos», «Quiero cambiar de trabajo»): se escribe en el cuadro y puedes cambiarlo.
 3. Pulsa **Empezar** (o Enter).
 
-Se crea un mapa con tu idea en el centro, más grande y en letra de libro, y empiezas en el **nivel 1 · Ideas**. Si pulsas **Empezar** sin escribir nada, se crea un mapa en blanco.
+Se crea un mapa con tu idea en el centro, en letra grande, y empiezas en el **nivel 1 · Pensar**. Desde ese momento la **Brújula** te va preguntando (sección 4).
 
 Debajo hay cuatro botones:
 
 | Botón | Qué hace |
 |---|---|
-| **Prefiero que me hagas preguntas** | Crea un mapa «Exploración» y abre «Ayúdame a pensar» (sección 23). |
-| **Ver un ejemplo** | Abre el mapa de ejemplo «Éxito comercial de un operador de seguros». Los números son inventados. |
+| **Prefiero que me hagas preguntas** | Abre un mapa vacío y la Brújula empieza preguntando «¿Qué te ronda la cabeza?». |
+| **Ver un ejemplo** | Abre el ejemplo sencillo **«Vender mis dibujos»**: un camino con pasos, piedras y ayudas (sección 28). |
 | **Pegar un mapa** | Abre un cuadro para pegar el texto JSON de un mapa, por ejemplo uno hecho por una IA con el MANUAL-IA. |
 | **Abrir un archivo** | Abre un archivo `.json` guardado antes. |
 
 Si ya tienes mapas guardados, aparece **Tus mapas**: el nombre, cuántas ideas tiene y la fecha. Haz clic para abrir uno. La papelera lo borra después de un segundo clic de confirmación («¿Seguro? No se puede deshacer»).
 
-Abajo están los enlaces al **Manual de usuario** y al **Manual para IA**.
+Abajo están el enlace **Ejemplo para expertos** (el mapa grande de un operador de seguros, para el nivel 3) y los enlaces al **Manual de usuario** y al **Manual para IA**.
 
 Si ya trabajaste antes, la aplicación abre directamente **el último mapa** que usaste. Para volver a tus mapas, haz clic en el **logotipo** (arriba a la izquierda) o usa **Más opciones (···) → Mis mapas…**.
 
 ---
 
-## 4. Los tres niveles y las zonas de la pantalla
+## 4. El modo fácil: Pensar y Camino
 
-### 4.1 Los tres niveles: de menos a más
-
-La aplicación empieza casi en blanco y se va ampliando cuando lo necesitas. El selector de nivel está arriba, en una bandeja de madera:
+La aplicación está hecha para que cualquiera, también un niño de 8 años, la use **a la primera, sin que nadie se lo explique**. Para eso tiene tres niveles; los dos primeros son el **modo fácil**:
 
 | Nivel | Qué ves | Para qué sirve |
 |---|---|---|
-| **1 · Ideas** | Solo el lienzo, tus ideas, la bandeja de abajo y la guía. | Soltar todo lo que tienes en la cabeza y unir lo que tenga que ver. |
-| **2 · Movimiento** | Además: **Inicio**, **Meta**, el botón **Probar**, **Dímelo claro** y **Marcador**. | Ver qué entra, qué se pierde por el camino y cuánto llega a tu meta. |
-| **3 · Todo** | Todas las herramientas: barra lateral, panel de abajo, «¿Y si…?», frenos y remedios, bucles, cuadrícula del tiempo, termómetro… | Afinar y comparar con detalle. |
+| **1 · Pensar** | Tu idea, la Brújula y una bandeja con 💡 Idea, 🔗 Unir y 🧹 Ordenar. | Soltar lo que tienes en la cabeza, sin orden. |
+| **2 · Camino** | Además: el **camino** (🌱 Hoy → 👣 pasos → 🎯 lo que quiero), las 🪨 **piedras**, las 🤝 **ayudas**, el **medidor** de arriba y **Lo que he descubierto**. | Ver cómo llegar de cómo está la cosa hoy a lo que quieres, qué te frena y qué te ayuda. |
+| **3 · Experto** | Todas las herramientas (secciones 5 a 27). | Afinar mucho: rondas, comportamientos, condiciones, «¿Y si…?», cuadrícula… |
 
-- El nivel se **guarda con cada mapa**.
-- Un mapa nuevo empieza en el nivel 1. Un mapa con inicio y meta (por ejemplo, uno pegado o hecho con «Ayúdame a pensar») se abre en el nivel 2.
+- El selector de nivel está arriba, en una bandeja de madera. El nivel se **guarda con cada mapa**.
+- **No hace falta cambiar de nivel a mano**: cuando le dices a la Brújula lo que quieres conseguir o lo que te preocupa, pasa sola a **2 · Camino** y te avisa («🎯 ¡Ya sabes a dónde quieres llegar! Ahora vamos a ver el camino.»).
+- Un mapa pegado o importado con inicio y meta, o el ejemplo, se abre en el nivel 2.
 - Bajar de nivel no borra nada: solo esconde herramientas.
 
-> En este manual, las funciones que solo están en el nivel 3 lo indican. Si no ves algo, pulsa **3 · Todo**.
+> En este manual, las funciones que solo están en el nivel 3 lo indican. Si no ves algo, pulsa **3 · Experto**.
 
-### 4.2 Barra superior
+### 4.1 La idea del camino
+
+Todo el modo fácil se basa en una sola imagen:
+
+```
+🌱 Hoy ──▶ 👣 paso ──▶ 👣 paso ──▶ 🎯 Lo que quiero
+                ▲
+            🪨 piedra ◀── 🤝 ayuda
+```
+
+- **🌱 Hoy**: cómo está la cosa ahora. De aquí salen tus **10 empujones** (tus ganas, tu fuerza) en cada vuelta.
+- **👣 Pasos**: lo que harás para llegar, en orden.
+- **🎯 Lo que quiero**: a dónde quieres llegar. Aquí se cuenta **cuántos de cada 10 empujones llegan**.
+- **🪨 Piedras**: lo que te frena. Cada piedra se queda con parte de los empujones del paso que frena: una **pequeña** deja pasar 9 de cada 10; una **mediana**, 7; una **grande**, 5. Si hay varias, se notan todas.
+- **🤝 Ayudas**: algo o alguien que hace más pequeña una piedra. Una ayuda de **un poco** la reduce un poco; **bastante**, más; **mucho**, casi del todo.
+- **💛 Por qué me importa**, **❤️ Cómo me siento**, **❓ Pregunta** y **💡 Idea**: no cambian la cuenta, pero te ayudan a pensar y salen en tu plan.
+
+La cuenta la hace el mismo motor que el nivel experto: no es un adorno.
+
+### 4.2 La Brújula 🧭
+
+Es la tarjeta de abajo. **Te hace una sola pregunta cada vez** y siempre dice **por qué** te la hace (la línea que empieza por 💬). Contestas ahí mismo:
+
+- Si hay un cuadro, escribe y pulsa **Añadir** (o Enter). Lo que escribes aparece en el mapa, **ya colocado y unido** donde toca.
+- Si hay botones, toca uno.
+- El botón de la derecha (**Saltar**, **Ya está**, **Nada**, **No**, **Todavía no**…) pasa a la siguiente.
+- La **×** la esconde; vuelve con el botón **🧭 Brújula** de abajo a la izquierda.
+
+Las preguntas siguen el orden en que pensamos las personas cuando queremos arreglar algo. Solo aparece la que tiene sentido en cada momento:
+
+| Pregunta | Para qué (lo que dice la Brújula) |
+|---|---|
+| ¿Qué te ronda la cabeza? | Todo empieza por una idea. No tiene que estar clara ni ser perfecta. |
+| «…»… ¿qué es para ti? (🎯 Algo que quiero conseguir · 😟 Algo que me preocupa · 💭 Solo quiero pensar en ello) | Así sé por dónde empezar a ayudarte. |
+| ¿Qué más se te ocurre sobre «…»? (con 💭) | Soltar ideas sin pensarlo mucho ayuda a ver cosas que no veías. |
+| ¿Alguna de estas ideas es algo que te gustaría conseguir? | Cuando sabes lo que quieres, el mapa te ayuda a llegar. |
+| Si esto se arreglara, ¿cómo sería? | Si sabes a dónde vas, es más fácil encontrar el camino. |
+| ¿Y cómo está la cosa hoy? | Para saber desde dónde sales. |
+| ¿Por qué es importante para ti «…»? | Tus razones te darán fuerza cuando cueste. |
+| ¿Qué podrías hacer para llegar a «…»? · ¿Y después de «…», qué harías? | Las cosas grandes se hacen con pasos pequeños. |
+| ¿Qué te puede frenar o salir mal? | Si sabes qué te puede frenar, puedes prepararte antes. |
+| ¿Cómo de grande es la piedra «…»? (Pequeña · Mediana · Grande) | Las piedras grandes frenan más. |
+| ¿Qué paso frena «…»? | Así sabes en qué parte del camino tener cuidado. |
+| ¿Qué o quién te podría ayudar con «…»? · ¿Cuánto te ayudaría? | Casi todo es más fácil con ayuda. |
+| ¿Hay algo más que te pueda frenar? | Mejor verlo ahora que encontrártelo de golpe. |
+| ¿Cuál es el paso más pequeñito que podrías hacer ya, mañana mismo? | Empezar por algo pequeño hace que empieces de verdad. |
+| ¿Cómo te sientes con todo esto? (😀 Con ganas · 😐 Normal · 😟 Con miedo · 😵 Hecho un lío) | Lo que sientes también cuenta. Si dices «con miedo», te propone ponerlo como piedra para buscarle ayuda. |
+| ¿Hay algo que no sepas y te gustaría averiguar? | Saber qué te falta saber también es avanzar. |
+| ¡He descubierto cosas en tu mapa! | Abre «Lo que he descubierto» (sección 4.6). |
+| ¿Ya has hecho «…»? (✅ ¡Hecho!) | Marcar lo que haces te enseña cuánto has avanzado. |
+| ¡Has hecho todos tus pasos! ¿Has conseguido «…»? | Si todavía no, te pregunta qué falta y lo añade como paso. |
+| ¿Quieres ver tu plan? | Abre «Mi plan» (sección 4.7). |
+
+Al final te deja seguir a tu aire: «Puedes seguir: añade pasos, piedras o ayudas con los botones de abajo», con **Lo que he descubierto** y **Hazme más preguntas** (vuelve a preguntar lo que saltaste).
+
+### 4.3 La bandeja de madera
+
+Abajo, en el centro. Cada botón crea la cosa **ya colocada y unida**, y lista para escribir (escribe y pulsa Enter):
+
+| Botón | Nivel | Qué hace |
+|---|---|---|
+| **💡 Idea** (B) | 1 y 2 | Una idea nueva. En el nivel 1, unida a la idea que tengas elegida (o a la del centro). |
+| **👣 Paso** | 2 | Un paso más en el camino: detrás del paso que tengas elegido, o al final (antes de lo que quieres). |
+| **🪨 Piedra** | 2 | Algo que te frena. Frena el paso que tengas elegido (o el último). |
+| **🤝 Ayuda** | 2 | Algo o alguien que te ayuda. Va a la piedra elegida (o a la piedra que más te frena y no tiene ayuda). |
+| **🔗 Unir** (C) | 1 y 2 | Arrastra desde el borde de una cosa hasta otra. El significado sale solo: de un paso a otro es camino; de una piedra a un paso, «frena»; de una ayuda a una piedra, «ayuda»; lo demás, «tienen que ver». |
+| **🧹 Ordenar** | 1 y 2 | Coloca todo en su sitio: el camino en fila, las piedras encima de lo que frenan y las ayudas encima de sus piedras. Se puede deshacer. |
+
+Más atajos del modo fácil:
+
+- **Tab** con algo elegido añade **lo siguiente con sentido**: después de Hoy o de un paso, otro paso justo detrás; después de lo que quieres, un paso al final; después de una piedra, una ayuda para ella; después de una idea, otra idea unida.
+- **Supr** (o **Quitar** en los detalles) borra sin romper el camino: los pasos de alrededor se vuelven a unir y las piedras de un paso borrado pasan a frenar el siguiente.
+- **Doble clic** en el lienzo: una idea donde hagas clic.
+- **Clic derecho** en el lienzo: 💡 Nueva idea y, en el nivel 2, 👣 Nuevo paso, 🪨 Nueva piedra y 🤝 Nueva ayuda; también Pegar, Deshacer, Verlo todo y Ordenar el mapa.
+
+### 4.4 El medidor (nivel 2)
+
+Arriba, en el centro: **«🎯 Llegan 7 de cada 10»** con diez bolitas (verdes si llegan 8 o más; ámbar de 5 a 7; rojas por debajo de 5).
+
+- Se recalcula solo cada vez que cambias algo. Cuando sube o baja, enseña un momento cuánto («+2 🎉» o «−1»).
+- Si todavía no se puede medir, te dice qué falta: «Pon lo que quieres conseguir 🎯», «Pon cómo está la cosa hoy 🌱» o «Une Hoy con lo que quieres, paso a paso 👣».
+- **¿Por qué?** (o un clic en el medidor) abre **Lo que he descubierto**.
+- En el camino, cada línea lleva un numerito con los empujones que pasan por ella: así ves dónde se pierden.
+
+### 4.5 Los detalles fáciles (derecha)
+
+Aparecen **solo cuando eliges algo** (clic en una idea o en una línea).
+
+**Una idea, en el nivel 1:** **Lo que pone**, dos botones grandes (**🎯 Algo que quiero conseguir** y **😟 Algo que me preocupa (cómo está hoy)**: los dos empiezan el camino), **¿Quieres apuntar algo más?**, **Color** y **Quitar**.
+
+**Una idea, en el nivel 2:**
+
+- **Lo que pone** y, arriba, el dibujo y el nombre de lo que es (por ejemplo, 🪨 Piedra) con **Quitar**.
+- **¿Qué es esto?**: nueve botones (👣 Paso, 🪨 Piedra, 🤝 Ayuda, 🎯 Lo que quiero, 🌱 Hoy, 💡 Idea, 💛 Por qué me importa, ❤️ Cómo me siento, ❓ Pregunta), con una frase que dice para qué sirve. Al cambiarlo, el mapa se recoloca solo. Solo hay un «Hoy» y un «Lo que quiero»: si eliges otro, el anterior vuelve a ser una idea.
+- Según lo que sea:
+  - **🪨 Piedra**: **¿Cómo de grande es?** (Pequeña · Mediana · Grande) y **¿Qué frena?** (los pasos y lo que quieres). Debajo te dice cuánto te quita: «Esta piedra te quita 3 de cada 10 empujones».
+  - **🤝 Ayuda**: **¿Con qué piedra te ayuda?** y **¿Cuánto te ayuda?** (Un poco · Bastante · Mucho). Debajo: «Gracias a esta ayuda llegan 2 empujones más de cada 10».
+  - **👣 Paso**: **⭐ Es mi primer paso**, **✅ ¡Ya lo he hecho!** y **Orden: Antes / Después** (paso N de M). Debajo: «Aquí llegan N de cada 10 empujones».
+  - **🎯 Lo que quiero**: **🎉 ¡Lo he conseguido!** y cuántos llegan.
+  - **🌱 Hoy**: «De aquí salen tus 10 empujones en cada vuelta».
+- **¿Quieres apuntar algo más?**: tus notas.
+- **Color**, solo en las ideas.
+
+**Una línea:** «Une A con B», qué significa («Es parte del camino», «A frena a B», «A ayuda con B» o «Solo dice que tienen que ver»), **¿Quieres escribir algo en la línea?** y **Quitar la línea**.
+
+En el mapa, cada cosa lleva su dibujo delante (🌱 👣 🎯 🪨 🤝 💛 ❤️ ❓ 💡) y, detrás, ⭐ si es tu primer paso, ✅ si ya está hecho y 🎉 si lo has conseguido.
+
+### 4.6 Lo que he descubierto 🔍
+
+Botón **Lo que he descubierto** de la barra superior (niveles 1 y 2), **¿Por qué?** del medidor o la pregunta de la Brújula. Es el análisis del mapa contado fácil:
+
+- Arriba, en grande, cuántos llegan de cada 10 y cuántos se quedan por el camino.
+- Debajo, lo que he visto, por ejemplo:
+  - «🪨 «…» es tu piedra más grande: te quita 3 de cada 10.» (Si nadie te ayuda con ella, **🧭 Pregúntame** hace que la Brújula te pregunte quién podría ayudarte.)
+  - «✨ Si quitaras todas las piedras, llegarían 10 de cada 10.»
+  - «🤝 «…» es tu mejor ayuda: sin ella perderías 2 de cada 10.»
+  - «⛰️ «…» tiene 2 piedras encima: es la parte más difícil del camino.»
+  - «🕳️ En «…» se pierden N de cada 10.» (en mapas hechos en el nivel 3)
+  - «🪨 Aún no has pensado qué te puede frenar.» · «⭐ Aún no has elegido tu primer paso.» · «⭐ Tu primer paso: «…».»
+  - «✅ Llevas N de M pasos hechos.» · «🎉 ¡Has conseguido «…»!»
+  - «🤝 «…» todavía no ayuda con ninguna piedra.» · «🪨 «…» no frena ningún paso.» · «👣 «…» no está en el camino.»
+  - «💡 Tienes N ideas sueltas.» · «❓ Te falta averiguar: «…».» · «💛 Lo haces porque: «…».» · «❤️ Te sientes: «…».»
+- **Verlo en el mapa** te lleva a esa cosa. **Ver mi plan** abre tu plan.
+
+Se calcula con tu mapa tal como está: si cambias algo, vuelve a mirar.
+
+### 4.7 Mi plan 📋
+
+Tu mapa en pocas líneas, para tenerlo a mano:
+
+- **Contado como a un amigo**: «Quieres «…». Ahora mismo: «…». Para llegar: «…», luego «…». Lo que más te puede frenar: «…». Te puede ayudar: «…». Empieza por «…»: es pequeño y puedes hacerlo pronto. ¡Tú puedes!» (con tus palabras, tal cual las escribiste).
+- La lista: 🎯 Quiero, 🌱 Hoy, 💛 Porque, 👣 Mis pasos (con ⭐ y ✅), 🪨 Lo que me puede frenar (con su tamaño y quién te ayuda), ❓ Me falta averiguar, ❤️ cómo te sientes y 📊 cuántos llegan.
+- **Copiar** y **Descargar** (archivo de texto).
+
+### 4.8 La barra superior
 
 | Elemento | Nivel | Función |
 |---|---|---|
 | **Logotipo** | todos | Abre **Mis mapas**. |
-| **Nombre del mapa** | todos | Clic para cambiarlo. Enter confirma y Escape cancela. En el mapa de ejemplo aparece «Ejemplo». |
+| **Nombre del mapa** | todos | Clic para cambiarlo. Enter confirma y Escape cancela. En los ejemplos aparece «Ejemplo». |
 | **Punto de guardado** | todos | Verde: guardado. Parpadea: guardando. Rojo: no se ha podido guardar (pasa el ratón para ver el motivo). |
-| **Selector de nivel** | todos | 1 · Ideas · 2 · Movimiento · 3 · Todo. |
+| **Selector de nivel** | todos | 1 · Pensar · 2 · Camino · 3 · Experto. |
 | **«¿Y si…?»** | 3 | Pruebas sin estropear el original (sección 18). |
 | **Vista** | 3 | Ideas · Recorrido · Fuerzas · Piezas · Película (sección 8). Teclas **1** a **5**. |
-| **Ayúdame a pensar** (✦) | todos | Te hace preguntas o trabaja contigo en un modo de trabajo (sección 23). |
-| **Dímelo claro** | 2 y 3 | Lo que sale de tu mapa, sin rodeos (sección 22). |
-| **Marcador** | 2 y 3 | Qué te ayuda, qué te frena y qué arreglaría primero (sección 21). |
+| **Ayúdame a pensar** (✦) | todos | Modos de trabajo con más preguntas: entrevista, plan, ACLARATOR y COPYWRITER (sección 23). |
+| **Lo que he descubierto** (🔍) | 1 y 2 | Sección 4.6. |
+| **Dímelo claro** | 3 | Lo que sale de tu mapa, sin rodeos (sección 22). |
+| **Marcador** | 3 | Qué te ayuda, qué te frena y qué arreglaría primero (sección 21). |
 | **Manual** (📖) | todos | Abre este manual en otra pestaña. |
 | **Cuadrícula del tiempo** (#) | 3 | Sección 19. |
 | **Termómetro** | 3 | Qué se agobia y qué va tranquilo. Tecla **H** (sección 20). |
@@ -178,42 +316,22 @@ La aplicación empieza casi en blanco y se va ampliando cuando lo necesitas. El 
 | **Guardar o abrir archivos** | 3 | JSON, PNG, SVG, PDF, importar, pegar, copia de seguridad y restaurar (en los niveles 1 y 2, en Más opciones). |
 | **Sol / Luna** | todos | Claro, Oscuro o Como mi ordenador. |
 | **Panel de abajo · Detalles** | 3 | Muestran u ocultan el panel de abajo y el panel de detalles. |
-| **Más opciones (···)** | todos | Mis mapas…, Mapa nuevo, Duplicar este mapa, Ver un ejemplo, Guardar o abrir archivos (niveles 1 y 2), Guardar versión ahora (Ctrl+S), Versiones guardadas…, Ajustes del mapa, Ayuda y atajos, Manual de usuario, Manual para IA (prompts). |
+| **Más opciones (···)** | todos | Mis mapas…, Mapa nuevo, Duplicar este mapa, Ver un ejemplo, Ejemplo para expertos, Guardar o abrir archivos (niveles 1 y 2), Guardar versión ahora (Ctrl+S), Versiones guardadas…, Ajustes del mapa, Ayuda y atajos, Manual de usuario, Manual para IA (prompts). |
 
 > En pantallas estrechas algunos botones muestran solo el icono. Pasa el ratón por encima para ver su nombre y su atajo.
 
-### 4.3 Bandeja de madera (niveles 1 y 2)
+### 4.9 El nivel 3 · Experto
 
-Abajo, en el centro, hay una bandeja con pocas herramientas y con palabras:
+Al pulsar **3 · Experto** desaparecen la Brújula, la bandeja y el medidor, y aparecen:
 
-| Botón | Tecla | Uso |
-|---|---|---|
-| **Idea** | B | Haz clic en el lienzo para poner una idea. También vale el doble clic en cualquier sitio. |
-| **Inicio** (nivel 2) | I | Crea el punto de donde sale todo (clientes, horas, dinero, ganas…). Empieza con 100 por ronda. |
-| **Meta** (nivel 2) | O | Crea lo que quieres conseguir. |
-| **Unir** | C | Arrastra desde el borde de una idea hasta otra. |
-| **Nota** | N | Una nota para acordarte de algo. |
-| **Ordenar** | — | Coloca todo en orden automáticamente. Se puede deshacer. |
+- la **barra lateral de herramientas** (sección 4.10);
+- el **panel de abajo** con seis pestañas: **Probar, Resultados, Pistas, ¿Y si…?, Rondas y Qué ha pasado** (sección 17), cuya altura cambias arrastrando su borde de arriba;
+- los **detalles completos** a la derecha, siempre a la vista (sección 9);
+- la **Leyenda** abajo a la derecha y todo lo demás de las secciones 5 a 27.
 
-### 4.4 La guía («siguiente paso»)
+Todo lo que hiciste en el modo fácil sigue ahí: Hoy es un **Inicio** que genera 10 por ronda, los pasos están unidos con uniones **Pasa**, cada piedra es una idea con influencia negativa (−1, −3 o −5) unida con **Influye** al paso que frena, y cada ayuda es un **Remedio** que la compensa (1, 2 o 4 puntos).
 
-En los niveles 1 y 2 aparece una tarjeta encima de la bandeja con **una sola cosa** que puedes hacer ahora, y un botón para hacerla. Va cambiando según tu mapa:
-
-- **Nivel 1**: escribir tu idea → añadir ideas alrededor (Tab) → soltar lo que necesitas, lo que te preocupa y lo que te ilusiona → unir las que tengan que ver → **Pasar a Movimiento**.
-- **Nivel 2**: **¿Dónde empieza todo?** (elige una idea y pulsa **Es el inicio**) → **¿Qué quieres conseguir?** (**Es mi meta**) → unir el inicio con la meta → **Probar** → «En 12 rondas llegan X a tu meta» → **Dímelo claro**.
-
-Siempre tiene el enlace **¿Atascado? Ayúdame a pensar**. La × la esconde.
-
-### 4.5 Barra «Probar» (nivel 2)
-
-Arriba, en el centro, cuando hay una meta:
-
-- **Probar / Pausa** y la flecha de **Volver a empezar**.
-- **Ronda N de [12]**: cambia el número para probar más o menos rondas (semanas, meses…).
-- **Han llegado a la meta**: va sumando mientras avanzan las rondas.
-- **¿Por qué?** abre «Dímelo claro».
-
-### 4.6 Barra lateral de herramientas (nivel 3)
+### 4.10 Barra lateral de herramientas (nivel 3)
 
 | Herramienta | Tecla | Uso |
 |---|---|---|
@@ -233,25 +351,13 @@ Arriba, en el centro, cuando hay una meta:
 
 Al pulsar una herramienta activa vuelves a **Mover y elegir**. **Escape** también, y además limpia la selección, el rastreo y el enfoque.
 
-### 4.7 Lienzo
+### 4.11 Lienzo
 
 - **Desplazarte**: arrastra sobre una zona vacía del lienzo.
 - **Zoom**: rueda del ratón, gesto de pellizco o los botones **− / % / +** de la esquina. El porcentaje vuelve al 100 %.
-- **Verlo todo**: tecla **F** o su botón. **Acercarme a lo elegido**: **⇧F**.
+- **Verlo todo**: tecla **F** o su botón. **Acercarme a lo elegido**: **⇧F**. En el modo fácil, el mapa deja sitio arriba para el medidor y abajo para la Brújula.
 - **Leyenda** (nivel 3): abajo a la derecha; cambia según la vista.
 - **Clic derecho**: menú con opciones (más en el nivel 3).
-
-### 4.8 Detalles (derecha)
-
-- En los niveles 1 y 2 aparecen **solo cuando eliges una idea o una unión**, y son sencillos:
-  - **Qué es**, **Notas** y **Color** (Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua, Rosa).
-  - En el nivel 2, además: **Esta idea es…** (Un paso · El inicio · Mi meta), **¿Cuánto sale de aquí en cada ronda?** (en el inicio), lo que pasa en la ronda actual y **Qué pasa en este paso** (sección 11).
-  - En una unión: el texto sobre la línea, **¿Se pierde algo por el camino?** (nivel 2), **Darle la vuelta** y **Borrar esta unión**.
-- En el nivel 3 están siempre a la vista y muestran todo (sección 9).
-
-### 4.9 Panel de abajo (nivel 3)
-
-Tiene seis pestañas: **Probar, Resultados, Pistas, ¿Y si…?, Rondas y Qué ha pasado** (sección 17). Puedes cambiar su altura arrastrando el borde de arriba.
 
 ---
 
@@ -280,7 +386,7 @@ Tiene seis pestañas: **Probar, Resultados, Pistas, ¿Y si…?, Rondas y Qué ha
 | **Grupo** | Grupo | Junta elementos y se puede plegar. | No calcula por sí mismo. |
 | **Zona** | Contenedor | Marca una parte del mapa (un área, un equipo…). | No calcula por sí mismo. |
 
-En el nivel 2 cambias el tipo en **Detalles → Esta idea es…** (Un paso · El inicio · Mi meta). En el nivel 3, en **Detalles → Tipo**. Si conviertes una idea en inicio, empieza a generar 100 por ronda; puedes cambiar la cantidad.
+En el nivel 2 cambias el papel en **Detalles → ¿Qué es esto?** (sección 4.5). En el nivel 3, el tipo en **Detalles → Tipo**. Si conviertes una idea en inicio, empieza a generar 100 por ronda; puedes cambiar la cantidad.
 
 ### 5.3 Escribir el texto
 
@@ -355,7 +461,7 @@ Puedes cambiar el tipo después en **Detalles → Tipo de unión** (nivel 3).
 
 Haz clic sobre la línea para elegirla.
 
-**Niveles 1 y 2.** Arriba pone **Unión**, con **Darle la vuelta** y **Borrar esta unión**. Debajo: «De … a …», **Texto sobre la línea** y, en el nivel 2 y si es de tipo Pasa, **¿Se pierde algo por el camino?** (0 % = llega todo) y «En esta ronda pasan …».
+**Niveles 1 y 2.** Arriba pone **🔗 Línea**, con **Quitar la línea** (y **Darle la vuelta** si solo dice que tienen que ver). Debajo: «Une A con B», qué significa y **¿Quieres escribir algo en la línea?** (sección 4.5).
 
 **Nivel 3.** Arriba: origen → destino, **Darle la vuelta** y **Borrar esta unión**. Después:
 
@@ -476,7 +582,7 @@ Si pulsas **Probar** (o Reproducir) estando en la vista Ideas, la aplicación ca
 
 ## 9. Detalles (el panel de la derecha)
 
-En el nivel 3 el panel **Detalles** está siempre a la vista (botón **Mostrar detalles / Ocultar detalles** de la barra superior). En los niveles 1 y 2 solo aparece cuando eliges algo, y es sencillo (sección 4.8).
+En el nivel 3 el panel **Detalles** está siempre a la vista (botón **Mostrar detalles / Ocultar detalles** de la barra superior). En los niveles 1 y 2 solo aparece cuando eliges algo, y es sencillo (sección 4.5).
 
 ### 9.1 Sin nada elegido: el mapa (nivel 3)
 
@@ -564,7 +670,7 @@ Cada uno se puede expresar en tres modos:
 
 Un comportamiento es **lo que hace una idea con el flujo**. Sin comportamientos, la idea deja pasar el flujo sin cambios (o solo es una idea suelta).
 
-- **Nivel 2:** en **Detalles → Qué pasa en este paso**, pulsa **¿Qué pasa aquí?** y elige uno de estos seis, con nombres sencillos: **Colador** (filtro: solo pasa una parte), **Límite** (restrictor: solo caben unos cuantos en cada ronda), **Se escapa algo** (reductor: por el camino se pierde un poco), **Multiplica** (multiplicador), **Hucha** (acumulador: lo va guardando) y **Suelta lo guardado** (liberador). Sin ninguno verás «Aquí no pasa nada especial: todo lo que llega, sigue adelante».
+- **Niveles 1 y 2:** no hace falta: las 🪨 piedras y las 🤝 ayudas hacen ese trabajo de forma sencilla (sección 4.1).
 - **Nivel 3:** en **Detalles → Qué hace**, pulsa **Añadir comportamiento** y elige entre los 14, agrupados en Origen, Forma, Impulso, Pérdida / fricción, Ruta, Reserva y Control.
 
 ### 11.1 Los 14 comportamientos
@@ -792,7 +898,7 @@ Probar es poner el mapa en marcha: en cada **ronda** (una semana, un mes… lo q
 
 ### 17.1 Pestaña Probar (panel de abajo, nivel 3)
 
-En el nivel 2 tienes la barra sencilla **Probar** (sección 4.5). En el nivel 3, el panel completo:
+En el modo fácil no hace falta: el medidor se calcula solo (sección 4.4). En el nivel 3, el panel completo:
 
 | Control | Función |
 |---|---|
@@ -1005,7 +1111,7 @@ Botones:
 
 ## 23. «Ayúdame a pensar»: preguntas, plan, ACLARATOR y COPYWRITER
 
-Botón **Ayúdame a pensar** (✦), en todos los niveles. También la guía tiene el enlace **¿Atascado? Ayúdame a pensar**. Te ayuda a **pensar antes de construir** y todo termina en tu mapa.
+Botón **Ayúdame a pensar** (✦), en todos los niveles. Es distinto de la Brújula: aquí eliges un modo de trabajo con más preguntas. Te ayuda a **pensar antes de construir** y todo termina en tu mapa.
 
 ### 23.1 Modo demostración y modo IA
 
@@ -1175,7 +1281,7 @@ Botones: **Copiar guion** (solo la voz, listo para leer ante la cámara), **Copi
 
 ### 24.1 Guardado automático
 
-Cada cambio se guarda solo en el navegador a los ~0,5 segundos. El punto de guardado junto al nombre lo confirma (sección 4.2). Al recargar se abre el último mapa.
+Cada cambio se guarda solo en el navegador a los ~0,5 segundos. El punto de guardado junto al nombre lo confirma (sección 4.8). Al recargar se abre el último mapa.
 
 ### 24.2 Deshacer
 
@@ -1239,7 +1345,7 @@ En el apartado **Copias de seguridad**, **Copia de seguridad completa** guarda *
 - **Animación**: **Partículas de flujo** encendidas o apagadas. Si tu sistema tiene activado «reducir movimiento», la aplicación lo respeta.
 - **Atajos de teclado**: cambia cualquier atajo escribiendo la combinación en su casilla con el formato `Mod+Shift+Tecla`, donde Mod = Ctrl o ⌘. Ejemplos: `Mod+Shift+K`, `Alt+P`, `H`.
 
-El nivel (1 · Ideas, 2 · Movimiento, 3 · Todo) no está aquí: se cambia arriba, en el selector de nivel.
+El nivel (1 · Pensar, 2 · Camino, 3 · Experto) no está aquí: se cambia arriba, en el selector de nivel.
 
 ---
 
@@ -1303,9 +1409,27 @@ Los atajos no actúan mientras escribes en un cuadro de texto.
 
 ---
 
-## 28. El mapa de ejemplo
+## 28. Los mapas de ejemplo
 
-**Ver un ejemplo** (pantalla de inicio o **Más opciones (···)**) abre **«SISTEMA DE ÉXITO COMERCIAL — OPERADOR DE SEGUROS DE HOGAR»**. Lleva la etiqueta «Ejemplo»: todos sus valores son **inventados** y sirven para aprender. Se abre en el nivel **2 · Movimiento**.
+### 28.1 «Vender mis dibujos» (modo fácil)
+
+**Ver un ejemplo** (pantalla de inicio o **Más opciones (···)**) abre un camino hecho para aprender. Lleva la etiqueta «Ejemplo» y se abre en **2 · Camino**:
+
+- 🌱 **Hoy**: «Dibujo mucho, pero nadie ve mis dibujos».
+- 👣 **Pasos**: «Hacer 10 dibujos bonitos» ⭐ (primer paso) → «Enseñarlos en internet» → «Ponerles un precio».
+- 🎯 **Lo que quiero**: «Vender mis dibujos».
+- 🪨 **Piedras**: «Me da vergüenza enseñarlos» (grande, frena «Enseñarlos en internet») y «No sé cuánto cobrar» (mediana, frena «Ponerles un precio»).
+- 🤝 **Ayudas**: «Mi prima sabe de redes» (bastante) y «Mirar lo que cobran otros» (mucho).
+- 💛 «Quiero comprarme una tableta para dibujar» · ❤️ «Me hace ilusión y me da un poco de miedo» · ❓ «¿Dónde se venden dibujos?».
+
+El medidor dice **«Llegan 7 de cada 10»**. **Prueba esto:**
+1. Elige «Mi prima sabe de redes» y cambia **¿Cuánto te ayuda?** a **Mucho**: mira cómo sube el medidor.
+2. Elige una piedra y hazla **Pequeña** o **Grande**.
+3. Pulsa **¿Por qué?** y luego **Ver mi plan**.
+
+### 28.2 Ejemplo para expertos (nivel 3)
+
+**Ejemplo para expertos** (abajo en la pantalla de inicio o en **Más opciones (···)**) abre **«SISTEMA DE ÉXITO COMERCIAL — OPERADOR DE SEGUROS DE HOGAR»**. Todos sus valores son **inventados**. Se abre en el nivel 2; pásalo a **3 · Experto** para verlo todo.
 
 - **Camino principal**: Llamadas recibidas → Clasificación de llamadas → Llamadas útiles / no útiles → Capacidad del operador → Conversación comercial → Objeciones → Cierre → Ventas.
 - **Factores**: Calidad de oportunidad, Tiempo disponible, Formación, Motivación, Fricción tecnológica, Argumentario.
@@ -1318,9 +1442,9 @@ Los atajos no actúan mientras escribes en un cuadro de texto.
   - **E · Combinar mejoras** (B + C + D).
 
 **Prueba esto:**
-1. Pulsa **Probar** (nivel 2) y mira cuánto llega a la meta.
-2. Abre el **Marcador** y **Dímelo claro**.
-3. Pasa a **3 · Todo**, cambia de «¿Y si…?» en el selector de arriba y observa el resultado.
+1. En el nivel 2, mira el medidor y **Lo que he descubierto**.
+2. Pasa a **3 · Experto**, pulsa **Reproducir** en el panel de abajo y abre el **Marcador** y **Dímelo claro**.
+3. Cambia de «¿Y si…?» en el selector de arriba y observa el resultado.
 4. Abre **Comparar «¿y si…?»** entre la Situación inicial y E.
 
 ---
@@ -1397,9 +1521,9 @@ Solo si quieres ejecutarla sin internet o modificarla.
 |---|---|
 | **El enlace pide iniciar sesión en Vercel.** | El propietario debe quitar la protección: Vercel → Settings → Deployment Protection → Vercel Authentication → Desactivado o Standard Protection. |
 | **No veo mis mapas.** | Están en el navegador y el ordenador donde los creaste. Usa ese navegador, o importa una copia de seguridad (sección 24.6). |
-| **No encuentro un botón de este manual.** | Seguramente es del nivel 3. Pulsa **3 · Todo** en el selector de nivel (sección 4.1). |
+| **No encuentro un botón de este manual.** | Seguramente es del nivel 3. Pulsa **3 · Experto** en el selector de nivel (sección 4). |
 | **Al probar no llega nada a la meta (sale 0).** | Revisa que haya un **Inicio** con cantidad, que esté unido a una **Meta** con uniones **Pasa** (no Influye ni Idea) y que ningún filtro o condición lo corte. Mira **Pistas** y **Qué ha pasado** (nivel 3). |
-| **No aparecen los comportamientos o las condiciones.** | En el nivel 2 solo están los seis sencillos de «Qué pasa en este paso». Para todo, pulsa **3 · Todo**. |
+| **No aparecen los comportamientos o las condiciones.** | En el modo fácil no hacen falta: las piedras y las ayudas hacen ese papel. Para todo, pulsa **3 · Experto**. |
 | **Las uniones Influye no mueven nada.** | Es correcto: cambian a la otra idea, no transportan. Usa uniones **Pasa** para mover algo. |
 | **Ha desaparecido una idea.** | Puede estar oculta, escondida en una rama, en una capa oculta o fuera del filtro de etiqueta. Prueba **Mostrar lo oculto**, **Quitar filtro** o búscala con Ctrl+K. |
 | **No puedo mover una idea.** | Está **bloqueada** o en una **capa bloqueada**. |
@@ -1417,22 +1541,22 @@ Solo si quieres ejecutarla sin internet o modificarla.
 
 ## 32. Recetas rápidas
 
-### A. Mapa mental puro (sin números)
+### A. Soltar ideas (sin números)
 
-1. En la pantalla de inicio, escribe tu idea y pulsa **Empezar** (nivel 1).
-2. Pulsa **Tab** para sacar ideas unidas y **⇧+Enter** para ideas hermanas. Escribe y pulsa Enter.
-3. Une ideas que tengan que ver arrastrando desde el borde de una a otra.
-4. Ordena con **Ordenar** (bandeja de madera) y dale color en **Detalles → Color**.
+1. En la pantalla de inicio, escribe tu idea y pulsa **Empezar** (nivel 1 · Pensar).
+2. A la pregunta de la Brújula, contesta **💭 Solo quiero pensar en ello**.
+3. Escribe en la Brújula todo lo que se te ocurra, de una en una: cada cosa aparece unida a tu idea. También puedes elegir una idea y pulsar **Tab**.
+4. Une las que tengan que ver con **🔗 Unir** y dales color en los detalles.
+5. Cuando veas algo que quieres conseguir, elígelo en la pregunta «¿Alguna de estas ideas es algo que te gustaría conseguir?».
 
-### B. Embudo simple que se prueba (nivel 2)
+### B. De un problema a un plan (modo fácil)
 
-1. Pasa a **2 · Movimiento**.
-2. Pulsa **Inicio** (I) y haz clic en el lienzo: llámalo «Contactos». En **Detalles → ¿Cuánto sale de aquí en cada ronda?** pon 100.
-3. Crea la idea «Interesados» y, en **Qué pasa en este paso → ¿Qué pasa aquí?**, elige **Colador**. Ábrelo y pon que pasa el 30 %.
-4. Crea la idea «Citas» y elige **Límite**, con capacidad 10.
-5. Pulsa **Meta** (O) y crea «Clientes».
-6. Une todo en ese orden.
-7. Pulsa **Probar**. Mira «Han llegado a la meta», **¿Por qué?** y el **Marcador**.
+1. Escribe tu problema («Me cuesta concentrarme») y pulsa **Empezar**.
+2. Contesta **😟 Algo que me preocupa**: pasas solo a **2 · Camino**.
+3. Contesta a la Brújula: cómo te gustaría que fuera, por qué te importa, dos o tres pasos, qué te puede frenar (y lo grande que es), quién te puede ayudar y cuál es tu primer pasito.
+4. Mira el medidor: **«Llegan N de cada 10»**. Si es bajo, busca una ayuda más fuerte para tu piedra más grande.
+5. Pulsa **¿Por qué?** → **Ver mi plan** → **Copiar** o **Descargar**.
+6. Cuando hagas un paso, elígelo y pulsa **✅ ¡Ya lo he hecho!**.
 
 ### C. Un freno y su remedio (nivel 3)
 
@@ -1486,7 +1610,11 @@ Solo si quieres ejecutarla sin internet o modificarla.
 | **Meta (salida)** | Lo que quieres conseguir: donde se cuenta el resultado. |
 | **Unión (conexión)** | Línea entre dos ideas. **Pasa** (flujo), **Influye** (causal), **Info** (informativa) o **Idea** (conceptual). |
 | **Ronda (iteración)** | Un paso de tiempo al probar (una semana, un mes…). |
-| **Nivel** | Cuántas herramientas ves: 1 · Ideas, 2 · Movimiento, 3 · Todo. |
+| **Nivel** | Cuántas herramientas ves: 1 · Pensar, 2 · Camino, 3 · Experto. |
+| **Brújula** | La guía del modo fácil: una pregunta cada vez, con su porqué. |
+| **Empujones** | Las 10 «fuerzas» que salen de Hoy en cada vuelta. El medidor cuenta cuántas llegan a lo que quieres. |
+| **Piedra** | Algo que te frena: se queda con parte de los empujones de un paso. |
+| **Ayuda** | Algo o alguien que hace más pequeña una piedra. |
 | **Acumulador / stock (hucha)** | Lo que se guarda en una idea para más adelante. |
 | **Bifurcación** | Reparto de un flujo entre varias salidas. |
 | **Bucle (circuito)** | Círculo de ideas. **Reforzador** si se amplifica, **equilibrador** si se frena, **mixto** si tiene de las dos cosas. |

@@ -6,6 +6,7 @@ import { computeMonitor } from './monitor';
 import { compareScenarios, sensitivitySweep, tornado, uncertaintyBand, type ParamRef } from './analysis';
 import { diagnose } from './diagnostics';
 import { buildVerdict } from './verdict';
+import { analizarCamino } from './kid';
 
 export const ENGINE_API = {
   simulateWithHeat: (doc: ProjectDoc, scenarioId: string | null, iterations: number) => {
@@ -21,6 +22,7 @@ export const ENGINE_API = {
     const name = scenarioId ? doc.scenarios[scenarioId]?.name ?? '' : '';
     return { monitor, heat, verdict: buildVerdict(doc, monitor, name), loops: result.loops, frameNotes: result.frameNotes };
   },
+  kid: (doc: ProjectDoc) => analizarCamino(doc),
   tornado: (doc: ProjectDoc, scenarioId: string | null, iterations: number) => tornado(doc, scenarioId, 0.2, 40, iterations),
   compare: (doc: ProjectDoc, a: string, b: string, iterations: number) => compareScenarios(doc, a, b, iterations),
   band: (doc: ProjectDoc, scenarioId: string, iterations: number) => uncertaintyBand(doc, scenarioId, iterations),

@@ -9,6 +9,7 @@ import { useProject } from '../store/projectStore';
 import { useUI } from '../store/uiStore';
 import { cx } from '../ui/primitives';
 import { levelOf } from '../app/levels';
+import { nuevo } from '../kid/kidActions';
 
 export interface MenuState { kind: 'node' | 'edge' | 'pane' | 'selection'; id: string | null; x: number; y: number; flow: { x: number; y: number } }
 
@@ -49,22 +50,26 @@ export function ContextMenu({ state, onClose }: { state: MenuState; onClose: () 
     <div ref={ref} role="menu" aria-label="Menú" data-testid="context-menu"
       className="fixed z-[90] w-60 rounded-xl border border-line bg-surface p-1 shadow-float mdf-fade-in" style={{ left, top }}>
       {state.kind === 'pane' && (<>
-        <Item icon={<Plus />} onClick={run(() => A.createNodeAt('bubble', state.flow))} shortcut="Doble clic">Nueva idea</Item>
-        {level >= 2 && <Item icon={<LogIn />} onClick={run(() => A.createNodeAt('input', state.flow))}>Nuevo inicio</Item>}
-        {level >= 2 && <Item icon={<LogOut />} onClick={run(() => A.createNodeAt('output', state.flow))}>Nueva meta</Item>}
-        <Item icon={<StickyNote />} onClick={run(() => A.createNodeAt('note', state.flow))}>Nota</Item>
+        {pro ? <Item icon={<Plus />} onClick={run(() => A.createNodeAt('bubble', state.flow))} shortcut="Doble clic">Nueva idea</Item>
+          : <Item icon={<span aria-hidden>💡</span>} onClick={run(() => nuevo('idea'))}>Nueva idea</Item>}
+        {level === 2 && <Item icon={<span aria-hidden>👣</span>} onClick={run(() => nuevo('paso'))}>Nuevo paso</Item>}
+        {level === 2 && <Item icon={<span aria-hidden>🪨</span>} onClick={run(() => nuevo('piedra'))}>Nueva piedra</Item>}
+        {level === 2 && <Item icon={<span aria-hidden>🤝</span>} onClick={run(() => nuevo('ayuda'))}>Nueva ayuda</Item>}
+        {pro && <Item icon={<LogIn />} onClick={run(() => A.createNodeAt('input', state.flow))}>Nuevo inicio</Item>}
+        {pro && <Item icon={<LogOut />} onClick={run(() => A.createNodeAt('output', state.flow))}>Nueva meta</Item>}
+        {pro && <Item icon={<StickyNote />} onClick={run(() => A.createNodeAt('note', state.flow))}>Nota</Item>}
         {pro && <Item icon={<Type />} onClick={run(() => A.createNodeAt('label', state.flow))}>Texto suelto</Item>}
         {pro && <Item icon={<BoxSelect />} onClick={run(() => A.createNodeAt('container', state.flow))}>Zona</Item>}
         <Sep />
         <Item icon={<ClipboardPaste />} onClick={run(() => void A.pasteClipboard())} shortcut="⌘V">Pegar</Item>
         <Item icon={<Undo2 />} onClick={run(A.undo)} shortcut="⌘Z">Deshacer</Item>
         <Item icon={<Focus />} onClick={run(() => A.fit())} shortcut="F">Verlo todo</Item>
-        <Item icon={<RefreshCw />} onClick={run(A.autoLayout)}>Ordenar el mapa</Item>
+        <Item icon={<RefreshCw />} onClick={run(level === 2 ? A.tidyEasy : A.autoLayout)}>Ordenar el mapa</Item>
         {pro && <Item icon={<EyeOff />} onClick={run(A.showAllHidden)}>Mostrar lo oculto</Item>}
       </>)}
       {(state.kind === 'node' || state.kind === 'selection') && (<>
         {node && <Item icon={<Type />} onClick={run(() => useUI.setState({ editingNodeId: node.id }))} shortcut="↵">Escribir</Item>}
-        {node && !isGroup && <Item icon={<MoveRight />} onClick={run(() => A.createConnectedNode(node.id))} shortcut="Tab">Añadir idea unida</Item>}
+        {node && !isGroup && <Item icon={<MoveRight />} onClick={run(() => A.createConnectedNode(node.id))} shortcut="Tab">{level === 2 ? 'Añadir lo siguiente' : 'Añadir idea unida'}</Item>}
         <Item icon={<CopyPlus />} onClick={run(A.duplicateSelection)} shortcut="⌘D">Duplicar</Item>
         {pro && node && !isGroup && <Item icon={<Link2 />} onClick={run(A.cloneSelection)}>Clonar (la misma idea en otro sitio)</Item>}
         <Item icon={<Copy />} onClick={run(() => void A.copySelection())} shortcut="⌘C">Copiar</Item>

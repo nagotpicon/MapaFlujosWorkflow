@@ -13,9 +13,10 @@ export async function setLevel(page: Page, level: 1 | 2 | 3) {
   await expect(page.getByTestId(`level-${level}`)).toHaveAttribute('aria-checked', 'true');
 }
 
+/** El ejemplo para expertos (operador de seguros), en el nivel 3. */
 export async function openDemo(page: Page) {
   await page.goto('/');
-  await page.getByTestId('open-demo').click();
+  await page.getByTestId('open-demo-expert').click();
   await expect(page.locator('[data-node-title="Ventas"]')).toBeVisible();
   await setLevel(page, 3);
 }

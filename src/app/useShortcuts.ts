@@ -4,6 +4,7 @@ import { useSim } from '../store/simStore';
 import { useUI, writeLS, type ViewMode } from '../store/uiStore';
 import * as A from './actions';
 import { levelOf } from './levels';
+import { nuevo } from '../kid/kidActions';
 import { SHORTCUTS, comboFromEvent } from './shortcuts';
 import * as repo from '../persistence/repository';
 
@@ -14,8 +15,8 @@ export function setView(v: ViewMode) {
   writeLS('mdf.view', v);
 }
 
-const LEVEL3_ONLY = ['group', 'ungroup', 'heat', 'view2', 'view3', 'view4'];
-const LEVEL2_PLUS = ['toolInput', 'toolOutput', 'play', 'nextIt', 'prevIt', 'view5'];
+const LEVEL3_ONLY = ['group', 'ungroup', 'heat', 'view2', 'view3', 'view4', 'toolInput', 'toolOutput', 'toolNote'];
+const LEVEL2_PLUS = ['play', 'nextIt', 'prevIt', 'view5'];
 
 export function runShortcut(id: string): boolean {
   const ui = useUI.getState();
@@ -42,7 +43,7 @@ export function runShortcut(id: string): boolean {
     case 'fit': A.fit(); return true;
     case 'fitSelection': A.fit(sel); return true;
     case 'toolSelect': useUI.setState({ tool: 'select' }); return true;
-    case 'toolBubble': useUI.setState({ tool: 'bubble' }); return true;
+    case 'toolBubble': if (level < 3) { nuevo('idea'); return true; } useUI.setState({ tool: 'bubble' }); return true;
     case 'toolConnect': useUI.setState({ tool: 'connect' }); return true;
     case 'toolNote': useUI.setState({ tool: 'note' }); return true;
     case 'toolInput': useUI.setState({ tool: 'input' }); return true;

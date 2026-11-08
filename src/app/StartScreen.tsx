@@ -7,7 +7,6 @@ import { ConfirmDeleteButton } from '../ui/primitives';
 import * as A from './actions';
 import { importFromFile } from './io';
 import { Logo } from './TopBar';
-import { useUI } from '../store/uiStore';
 
 export function ProjectList({ onOpen, onLoaded }: { onOpen?: () => void; onLoaded?: (count: number) => void }) {
   const [list, setList] = useState<repo.ProjectSummary[] | null>(null);
@@ -48,6 +47,8 @@ function Chip({ icon, children, onClick, testId }: { icon: React.ReactNode; chil
  * Pantalla de inicio: casi un lienzo en blanco. Una pregunta, un cuadro de texto
  * y poco más. El resto aparece cuando hace falta.
  */
+const EXAMPLES = ['Quiero sacar mejor nota en mates', 'Quiero ganar dinero con mis dibujos', 'Me cuesta hacer amigos', 'Quiero cambiar de trabajo'];
+
 export function StartScreen() {
   const [paste, setPaste] = useState(false);
   const [idea, setIdea] = useState('');
@@ -66,7 +67,7 @@ export function StartScreen() {
           <span className="font-display text-[17px] font-semibold text-ink">Mapa de Flujos</span>
         </div>
         <h1 className="font-display text-[clamp(32px,5vw,46px)] font-medium leading-[1.1] tracking-tight text-ink">¿Qué te ronda la cabeza?</h1>
-        <p className="mt-3 max-w-lg text-[16px] leading-relaxed text-ink-2">Escríbelo como te salga, aunque no lo tengas claro. Lo vamos ordenando juntos, paso a paso.</p>
+        <p className="mt-3 max-w-lg text-[16px] leading-relaxed text-ink-2">Escríbelo como te salga, aunque no lo tengas claro. Luego te hago preguntas, de una en una, y lo vamos dibujando juntos.</p>
 
         <form className="mt-8" onSubmit={(e) => { e.preventDefault(); start(); }}>
           <div className="relative">
@@ -84,8 +85,16 @@ export function StartScreen() {
           </div>
         </form>
 
+        <div className="mt-7 flex flex-wrap items-center gap-1.5 text-[13px] text-ink-3" data-testid="start-examples">
+          <span className="mr-1">Por ejemplo:</span>
+          {EXAMPLES.map((ex) => (
+            <button key={ex} type="button" onClick={() => { setIdea(ex); input.current?.focus(); }}
+              className="rounded-full border border-line bg-surface px-3 py-1 text-[13px] text-ink-2 transition-colors hover:border-accent hover:text-ink">{ex}</button>
+          ))}
+        </div>
+
         <div className="mt-9 flex flex-wrap gap-2">
-          <Chip testId="start-explorer" icon={<Sparkles />} onClick={async () => { await A.newProject('Exploración'); useUI.setState({ overlay: 'explorer' }); }}>Prefiero que me hagas preguntas</Chip>
+          <Chip testId="start-explorer" icon={<Sparkles />} onClick={() => void A.newProject('Mi mapa')}>Prefiero que me hagas preguntas</Chip>
           <Chip testId="open-demo" icon={<Layers3 />} onClick={() => void A.openDemo()}>Ver un ejemplo</Chip>
           <Chip testId="start-paste" icon={<ClipboardPaste />} onClick={() => setPaste(true)}>Pegar un mapa</Chip>
           <Chip testId="start-import" icon={<FileUp />} onClick={() => void importFromFile()}>Abrir un archivo</Chip>
@@ -99,7 +108,7 @@ export function StartScreen() {
         <div className="flex-1" />
         <PasteImportDialog open={paste} onOpenChange={setPaste} />
         <div className="mt-14 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-[12.5px] text-ink-3">
-          <span>Todo se guarda en este navegador. No hace falta cuenta.</span>
+          <span>Todo se guarda en este navegador. No hace falta cuenta. <button type="button" onClick={() => void A.openExpertDemo()} className="underline-offset-2 hover:text-accent-text hover:underline" data-testid="open-demo-expert">Ejemplo para expertos</button></span>
           <span className="flex gap-3" data-testid="start-manuals">
             <a href={manualUrl(MANUAL_USER_PATH)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 no-underline hover:text-accent-text"><BookOpen className="size-4" />Manual de usuario</a>
             <a href={manualUrl(MANUAL_IA_PATH)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 no-underline hover:text-accent-text"><Bot className="size-4" />Manual para IA</a>

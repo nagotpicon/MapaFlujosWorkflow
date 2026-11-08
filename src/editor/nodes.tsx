@@ -15,6 +15,7 @@ import { BehaviorIcon } from '../ui/behaviorIcon';
 import { cx, fmt } from '../ui/primitives';
 import { qty } from '../engine/packet';
 import { HEAT_LABEL } from '../engine/heat';
+import { PAPEL, type Papel } from '../kid/model';
 import { useHighlight } from './highlight';
 import type { RFNodeData } from './derive';
 
@@ -113,6 +114,8 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const stepActive = useSim((s) => s.step >= 0 && s.result?.order[s.step] === logicalId);
   const stepDone = useSim((s) => s.step < 0 || (s.result ? s.result.order.indexOf(logicalId) <= s.step : true));
   const view = useUI((s) => s.view);
+  // en el modo fácil (niveles 1 y 2) no se enseñan iconos ni números técnicos dentro de las ideas
+  const easy = useProject((s) => s.doc?.project.settings.depth !== 'expert');
   const showHeat = useUI((s) => s.showHeat);
   const animate = useUI((s) => s.animate);
   const hl = useHighlight();
@@ -123,6 +126,8 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const bd = `var(--n-${color}-bd)`;
   const ac = `var(--n-${color}-ac)`;
   const Icon = nodeIcon(vs.icon);
+  const custom = node.metadata.custom ?? {};
+  const papel = custom.papel && custom.papel in PAPEL ? (custom.papel as Papel) : null;
   const shape = vs.shape;
   const svgShape = shape === 'diamond' || shape === 'hexagon';
   const dims = node.dimensions;
@@ -174,10 +179,16 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
       {vs.image && !svgShape && <img src={vs.image} alt="" className="w-full rounded-t-[13px] object-cover" style={{ maxHeight: dims ? '55%' : 110 }} draggable={false} />}
       <div className={cx('relative flex min-w-0 items-start gap-2', shape === 'pill' ? 'px-4' : 'px-3.5', svgShape ? 'max-w-[70%] py-1' : 'py-3', shape === 'circle' && 'flex-col items-center')}>
         {Icon && <span className="mt-[1px] shrink-0" style={{ color: ac }}><Icon className="size-4" strokeWidth={1.75} /></span>}
-        {!Icon && isIO && <span className="mt-[6px] size-2 shrink-0 rounded-full" style={{ background: ac }} aria-hidden title={node.type === 'input' ? 'Inicio' : 'Meta'} />}
-        <InlineTitle node={raw.aliasOf ? { ...node, id: raw.aliasOf } : node} className="min-w-0 flex-1 whitespace-pre-wrap break-words leading-snug" />
+        {papel ? <span className="shrink-0 leading-snug" aria-hidden title={PAPEL[papel].name} data-testid="node-papel">{PAPEL[papel].emoji}</span>
+          : !Icon && isIO && <span className="mt-[6px] size-2 shrink-0 rounded-full" style={{ background: ac }} aria-hidden title={node.type === 'input' ? 'Inicio' : 'Meta'} />}
+        <InlineTitle node={raw.aliasOf ? { ...node, id: raw.aliasOf } : node} className={cx('min-w-0 flex-1 whitespace-pre-wrap break-words leading-snug', custom.hecho === '1' && 'text-ink-2')} />
+        {(custom.primero === '1' || custom.hecho === '1' || custom.conseguido === '1') && (
+          <span className="shrink-0 leading-snug" data-testid="node-marks" title={[custom.primero === '1' && 'Primer paso', custom.hecho === '1' && 'Hecho', custom.conseguido === '1' && '¡Conseguido!'].filter(Boolean).join(' · ')}>
+            {custom.conseguido === '1' ? '🎉' : ''}{custom.primero === '1' ? '⭐' : ''}{custom.hecho === '1' ? '✅' : ''}
+          </span>
+        )}
       </div>
-      {(flowView || annCount > 0 || raw.aliasOf || raw.locked || node.branchCollapsed) && (
+      {!easy && (flowView || annCount > 0 || raw.aliasOf || raw.locked || node.branchCollapsed) && (
         <div className={cx('relative flex flex-wrap items-center gap-1 px-3 pb-2 text-[10.5px] text-ink-3', (shape === 'circle' || svgShape) && 'justify-center')}>
           {flowView && bhs.slice(0, 5).map((b) => (
             <span key={b!.id} title={BEHAVIOR_LIBRARY[b!.behaviorType].label} className="inline-flex size-[18px] items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_8%,transparent)]" style={{ color: ac }}>

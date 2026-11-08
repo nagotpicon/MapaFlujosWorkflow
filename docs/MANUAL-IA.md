@@ -6,7 +6,7 @@ Contiene:
 
 1. **Cómo usarlo**: instrucciones para la persona y para la IA.
 2. **Prompt maestro**: el contexto que la IA debe cargar siempre.
-3. **Biblioteca de prompts** (P1–P18): listos para copiar, con variables `{{ASÍ}}`. Incluye los modos de trabajo **ACLARATOR** (P17) y **COPYWRITER** (P18).
+3. **Biblioteca de prompts** (P1–P19): listos para copiar, con variables `{{ASÍ}}`. Incluye los modos de trabajo **ACLARATOR** (P17) y **COPYWRITER** (P18), y un mapa del **modo fácil** listo para importar (P19).
 4. **Especificación exacta del formato de proyecto (JSON)**, para generar mapas que la aplicación importa sin errores.
 5. **Reglas del motor de simulación**, para razonar correctamente sobre los resultados.
 6. **Mapa de la interfaz con identificadores estables** (`data-testid`), para agentes que controlan el navegador.
@@ -19,7 +19,7 @@ Aplicación publicada: **https://mapa-flujos-workflow.vercel.app**.
 - texto plano para IAs: **https://mapa-flujos-workflow.vercel.app/MANUAL-IA.md**;
 - índice para IAs: **/llms.txt**;
 - en GitHub: `docs/MANUAL-IA.md`;
-- ejemplos importables: **/ejemplos/mapa-ejemplo-ia.json** y **/ejemplos/mapa-ejemplo-ia-avanzado.json**.
+- ejemplos importables: **/ejemplos/mapa-ejemplo-ia.json**, **/ejemplos/mapa-ejemplo-ia-avanzado.json** y **/ejemplos/mapa-ejemplo-camino.json** (modo fácil).
 
 Para la IA, la forma más fiable de leerlo completo es pedirle que lea la URL del texto plano o adjuntarle el archivo.
  Código: repositorio `nagotpicon/MapaFlujosWorkflow`. El manual para personas es `docs/MANUAL-USUARIO.md`.
@@ -56,7 +56,8 @@ Copia este bloque completo como primer mensaje o como instrucciones del sistema:
 Eres el copiloto experto de «Mapa de Flujos», una aplicación web (https://mapa-flujos-workflow.vercel.app) que combina un editor de mapas mentales con un motor que simula flujos ronda a ronda (iteraciones). Tu trabajo: ayudar a la persona a pensar su idea, construir su mapa, probarlo e interpretar los resultados. Hablas en español, claro, directo y sencillo (que lo entienda alguien de 13 años).
 
 CONOCIMIENTO DE LA APLICACIÓN (resumen; la especificación completa está en el MANUAL-IA que te adjunto o pego):
-- La interfaz tiene tres niveles: 1 · Ideas (solo escribir y unir ideas), 2 · Movimiento (inicio, meta, botón Probar, Dímelo claro y Marcador) y 3 · Todo (todas las herramientas). Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, en el 2.
+- La interfaz tiene tres niveles: 1 · Pensar y 2 · Camino (el MODO FÁCIL, pensado para que lo use un niño de 8 años sin explicaciones) y 3 · Experto (todas las herramientas). Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, en el 2.
+- MODO FÁCIL: la «Brújula» hace una pregunta cada vez (con su porqué) y lo que se responde se dibuja solo. El mapa es un camino: 🌱 Hoy → 👣 pasos → 🎯 Lo que quiero. Las 🪨 piedras frenan un paso (pequeña deja pasar 9 de cada 10; mediana, 7; grande, 5) y las 🤝 ayudas hacen más pequeñas las piedras (un poco, bastante, mucho). Un medidor dice «Llegan N de cada 10 empujones». También hay 💛 razones, ❤️ cómo me siento, ❓ preguntas y 💡 ideas. Paneles: «Lo que he descubierto» y «Mi plan». Por dentro: Hoy = input con 10 por ronda; pasos = burbujas unidas con flow; piedra = burbuja con influencia −1/−3/−5 y una unión causal modulate (sensibilidad 0.5) al paso; ayuda = unión causal compensate (1/2/4 puntos) a la piedra; el papel va en metadata.custom.papel (sección 3.16).
 - Nombres en pantalla → nombre técnico (JSON): Idea → bubble; Inicio → input; Meta → output; Nota → note; Texto suelto → label; Grupo → group; Zona → container. Uniones: Pasa → flow; Influye → causal; Info → informative; Idea → conceptual. Ronda = iteración. «¿Y si…?» = escenario. Marcador = monitor. «Ayúdame a pensar» = explorador. Detalles = inspector. Pistas = diagnóstico. Qué ha pasado = eventos. Bucle = circuito.
 - Elementos: Idea (idea o paso; puede tener comportamientos), Inicio (genera flujo cada ronda), Meta (recibe el flujo; TODO lo que llega a cualquier Meta cuenta como «resultado»), Nota, Texto suelto, Grupo, Zona.
 - Uniones: Pasa (transporta), Influye (modula: refuerza o frena una dimensión del destino; o compensa una dificultad), Info e Idea (solo relacionan).
@@ -98,7 +99,7 @@ Cada prompt indica **cuándo usarlo**, el **texto para copiar** y **qué debe de
 
 ````text
 Quiero hacer esto en Mapa de Flujos: {{LO QUE QUIERES HACER}}.
-Dame los pasos numerados, con los nombres exactos de botones, menús y teclas (Windows: Ctrl; Mac: ⌘). Si hace falta cambiar de nivel (1 · Ideas, 2 · Movimiento, 3 · Todo, arriba en la barra), dímelo primero. Termina con cómo comprobar que ha funcionado.
+Dame los pasos numerados, con los nombres exactos de botones, menús y teclas (Windows: Ctrl; Mac: ⌘). Si hace falta cambiar de nivel (1 · Pensar, 2 · Camino, 3 · Experto, arriba en la barra), dímelo primero. Si vale con el modo fácil, explícalo con la Brújula, los botones de la bandeja (💡 Idea, 👣 Paso, 🪨 Piedra, 🤝 Ayuda) y el medidor. Termina con cómo comprobar que ha funcionado.
 ````
 
 **Debe devolver:** una lista de pasos exactos y una comprobación final. Nada de funciones inventadas.
@@ -276,7 +277,7 @@ Tienes control del navegador. Abre https://mapa-flujos-workflow.vercel.app y haz
 Usa los selectores [data-testid="…"] de la sección 6 del MANUAL-IA y los nombres de menú exactos. Procedimiento:
 1) Si aparece la pantalla de inicio (data-testid="start-screen"), elige la opción adecuada.
 2) Para crear un mapa completo, genera el JSON (sección 3), pulsa data-testid="start-paste" (o, en el nivel 3, io-menu → «Pegar proyecto (JSON)»), escribe el JSON en data-testid="paste-json" y pulsa data-testid="paste-import-run".
-3) Ten en cuenta los niveles: si necesitas la barra lateral, el panel de abajo o los «¿Y si…?», pulsa data-testid="level-3". En el nivel 2 prueba con data-testid="simple-play" y lee data-testid="simple-result"; en el nivel 3 usa data-testid="sim-play" y la pestaña data-testid="tab-results". El Marcador se abre con data-testid="open-monitor".
+3) Ten en cuenta los niveles: si necesitas la barra lateral, el panel de abajo o los «¿Y si…?», pulsa data-testid="level-3". En el nivel 2 (Camino) lee el medidor data-testid="kid-meter-value" («llegan N de cada 10») y responde a la Brújula con data-testid="guide-input" + "guide-send" o "guide-choice-<valor>"; en el nivel 3 usa data-testid="sim-play" y la pestaña data-testid="tab-results". El Marcador (nivel 3) se abre con data-testid="open-monitor"; en el modo fácil, «Lo que he descubierto» con data-testid="open-discover".
 4) Antes de acciones destructivas (borrar proyectos, restaurar versiones), pide confirmación.
 5) Al terminar, resume qué hiciste y qué viste, sin inventar cifras.
 ````
@@ -371,6 +372,19 @@ TONO: autoridad intelectual, cercanía humana, claridad absoluta, energía conve
 ````
 
 **Debe devolver:** el guion (700–900 palabras), el reto, tres reels y 3–5 stories, solo voz. En la aplicación, el resultado se puede convertir en mapa con **Crear el mapa del guion**.
+
+### P19 · Mapa del modo fácil («el camino») desde una idea
+
+**Cuándo:** quieres un mapa sencillo, para cualquier edad, que se abra en **2 · Camino** con su medidor.
+
+````text
+Con el MANUAL-IA (sección 3.16), construye un mapa del MODO FÁCIL para: {{IDEA O PROBLEMA}}.
+Hazme antes, de una en una y en palabras muy sencillas, como mucho estas preguntas (si ya lo sé, sáltalas): cómo está la cosa hoy, qué me gustaría conseguir, por qué me importa, qué 2–4 pasos daría, qué me puede frenar (y si es una piedra pequeña, mediana o grande), quién o qué me podría ayudar (un poco, bastante o mucho) y cuál es mi primer pasito.
+Después devuelve UN bloque ```json en formato «v1 con listas» con: un nodo input «Hoy» (papel hoy, cantidad 10 y un generador de 10), los pasos en cadena con uniones flow, un nodo output «Lo que quiero», cada piedra con weight.influence −1/−3/−5 y una unión causal modulate (sensibilidad 0.5) al paso que frena, cada ayuda con una unión causal compensate (1/2/4 puntos) a su piedra, y metadata.custom.papel en todos (más tamano, fuerza y primero cuando toque). project.settings.depth = "advanced".
+Explica en 3 líneas cuántos de cada 10 empujones calculas que llegan y por qué (marcado como estimación).
+````
+
+**Debe devolver:** un JSON como el de la sección 3.16. Para comprobarlo: **Pegar un mapa → Importar**; el medidor de arriba dice cuántos llegan.
 
 ---
 
@@ -509,7 +523,7 @@ Valores permitidos:
 | `resolution` | `pending` · `eliminate` · `accept` · `compensate` · `reroute` |
 | `evidence` | `confirmed` · `observed` · `estimate` · `hypothesis` · `preference` · `unknown` |
 
-El Marcador cuenta estas fricciones y sus decisiones («Frenos que has encontrado»).
+El Marcador (nivel 3) cuenta estas fricciones y sus decisiones («Frenos que has encontrado»).
 
 #### 3.3.2 `dimensionValues` (entradas)
 
@@ -762,7 +776,7 @@ El motor detecta ciclos aunque no declares el circuito. Declararlo permite confi
 | Ajuste | Valores |
 |---|---|
 | `simulation.iterations` | 1–500. |
-| `depth` | Nivel con el que se abre el mapa: `basic` (1 · Ideas), `advanced` (2 · Movimiento, el predeterminado) o `expert` (3 · Todo). Usa `expert` si el mapa usa rangos, fórmulas, puertos o «¿Y si…?», para que se vean en Detalles sin que la persona tenga que cambiar de nivel. |
+| `depth` | Nivel con el que se abre el mapa: `basic` (1 · Pensar), `advanced` (2 · Camino, el predeterminado) o `expert` (3 · Experto). Usa `expert` si el mapa usa rangos, fórmulas, puertos o «¿Y si…?», para que se vean en Detalles sin que la persona tenga que cambiar de nivel. |
 | `frame` | Si lo incluyes, escribe el objeto **completo** como en el ejemplo. `mode: "free"` = la posición no cuenta. |
 
 **Colocación exacta en la cuadrícula** (nodos sin `dimensions` explícitas, tamaño ≈ 190 × 64). Para la columna `c` (1, 2, 3…; 1 = primera) y la fila `f` (0 = eje; +1, +2 = apoyo por encima; −1, −2 = fricción por debajo):
@@ -838,6 +852,424 @@ Con los valores por defecto (260 × 140, origen 0,0):
 
 Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, Brain, Briefcase, Bug, Building2, Calendar, Car, ChartLine, CircleCheck, CircleX, Clock, Cloud, Compass, Cpu, Database, Flag, Flame, Gauge, Gem, Gift, GraduationCap, Guitar, Hammer, Handshake, Heart, House, Hourglass, Key, Leaf, Lightbulb, Link, Lock, Mail, Map, Megaphone, MessagesSquare, Mic, Package, PhoneIncoming, PiggyBank, Puzzle, Radar, Rocket, RotateCcw, Scale, ScrollText, Search, Shield, ShieldAlert, ShieldCheck, ShoppingCart, Sparkles, Star, Store, Target, ThumbsUp, Timer, TrendingDown, TrendingUp, Trophy, Truck, User, UserCheck, Users, Wallet, Wrench, Zap, Filter, Split, Shuffle, Minimize2, PackageOpen, SlidersHorizontal, X.
 
+### 3.16 Mapas del modo fácil («el camino»)
+
+El modo fácil (niveles 1 y 2) lee el mapa como un **camino**. Guarda el papel de cada cosa en `metadata.custom` (un diccionario de textos). Si falta, lo deduce de la estructura.
+
+| Papel (`custom.papel`) | En pantalla | Cómo se construye para que la cuenta salga |
+|---|---|---|
+| `hoy` | 🌱 Hoy | `type: "input"`, `dimensionValues.quantity.value: 10` y un comportamiento `generator` de 10. Solo uno. |
+| `paso` | 👣 Paso | `type: "bubble"`, en una cadena de uniones `flow`: Hoy → paso → paso → meta. |
+| `meta` | 🎯 Lo que quiero | `type: "output"`. Solo una. |
+| `piedra` | 🪨 Piedra | `type: "bubble"`, `weight.influence: {"mode": "weighted", "value": -1 / -3 / -5}` y `custom.tamano`: `"pequena"` / `"mediana"` / `"grande"`. Una unión `causal` con `influence.mode: "modulate"`, `targetDimension: "quantity"` y `sensitivity: 0.5` hacia el paso (o la meta) que frena. |
+| `ayuda` | 🤝 Ayuda | `type: "bubble"` y `custom.fuerza`: `"poco"` / `"bastante"` / `"mucho"`. Una unión `causal` con `influence.mode: "compensate"`, `compensationType: "partial"`, `compensationUnit: "points"` y `amount` 1 / 2 / 4 hacia su piedra. |
+| `razon` · `siento` · `pregunta` · `idea` | 💛 · ❤️ · ❓ · 💡 | `type: "bubble"`, unidas con `conceptual` a lo que se refieren (no cambian la cuenta). |
+
+Marcas opcionales en `custom` (siempre texto): `primero: "1"` (⭐ primer paso; solo uno), `hecho: "1"` (✅) y, en la meta, `conseguido: "1"` (🎉).
+
+**La cuenta.** Con una piedra grande (−5) y sensibilidad 0,5, el paso deja pasar 1 + 0,5 × (−5/5) = 0,5: la mitad. Mediana: 0,7. Pequeña: 0,9. Una ayuda suma sus puntos a la piedra (−5 + 4 = −1 → 0,9). Varias piedras se multiplican. El medidor enseña `resultado / generado × 10`.
+
+**Colocación recomendada** (la app la rehace con **🧹 Ordenar**): el camino en fila (`y: 0`, cada 290 px en `x`), las piedras 170 px por encima de lo que frenan, las ayudas 170 px por encima de su piedra, y las razones y preguntas 170 px por debajo de la meta. Anclajes: camino `right` → `left`; piedras y ayudas `bottom` → `top`.
+
+**Ejemplo validado** (`docs/ejemplos/mapa-ejemplo-camino.json`, comprobado por `tests/manual-ia.test.ts`): llegan **6,3 de cada 10** (0,9 por la piedra grande con ayuda «mucho» × 0,7 por la piedra mediana).
+
+```json
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "prj_camino_mates",
+    "name": "Sacar un 8 en mates",
+    "description": "Mapa del modo fácil (el camino) hecho siguiendo el MANUAL-IA.",
+    "createdAt": 1767225600000,
+    "updatedAt": 1767225600000,
+    "activeScenarioId": "scn_base",
+    "settings": {
+      "depth": "advanced"
+    }
+  },
+  "nodes": [
+    {
+      "id": "n_hoy",
+      "projectId": "prj_camino_mates",
+      "type": "input",
+      "title": "Saco un 5 y me agobio",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "blue",
+        "shape": "pill"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "hoy"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "dimensionValues": {
+        "quantity": {
+          "value": 10
+        }
+      },
+      "behaviorIds": [
+        "b_gen"
+      ]
+    },
+    {
+      "id": "n_p1",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Repasar 20 minutos cada día",
+      "position": {
+        "x": 290,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso",
+          "primero": "1"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_p2",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Hacer los ejercicios del libro",
+      "position": {
+        "x": 580,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_p3",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Preguntar lo que no entiendo",
+      "position": {
+        "x": 870,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "amber",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "paso"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_meta",
+      "projectId": "prj_camino_mates",
+      "type": "output",
+      "title": "Sacar un 8 en mates",
+      "position": {
+        "x": 1160,
+        "y": 0
+      },
+      "visualStyle": {
+        "color": "emerald",
+        "shape": "pill"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "meta"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_piedra",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Me distraigo con el móvil",
+      "position": {
+        "x": 290,
+        "y": -170
+      },
+      "visualStyle": {
+        "color": "rose",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "piedra",
+          "tamano": "grande"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": -5
+        }
+      }
+    },
+    {
+      "id": "n_ayuda",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Dejar el móvil en otra habitación",
+      "position": {
+        "x": 290,
+        "y": -340
+      },
+      "visualStyle": {
+        "color": "cyan",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "ayuda",
+          "fuerza": "mucho"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    },
+    {
+      "id": "n_piedra2",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Me da vergüenza preguntar",
+      "position": {
+        "x": 870,
+        "y": -170
+      },
+      "visualStyle": {
+        "color": "rose",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "piedra",
+          "tamano": "mediana"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000,
+      "weight": {
+        "influence": {
+          "mode": "weighted",
+          "value": -3
+        }
+      }
+    },
+    {
+      "id": "n_razon",
+      "projectId": "prj_camino_mates",
+      "type": "bubble",
+      "title": "Quiero ir tranquilo a los exámenes",
+      "position": {
+        "x": 1160,
+        "y": 170
+      },
+      "visualStyle": {
+        "color": "pink",
+        "shape": "rounded"
+      },
+      "metadata": {
+        "custom": {
+          "papel": "razon"
+        }
+      },
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_hoy",
+      "targetNodeId": "n_p1",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e2",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p1",
+      "targetNodeId": "n_p2",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e3",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p2",
+      "targetNodeId": "n_p3",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e4",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_p3",
+      "targetNodeId": "n_meta",
+      "type": "flow",
+      "visualStyle": {},
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e5",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_piedra",
+      "targetNodeId": "n_p1",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.5
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e6",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_ayuda",
+      "targetNodeId": "n_piedra",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "compensate",
+          "compensationType": "partial",
+          "compensationUnit": "points",
+          "amount": 4
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e7",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_piedra2",
+      "targetNodeId": "n_p3",
+      "type": "causal",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {
+        "influence": {
+          "mode": "modulate",
+          "targetDimension": "quantity",
+          "sensitivity": 0.5
+        }
+      },
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      }
+    },
+    {
+      "id": "e8",
+      "projectId": "prj_camino_mates",
+      "sourceNodeId": "n_meta",
+      "targetNodeId": "n_razon",
+      "type": "conceptual",
+      "visualStyle": {
+        "sourceAnchor": "bottom",
+        "targetAnchor": "top"
+      },
+      "behavior": {},
+      "metadata": {
+        "createdAt": 1767225600000,
+        "updatedAt": 1767225600000
+      },
+      "direction": "none"
+    }
+  ],
+  "behaviors": [
+    {
+      "id": "b_gen",
+      "ownerId": "n_hoy",
+      "behaviorType": "generator",
+      "parameters": {
+        "amount": 10,
+        "mode": "continuous"
+      }
+    }
+  ],
+  "conditions": [],
+  "annotations": [],
+  "layers": [],
+  "dimensions": [],
+  "scenarios": [
+    {
+      "id": "scn_base",
+      "projectId": "prj_camino_mates",
+      "name": "Situación inicial",
+      "isBase": true,
+      "color": "#6366f1",
+      "createdAt": 1767225600000,
+      "updatedAt": 1767225600000
+    }
+  ],
+  "circuits": []
+}
+```
+
 ---
 
 ## 4. Glosario de la interfaz (nombres exactos)
@@ -849,8 +1281,10 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
 | En pantalla | Técnico (y en el JSON) |
 |---|---|
 | Idea | Burbuja (`bubble`) |
-| Inicio | Entrada (`input`) |
-| Meta | Salida (`output`) |
+| 🌱 Hoy (modo fácil) · Inicio (nivel 3) | Entrada (`input`) |
+| 🎯 Lo que quiero (modo fácil) · Meta (nivel 3) | Salida (`output`) |
+| 👣 Paso · 🪨 Piedra · 🤝 Ayuda | `bubble` con `metadata.custom.papel` (sección 3.16) |
+| Empujones (10 por vuelta) | Cantidad que genera Hoy |
 | Nota · Texto suelto · Grupo · Zona | `note` · `label` · `group` · `container` |
 | Unión: Pasa · Influye · Info · Idea | Conexión: `flow` · `causal` · `informative` · `conceptual` |
 | Ronda | Iteración |
@@ -863,34 +1297,36 @@ Activity, AlarmClock, Anchor, BadgeEuro, Banknote, BatteryLow, Bell, BookOpen, B
 | Pistas · Qué ha pasado | Diagnóstico · Eventos |
 | Cuadrícula del tiempo | Marco espacial |
 | Vistas Ideas · Recorrido · Fuerzas · Piezas · Película | `mental` · `flow` · `energy` · `system` · `simulation` |
-| Niveles 1 · Ideas · 2 · Movimiento · 3 · Todo | `project.settings.depth`: `basic` · `advanced` · `expert` |
+| Niveles 1 · Pensar · 2 · Camino · 3 · Experto | `project.settings.depth`: `basic` · `advanced` · `expert` |
 
 ### 4.2 Niveles
 
-- **1 · Ideas**: lienzo, ideas, bandeja de madera (Idea, Unir, Nota, Ordenar) y la guía. Solo vista Ideas.
-- **2 · Movimiento**: además **Inicio**, **Meta**, la barra **Probar**, **Dímelo claro** y **Marcador**. Vista Película.
-- **3 · Todo**: barra lateral, panel de abajo, «¿Y si…?», vistas, cuadrícula, termómetro, buscador, versiones y todo Detalles.
-- El selector está arriba, en la bandeja de madera. Bajar de nivel no borra nada. Un mapa nuevo empieza en el 1; uno con inicio y meta (importado, de ejemplo o hecho con «Ayúdame a pensar»), en el 2.
+- **1 · Pensar** (modo fácil): la idea del centro, la Brújula y una bandeja con 💡 Idea, 🔗 Unir y 🧹 Ordenar. Solo vista Ideas.
+- **2 · Camino** (modo fácil): además el camino (🌱 Hoy → 👣 pasos → 🎯 Lo que quiero), 🪨 piedras, 🤝 ayudas, el medidor «Llegan N de cada 10» y «Lo que he descubierto». Vista Película.
+- **3 · Experto**: barra lateral, panel de abajo, «¿Y si…?», vistas, cuadrícula, termómetro, buscador, versiones, Marcador, «Dímelo claro» y todo Detalles.
+- El selector está arriba, en la bandeja de madera. La Brújula pasa sola del 1 al 2 cuando la persona dice qué quiere o qué le preocupa. Bajar de nivel no borra nada. Un mapa nuevo empieza en el 1; uno con inicio y meta (importado, de ejemplo o hecho con «Ayúdame a pensar»), en el 2.
 
 ### 4.3 Nombres exactos por zona
 
-- **Pantalla de inicio:** «¿Qué te ronda la cabeza?», cuadro «Tu idea», botón «Empezar»; «Prefiero que me hagas preguntas», «Ver un ejemplo», «Pegar un mapa», «Abrir un archivo»; «Tus mapas»; enlaces «Manual de usuario» y «Manual para IA».
+- **Pantalla de inicio:** «¿Qué te ronda la cabeza?», cuadro «Tu idea», botón «Empezar»; «Por ejemplo:» con cuatro ejemplos que rellenan el cuadro; «Prefiero que me hagas preguntas» (mapa vacío con la Brújula), «Ver un ejemplo» («Vender mis dibujos», modo fácil), «Pegar un mapa», «Abrir un archivo»; «Tus mapas»; «Ejemplo para expertos»; enlaces «Manual de usuario» y «Manual para IA».
 - **Barra superior:**
   - Logotipo → «Mis mapas»; nombre del mapa (clic para cambiarlo) y punto de guardado.
-  - Selector de nivel: «1 · Ideas», «2 · Movimiento», «3 · Todo».
+  - Selector de nivel: «1 · Pensar», «2 · Camino», «3 · Experto».
   - Nivel 3: selector «¿Y si…?» («Nuevo «¿y si…?»», «Duplicar «…»», «Quitar todos sus cambios», «Comparar…») y «Vista» («Ideas», «Recorrido», «Fuerzas», «Piezas», «Película»).
   - «Ayúdame a pensar» (todos), «Dímelo claro» y «Marcador» (nivel 2 o más), «Manual».
   - Nivel 3: «Cuadrícula del tiempo», «Termómetro», «Buscar», «Versiones guardadas», «Guardar o abrir archivos» («Guardar una copia»: «Proyecto completo (.json)», «Imagen PNG», «Imagen SVG», «Documento PDF»; «Abrir»: «Importar proyecto (.json)», «Pegar proyecto (JSON)»; «Copias de seguridad»: «Copia de seguridad completa», «Restaurar copia de seguridad»), «Mostrar/Ocultar el panel de abajo», «Mostrar/Ocultar detalles».
   - «Deshacer», «Rehacer», «Claro u oscuro» («Claro», «Oscuro», «Como mi ordenador»).
   - «Más opciones» (···): «Mis mapas…», «Mapa nuevo», «Duplicar este mapa», «Ver un ejemplo», «Guardar o abrir archivos» (niveles 1 y 2), «Guardar versión ahora», «Versiones guardadas…», «Ajustes del mapa», «Ayuda y atajos», «Manual de usuario», «Manual para IA (prompts)».
-- **Bandeja de madera (niveles 1 y 2):** «Idea» (B), «Inicio» (I, nivel 2), «Meta» (O, nivel 2), «Unir» (C), «Nota» (N), «Ordenar».
-- **Guía:** una tarjeta con el siguiente paso y su botón («Es el inicio», «Es mi meta», «Probar», «Pasar a Movimiento»…) y el enlace «¿Atascado? Ayúdame a pensar».
-- **Barra Probar (nivel 2):** «Probar» / «Pausa», «Volver a empezar», «Ronda N de [12]», «Han llegado a la meta», «¿Por qué?».
+- **Bandeja de madera (niveles 1 y 2):** «💡 Idea» (B), «👣 Paso», «🪨 Piedra» y «🤝 Ayuda» (nivel 2), «🔗 Unir» (C), «🧹 Ordenar». Cada botón crea la cosa ya colocada, unida y lista para escribir.
+- **Brújula (niveles 1 y 2):** una tarjeta abajo con UNA pregunta, una línea «💬 …» que dice por qué la hace, un cuadro con «Añadir» o botones de respuesta, y un botón para pasar («Saltar», «Ya está», «Nada», «No», «Todavía no», «No sé, sigue»…). La × la esconde; «🧭 Brújula» la vuelve a abrir.
+- **Medidor (nivel 2):** «🎯 Llegan N de cada 10» con diez bolitas y «¿Por qué?»; al cambiar algo enseña «+N 🎉» o «−N». Si no se puede medir: «Pon lo que quieres conseguir 🎯», «Pon cómo está la cosa hoy 🌱» o «Une Hoy con lo que quieres, paso a paso 👣».
+- **Lo que he descubierto** (barra superior en los niveles 1 y 2) y **Mi plan**: «Ver mi plan», «Contado como a un amigo», «Copiar», «Descargar»; en cada descubrimiento, «Verlo en el mapa» y «🧭 Pregúntame».
 - **Barra lateral (nivel 3):** «Mover y elegir» (V), «Nueva idea» (B), «Unir ideas» (C; tipos «Pasa», «Influye», «Info», «Idea»), «Juntar en un grupo» (Ctrl+G), «Inicio» (I), «Meta» (O), «Nota» (N), «Comentario», «Etiquetas», «Texto suelto», «Zona», «Bucle», «Capas».
 - **Menú del clic derecho:** en el lienzo: «Nueva idea», «Nuevo inicio», «Nueva meta», «Nota», «Texto suelto», «Zona», «Pegar», «Deshacer», «Verlo todo», «Ordenar el mapa», «Mostrar lo oculto». En una idea: «Escribir», «Añadir idea unida», «Duplicar», «Clonar (la misma idea en otro sitio)», «Copiar», «Cortar», «Juntar en un grupo», «Deshacer el grupo», «Esconder/Mostrar lo que cuelga», «¿A qué afecta?», «¿De dónde le viene?», «Centrarme en esto», «Añadir comentario», «Bloquear/Desbloquear», «Ocultar», «Borrar». En una unión: «Darle la vuelta», «Que vaya en los dos sentidos / en un solo sentido», «Duplicar unión», «Añadir comentario», «Borrar unión».
-- **Detalles de una idea, niveles 1 y 2:** «Qué es», «Notas», «Esta idea es…» («Un paso», «El inicio», «Mi meta»), «¿Cuánto sale de aquí en cada ronda?», «Color» (Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua, Rosa), «Qué pasa en este paso» → «¿Qué pasa aquí?» («Colador», «Límite», «Se escapa algo», «Multiplica», «Hucha», «Suelta lo guardado»), «Comentarios».
+- **Detalles de una idea, nivel 1:** «Lo que pone», «🎯 Algo que quiero conseguir», «😟 Algo que me preocupa (cómo está hoy)», «¿Quieres apuntar algo más?», «Color», «Quitar».
+- **Detalles de una idea, nivel 2:** «Lo que pone»; «¿Qué es esto?» («👣 Paso», «🪨 Piedra», «🤝 Ayuda», «🎯 Lo que quiero», «🌱 Hoy», «💡 Idea», «💛 Por qué me importa», «❤️ Cómo me siento», «❓ Pregunta»); piedra: «¿Cómo de grande es?» («Pequeña», «Mediana», «Grande») y «¿Qué frena?»; ayuda: «¿Con qué piedra te ayuda?» y «¿Cuánto te ayuda?» («Un poco», «Bastante», «Mucho»); paso: «⭐ Es mi primer paso», «✅ ¡Ya lo he hecho!», «Orden: Antes / Después»; meta: «🎉 ¡Lo he conseguido!»; «¿Quieres apuntar algo más?»; «Quitar».
 - **Detalles de una idea, nivel 3:** «Nombre», «Descripción», «Tipo», «Categoría», «Etiquetas», «Grado de confianza»; secciones «Cuánto empuja o frena», «Qué hace» («Añadir comportamiento»), «Cuándo funciona», «Remedios» («Vincular», «Nueva medida compensatoria»), «Qué genera (dimensiones)» («Definir»), «Cómo reparte y cómo junta», «Con quién está unida», «Aspecto», «Comentarios», «Archivos», «Más opciones».
-- **Detalles de una unión:** niveles 1 y 2: «Texto sobre la línea», «¿Se pierde algo por el camino?», «Darle la vuelta», «Borrar esta unión». Nivel 3: «Tipo de unión», «Etiqueta», «Dirección», «Qué pasa por esta unión», «Cómo influye», «Cuándo deja pasar», «Bucle» («Convertir en bucle»), «Aspecto», «Comentarios».
+- **Detalles de una unión:** niveles 1 y 2: «🔗 Línea», «Une A con B», su significado («Es parte del camino…», «A frena a B», «A ayuda con B», «Solo dice que tienen que ver»), «¿Quieres escribir algo en la línea?», «Quitar la línea». Nivel 3: «Tipo de unión», «Etiqueta», «Dirección», «Qué pasa por esta unión», «Cómo influye», «Cuándo deja pasar», «Bucle» («Convertir en bucle»), «Aspecto», «Comentarios».
 - **Panel de abajo (nivel 3):** pestañas «Probar», «Resultados», «Pistas», «¿Y si…?», «Rondas» y «Qué ha pasado». Controles: «Reproducir», «Detener», «Reiniciar», «Ronda anterior / siguiente», «Paso a paso (elemento a elemento)», «Guardar esta ejecución», «Velocidad», «Rondas», «En vivo», «Calcular». En «¿Y si…?»: «Sensibilidad: altera un parámetro y observa» → «Barrer», e «Incertidumbre» → «Calcular banda».
 - **Ayúdame a pensar:** «Nueva exploración»; cuatro modos: «Hazme preguntas», «Te cuento mi plan», «Aclarator», «Copywriter»; campos «¿Sobre qué quieres pensar?», «¿Qué quieres conseguir?», «¿Cómo lo harías?», «Algo más que deba saber» (Aclarator: «¿Qué quieres aclarar?» y «Cuéntamelo todo, tal cual te salga»; Copywriter: «¿De qué tema es el vídeo?», «¿Para quién es?», «¿Qué quieres que se lleven?», «Notas»); «Empezar» / «Continuar»; «Añadir plan (Word, Excel, PDF, texto)».
   - Comandos rápidos: «No lo sé», «Dame ejemplos», «Profundiza», «Cuestiona mi planteamiento», «Busca alternativas», «Simplifica», «Cambia de perspectiva», «Compara opciones», «Prepara el flujo», «Volver a una pregunta anterior».
@@ -957,6 +1393,13 @@ Causas: presión sobre la capacidad, infrautilización, caudal bajo, cola crecie
 - El **impacto** de cada idea se calcula simulando el sistema **sin** ella y comparando («lo que ganarías si lo arreglas», «lo que perderías sin ello»).
 - «Dímelo claro» se genera solo con datos calculados (sin IA). «Que la IA lo cuente mejor» lo reescribe con los mismos datos, sin añadir cifras.
 
+### 5.8 Modo fácil: «el camino»
+
+- La cuenta sale del motor de siempre con 1 ronda: `llegan = resultado / generado × 10` (con un decimal).
+- **Cuánto quita una piedra**: se simula el mapa con esa piedra a 0 y se compara. **Cuánto devuelve una ayuda**: se simula sin sus uniones de compensación. **Si quitaras todas las piedras**: todas a 0.
+- **Pérdidas de pasos** (mapas del nivel 3): lo que se pierde en cada paso con todas las piedras a 0 (por filtros, reductores…).
+- La Brújula nunca inventa: pregunta y dibuja lo que la persona dice, con sus palabras. «Mi plan» cita esas palabras entre comillas.
+
 ### 5.7 Modos de trabajo: ACLARATOR y COPYWRITER
 
 - **ACLARATOR**: diez bloques en este orden: OBJETIVO, PRIORIDAD, SUBOBJETIVOS, ELEMENTOS CRÍTICOS, TONO, RECEPTOR, LÍMITES, CONTEXTO, DETALLE y ÉXITO. Cada uno con capa INTERNA y EXTERNA. Regla de oro: no se pasa al siguiente hasta que el actual esté aclarado y validado, y nunca se muestra «el total». Una capa no cuenta como clara si está vacía, tiene menos de 4 palabras o usa palabras vagas («algo», «mejor», «muchos», «cosas»…) en menos de 14 palabras. No deletrea: lee las palabras tal cual vienen. Al final crea un mapa radial de 31 ideas (centro + 10 bloques + 20 capas).
@@ -968,15 +1411,15 @@ Causas: presión sobre la capacidad, infrautilización, caudal bajo, cola crecie
 
 Selectores estables: `[data-testid="…"]`.
 
-**Muy importante: los niveles.** La interfaz muestra más o menos cosas según el nivel del mapa (1 · Ideas, 2 · Movimiento, 3 · Todo). Muchos identificadores **solo existen en el nivel 3**: la barra lateral (`tool-*`), el panel de abajo (`bottom-panel`, `tab-*`, `sim-*`), `io-menu`, `open-palette`, `open-versions`, `scenario-switcher`, `frame-toggle`, `heat-toggle`, `toggle-bottom` y `toggle-inspector`. Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, o el de ejemplo, en el 2. **Para tenerlo todo, pulsa `level-3` nada más abrir el mapa.**
+**Muy importante: los niveles.** La interfaz muestra más o menos cosas según el nivel del mapa (1 · Pensar, 2 · Camino, 3 · Experto). Muchos identificadores **solo existen en el nivel 3**: la barra lateral (`tool-*`), el panel de abajo (`bottom-panel`, `tab-*`, `sim-*`), `io-menu`, `open-palette`, `open-versions`, `scenario-switcher`, `frame-toggle`, `heat-toggle`, `toggle-bottom` y `toggle-inspector`. Un mapa nuevo empieza en el nivel 1; uno importado con inicio y meta, o el de ejemplo, en el 2. **Para tenerlo todo, pulsa `level-3` nada más abrir el mapa.**
 
 | Zona | Identificadores |
 |---|---|
 | Inicio | `start-screen`, `start-idea` (cuadro «Tu idea»), `new-project` (botón **Empezar**), `start-explorer` (Prefiero que me hagas preguntas), `open-demo` (Ver un ejemplo), `start-paste` (Pegar un mapa), `start-import` (Abrir un archivo), `project-list`, `confirm-delete`, `start-manuals` |
 | Pegar JSON | `paste-import` (diálogo), `paste-json` (cuadro de texto), `paste-import-run` (botón Importar) |
 | Aplicación | `app`, `topbar`, `canvas`, `inspector` (Detalles), `legend`, `toast`; nivel 3: `toolbar`, `bottom-panel` |
-| Niveles | `level-switch`, `level-1` (Ideas), `level-2` (Movimiento), `level-3` (Todo). Son botones de radio: el activo tiene `aria-checked="true"`. |
-| Niveles 1 y 2 | Bandeja: `dock`, `dock-idea`, `dock-start` (Inicio, nivel 2), `dock-goal` (Meta, nivel 2), `dock-connect`, `dock-note`, `dock-layout` (Ordenar). Guía: `coach`, `coach-action`, `coach-help`. Barra Probar (nivel 2, con meta): `simple-sim`, `simple-play`, `simple-rounds`, `simple-result`. Detalles sencillos: `simple-quantity` (cantidad por ronda de un inicio), `simple-loss` (pérdida de una unión). |
+| Niveles | `level-switch`, `level-1` (Pensar), `level-2` (Camino), `level-3` (Experto). Son botones de radio: el activo tiene `aria-checked="true"`. |
+| Niveles 1 y 2 | Bandeja: `dock`, `dock-idea`, `dock-paso`, `dock-piedra`, `dock-ayuda` (nivel 2), `dock-connect`, `dock-layout` (Ordenar). Brújula: `guide` (atributo `data-question`: idea, tipo, mas, elegir, meta, hoy, razon, paso1, pasoN, piedra1, `tamano:<id>`, `donde:<id>`, `ayuda:<id>`, `fuerza:<id>`, piedraN, primero, siento, miedo, pregunta, descubre, `hecho:<id>`, llegue, falta, plan…), `guide-text`, `guide-why`, `guide-input`, `guide-send`, `guide-choice-<valor>`, `guide-skip`, `guide-hide`, `guide-open`. Medidor (nivel 2): `kid-meter` (atributo `data-ready`), `kid-meter-value` (por ejemplo «7» o «4,9»), `kid-meter-delta`. Paneles: `open-discover`, `discover`, `discover-head`, `discover-item`, `open-plan`, `plan`, `plan-story`, `plan-lines`, `plan-copy`, `plan-download`. Detalles fáciles: `node-inspector` (atributo `data-papel`), `kid-role-<papel>`, `kid-size-<pequena\|mediana\|grande>`, `kid-target-<id>`, `kid-stone-<id>`, `kid-force-<poco\|bastante\|mucho>`, `kid-first`, `kid-done`, `kid-move-left`, `kid-move-right`, `kid-achieved`, `kid-effect`, `kid-delete`. En el lienzo: `node-papel` (el emoji) y `node-marks` (⭐ ✅ 🎉). Inicio: `start-examples`, `open-demo-expert`. |
 | Barra superior | `project-name`, `save-state` (atributo `data-state`: idle/pending/saving/saved/error), `open-explorer`, `open-verdict` y `open-monitor` (nivel 2 o más), `open-manual`, `undo`, `redo`, `theme-menu`, `main-menu`; nivel 3: `scenario-switcher`, `frame-toggle`, `heat-toggle`, `open-palette`, `open-versions`, `io-menu`, `toggle-bottom`, `toggle-inspector` |
 | Barra lateral (nivel 3) | `tool-select`, `tool-bubble`, `tool-connect`, `tool-group`, `tool-input`, `tool-output`, `tool-note`, `tool-comment`, `tool-tag`, `tool-label`, `tool-container`, `tool-circuit`, `tool-layers`; paneles `tag-popover`, `tag-input`, `layers-panel`, `layer-row`, `layer-assign`, `layer-visibility` |
 | Lienzo | nodos `.react-flow__node` con `[data-node-title="Título"]`; `map-node`, `group-node`, `group-toggle`, `node-title-input` (edición en el sitio), `node-flow`; asas de unión `.react-flow__handle-top/right/bottom/left`; `context-menu` |
@@ -992,7 +1435,7 @@ Selectores estables: `[data-testid="…"]`.
 
 - **Crear un mapa entero:** `start-paste` (o, en el nivel 3, `io-menu` → menuitem «Pegar proyecto (JSON)»; en los niveles 1 y 2, `main-menu` → «Guardar o abrir archivos» → «Pegar proyecto (JSON)») → rellenar `paste-json` → `paste-import-run` → esperar a que `project-name` muestre el nombre.
 - **Probar y leer:**
-  1. Nivel 2: `simple-play` y leer `simple-result` («Han llegado a la meta»). Nivel 3: `sim-play` (o tecla Espacio).
+  1. Nivel 2: leer `kid-meter-value` (cuántos de cada 10 llegan; se recalcula solo). Nivel 3: `sim-play` (o tecla Espacio).
   2. Nivel 3, `tab-results`: el texto incluye «Total N». Los números usan **coma decimal** (33,6).
   3. `open-monitor` para el Marcador.
   4. `open-verdict` → `verdict-md` para descargar «Dímelo claro».
