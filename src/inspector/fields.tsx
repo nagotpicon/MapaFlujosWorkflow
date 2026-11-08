@@ -35,7 +35,7 @@ export function OverrideMark({ overridden, reset }: { overridden: boolean; reset
   const scenario = useProject((s) => (s.doc?.project.activeScenarioId ? s.doc.scenarios[s.doc.project.activeScenarioId] : undefined));
   if (!overridden) return null;
   return (
-    <Tip label={`Modificado en «${scenario?.name}». Restaurar el valor base`}>
+    <Tip label={`Cambiado solo en «${scenario?.name}». Pulsa para volver al valor del original`}>
       <button type="button" onClick={reset} className="inline-flex items-center gap-0.5 rounded px-1 text-[10px] font-medium text-accent-text hover:bg-accent-soft" data-testid="override-mark">
         <span className="size-1.5 rounded-full bg-accent" /><RotateCcw className="size-2.5" />
       </button>
@@ -43,21 +43,21 @@ export function OverrideMark({ overridden, reset }: { overridden: boolean; reset
   );
 }
 
-export function ParamNumber({ kind, id, path, label, hint, percent, min, max, step, suffix }: {
-  kind: EntityKind; id: string; path: string; label: ReactNode; hint?: string; percent?: boolean; min?: number; max?: number; step?: number; suffix?: string;
+export function ParamNumber({ kind, id, path, label, hint, help, percent, min, max, step, suffix }: {
+  kind: EntityKind; id: string; path: string; label: ReactNode; hint?: string; help?: ReactNode; percent?: boolean; min?: number; max?: number; step?: number; suffix?: string;
 }) {
   const [v, set, o] = useParam<number | null>(kind, id, path);
   return (
-    <Field label={<span className="inline-flex items-center gap-1">{label}<OverrideMark {...o} /></span>} hint={hint}>
+    <Field label={<span className="inline-flex items-center gap-1">{label}<OverrideMark {...o} /></span>} hint={hint} help={help}>
       <NumberInput value={v ?? null} onChange={set} percent={percent} min={min} max={max} step={step} suffix={suffix} data-param={path} />
     </Field>
   );
 }
 
-export function ParamSelect<T extends string>({ kind, id, path, label, options, hint }: { kind: EntityKind; id: string; path: string; label: ReactNode; options: { value: T; label: string }[]; hint?: string }) {
+export function ParamSelect<T extends string>({ kind, id, path, label, options, hint, help }: { kind: EntityKind; id: string; path: string; label: ReactNode; options: { value: T; label: string }[]; hint?: string; help?: ReactNode }) {
   const [v, set, o] = useParam<T>(kind, id, path);
   return (
-    <Field label={<span className="inline-flex items-center gap-1">{label}<OverrideMark {...o} /></span>} hint={hint}>
+    <Field label={<span className="inline-flex items-center gap-1">{label}<OverrideMark {...o} /></span>} hint={hint} help={help}>
       <Select value={v} onChange={set} options={options} label={typeof label === 'string' ? label : undefined} />
     </Field>
   );
@@ -73,12 +73,12 @@ export function NodeSelect({ value, onChange, exclude, label, allowNone }: { val
 export function DimSelect({ value, onChange, label, includeInfluence }: { value: string; onChange: (v: string) => void; label: string; includeInfluence?: boolean }) {
   const { doc } = useInspector();
   const opts = Object.values(doc.dimensions).map((d) => ({ value: d.id, label: d.name }));
-  if (includeInfluence) opts.push({ value: '__influence', label: 'Influencia del nodo' });
+  if (includeInfluence) opts.push({ value: '__influence', label: 'Su fuerza (empuja o frena)' });
   return <Select label={label} value={value} onChange={onChange} options={opts} />;
 }
 
 /** Editor de un valor en escala cualitativa, ponderada o numérica. */
-export function ScaleValueEditor({ value, onChange, label, allowNull = true }: { value: ScaleValue | null; onChange: (v: ScaleValue | null) => void; label: string; allowNull?: boolean }) {
+export function ScaleValueEditor({ value, onChange, label, id, help, allowNull = true }: { value: ScaleValue | null; onChange: (v: ScaleValue | null) => void; label: string; id?: string; help?: ReactNode; allowNull?: boolean }) {
   const { doc } = useInspector();
   const ws = doc.project.settings.weightedScale;
   const scale = findScale(doc.project.settings, value?.scaleId ?? null);
@@ -91,10 +91,11 @@ export function ScaleValueEditor({ value, onChange, label, allowNull = true }: {
   };
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-medium text-ink-2">{label}</span>
-        <Segmented size="xs" label={`Modo de ${label}`} value={mode} onChange={setMode}
-          options={[...(allowNull ? [{ value: 'none', label: '—', title: 'Sin valor' }] : []), { value: 'qualitative', label: 'Cual.', title: 'Cualitativa' }, { value: 'weighted', label: 'Pond.', title: `Ponderada ${ws.min}…${ws.max}` }, { value: 'numeric', label: 'Núm.', title: 'Numérica' }]} />
+      <div className="space-y-1">
+        <span className="block text-[12px] font-medium text-ink-2">{label}</span>
+        {help && <span className="block text-[11.5px] leading-snug text-ink-3">{help}</span>}
+        <Segmented size="xs" label={`Cómo lo dices: ${label}`} value={mode} onChange={setMode}
+          options={[...(allowNull ? [{ value: 'none', label: 'Nada', title: 'Sin valor' }] : []), { value: 'weighted', label: `De ${ws.min} a +${ws.max}`, title: `Un número de ${ws.min} a +${ws.max} (técnico: ponderada)` }, { value: 'qualitative', label: 'Con palabras', title: 'Muy bajo, bajo, medio… (técnico: cualitativa)' }, { value: 'numeric', label: 'Número libre', title: 'Cualquier número (técnico: numérica)' }]} />
       </div>
       {value?.mode === 'qualitative' && (
         <div className="flex gap-1">
@@ -111,13 +112,13 @@ export function ScaleValueEditor({ value, onChange, label, allowNull = true }: {
           <span className="w-6 text-right text-[10px] text-ink-3">{ws.min}</span>
           <div className="flex-1"><Slider label={label} value={value.value} min={ws.min} max={ws.max} step={0.5} onChange={(v) => onChange({ ...value, value: v })} /></div>
           <span className="w-6 text-[10px] text-ink-3">+{ws.max}</span>
-          <span className={cx('w-9 rounded-md px-1 text-center text-[12px] font-semibold tabular', value.value < 0 ? 'text-loss' : value.value > 0 ? 'text-gain' : 'text-ink-3')} data-testid={`scale-${label}`}>
+          <span className={cx('w-9 rounded-md px-1 text-center text-[12px] font-semibold tabular', value.value < 0 ? 'text-loss' : value.value > 0 ? 'text-gain' : 'text-ink-3')} data-testid={`scale-${id ?? label}`}>
             {value.value > 0 ? '+' : ''}{value.value}
           </span>
         </div>
       )}
       {value?.mode === 'numeric' && <NumberInput value={value.value} onChange={(v) => onChange({ ...value, value: v })} step={0.1} />}
-      {value?.mode === 'qualitative' && <p className="text-[10.5px] text-ink-3">≈ Para simular se interpreta como {(scale.levels[Math.round(value.value)]?.value * ws.max).toFixed(1)} (aproximación configurable en Ajustes).</p>}
+      {value?.mode === 'qualitative' && <p className="text-[11px] text-ink-3">≈ Para hacer la cuenta, «{scale.levels[Math.round(value.value)]?.label}» cuenta como {(scale.levels[Math.round(value.value)]?.value * ws.max).toFixed(1).replace('.', ',')} de {ws.max} (se cambia en Ajustes del mapa).</p>}
     </div>
   );
 }

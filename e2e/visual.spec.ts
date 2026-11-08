@@ -20,8 +20,11 @@ for (const scheme of ['light', 'dark'] as const) {
     await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     expect(bg).toBe(scheme === 'light' ? 'rgb(250, 249, 245)' : 'rgb(38, 38, 36)');
-    await page.locator('[data-node-title="Cierre"]').click();
-    await expect(page.getByTestId('node-inspector')).toBeVisible();
+    // el mapa se centra con una animación: si el clic cae a mitad, se repite
+    await expect(async () => {
+      await page.locator('[data-node-title="Cierre"]').click();
+      await expect(page.getByTestId('node-inspector')).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
     await page.screenshot({ path: `test-results/visual-${scheme}.png` });
     await ctx.close();
   });

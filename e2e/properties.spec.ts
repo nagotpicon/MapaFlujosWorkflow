@@ -18,11 +18,11 @@ test.describe('Propiedades y motor desde la interfaz', () => {
 
     // comportamiento: filtro del 65 %
     await selectNode(page, 'Filtro útil');
-    await page.getByTestId('section-behaviors').getByRole('button', { name: 'Qué hace' }).click();
+    await page.getByTestId('section-behaviors').getByRole('button', { name: /Qué hace/ }).click();
     await page.getByTestId('add-behavior').click();
     await page.getByTestId('behavior-option-filter').click();
     const card = page.getByTestId('behavior-card').first();
-    await card.getByRole('button', { name: /Filtro/ }).click();
+    await card.getByRole('button', { name: /Colador|Filtro/ }).click();
     const pass = card.locator('[data-param="passRatio"]');
     await pass.fill('65');
     await pass.press('Enter');
@@ -31,8 +31,8 @@ test.describe('Propiedades y motor desde la interfaz', () => {
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^65/);
 
     // peso / polaridad (influencia negativa)
-    await page.getByTestId('section-weights').getByRole('button', { name: 'Cuánto empuja o frena' }).click();
-    await page.getByRole('radio', { name: 'Pond.' }).nth(1).click();
+    await page.getByTestId('section-weights').getByRole('button', { name: /Cuánto empuja o frena/ }).click();
+    await page.getByRole('radiogroup', { name: /Empuja o frena/ }).getByRole('radio', { name: 'De -5 a +5' }).click();
     await expect(page.getByTestId('scale-Influencia')).toHaveText('0');
     // condición de activación
     await page.getByTestId('section-conditions').getByRole('button', { name: /Cuándo funciona/ }).click();

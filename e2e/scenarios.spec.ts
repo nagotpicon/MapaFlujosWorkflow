@@ -14,7 +14,7 @@ test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, rec
   // 2. cambiar una variable (filtro de clasificación) solo en este escenario
   await selectNode(page, 'Clasificación de llamadas');
   const card = page.getByTestId('behavior-card').first();
-  await card.getByRole('button', { name: /Filtro/ }).click();
+  await card.getByRole('button', { name: /Colador|Filtro/ }).click();
   const pass = card.locator('[data-param="passRatio"]');
   await pass.fill('90');
   await pass.press('Enter');

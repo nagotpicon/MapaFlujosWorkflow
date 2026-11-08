@@ -100,27 +100,30 @@ export function exprDependencies(expr: ConditionExpr, out: Set<string> = new Set
   return out;
 }
 
-const OP_LABEL: Record<string, string> = { '>': '>', '>=': '≥', '<': '<', '<=': '≤', '==': '=', '!=': '≠' };
+const OP_WORD: Record<string, string> = { '>': 'es más de', '>=': 'es por lo menos', '<': 'es menos de', '<=': 'es como mucho', '==': 'es justo', '!=': 'no es' };
+const ROUND_WORD: Record<string, string> = { '>': 'después de la ronda', '>=': 'desde la ronda', '<': 'antes de la ronda', '<=': 'hasta la ronda', '==': 'en la ronda', '!=': 'en todas menos la ronda' };
 const METRIC_LABEL: Record<string, string> = {
-  in: 'entrada', out: 'salida', stock: 'stock', influence: 'influencia', lost: 'pérdida', result: 'resultado', dim: 'dimensión', active: 'activo',
+  in: 'lo que le llega a', out: 'lo que sale de', stock: 'lo que tiene guardado', influence: 'la fuerza de', lost: 'lo que pierde', result: 'lo que llega a la meta desde', dim: 'cómo es lo de', active: 'encendida',
 };
 
+/** La condición contada en una frase sencilla (la que se ve encima del editor). */
 export function describeExpr(expr: ConditionExpr, nodeName: (id: string) => string): string {
   const od = (o: Operand | undefined): string => {
     if (!o) return '?';
     if (o.kind === 'const') return String(o.value);
-    if (o.kind === 'iteration') return 'ronda';
-    return `${METRIC_LABEL[o.metric] ?? o.metric}${o.dimensionId && o.metric === 'dim' ? `·${o.dimensionId}` : ''} de «${nodeName(o.nodeId)}»`;
+    if (o.kind === 'iteration') return 'la ronda';
+    if (o.kind === 'metric' && o.metric === 'active') return `«${nodeName(o.nodeId)}»`;
+    return `${METRIC_LABEL[o.metric] ?? o.metric} «${nodeName(o.nodeId)}»${o.dimensionId && o.metric === 'dim' ? ` (${o.dimensionId})` : ''}`;
   };
   switch (expr.conditionType) {
     case 'const': return expr.value === false ? 'nunca' : 'siempre';
-    case 'and': return expr.children.map((c) => `(${describeExpr(c, nodeName)})`).join(' Y ') || 'siempre';
-    case 'or': return expr.children.map((c) => `(${describeExpr(c, nodeName)})`).join(' O ') || 'nunca';
-    case 'not': return `NO (${expr.children[0] ? describeExpr(expr.children[0], nodeName) : '…'})`;
-    case 'compare': return `${od(expr.operands[0])} ${OP_LABEL[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[1])}`;
-    case 'iteration': return `ronda ${OP_LABEL[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[0])}`;
-    case 'range': return `${od(expr.operands[0])} ${expr.operator === 'outside' ? 'fuera de' : 'entre'} ${od(expr.operands[1])} y ${od(expr.operands[2])}`;
-    case 'threshold': return `${od(expr.operands[0])} ${expr.operator === 'below' ? 'por debajo de' : 'supera'} ${od(expr.operands[1])}`;
-    case 'active': return `«${od(expr.operands[0])}» está activo`;
+    case 'and': return expr.children.map((c) => describeExpr(c, nodeName)).join(' y además ') || 'siempre';
+    case 'or': return expr.children.map((c) => describeExpr(c, nodeName)).join(' o ') || 'nunca';
+    case 'not': return `que NO pase esto: ${expr.children[0] ? describeExpr(expr.children[0], nodeName) : '…'}`;
+    case 'compare': return `${od(expr.operands[0])} ${OP_WORD[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[1])}`;
+    case 'iteration': return `${ROUND_WORD[expr.operator ?? ''] ?? `ronda ${expr.operator}`} ${od(expr.operands[0])}`;
+    case 'range': return `${od(expr.operands[0])} ${expr.operator === 'outside' ? 'está fuera de' : 'está entre'} ${od(expr.operands[1])} y ${od(expr.operands[2])}`;
+    case 'threshold': return `${od(expr.operands[0])} ${expr.operator === 'below' ? 'no llega a' : 'pasa de'} ${od(expr.operands[1])}`;
+    case 'active': return `${od(expr.operands[0])} está encendida`;
   }
 }

@@ -17,7 +17,7 @@ describe('Termómetro de calor', () => {
     const { b, op } = build(150);
     const h = computeHeat(b.doc, simulate(b.doc, { iterations: 4 }));
     expect(h.nodes[op][2].state).toBe('overheated');
-    expect(h.nodes[op][2].causes.join(' ')).toMatch(/Presión|Cola/);
+    expect(h.nodes[op][2].causes.join(' ')).toMatch(/más de las que caben|esperando turno/);
   });
   it('ritmo perfecto en utilización sana', () => {
     const { b, op } = build(80);

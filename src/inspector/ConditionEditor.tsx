@@ -5,14 +5,14 @@ import { newId } from '../core/model/factory';
 import * as op from '../core/operations';
 import { describeExpr } from '../engine/conditions';
 import * as A from '../app/actions';
-import { Button, IconButton, NumberInput, Segmented, Select, cx } from '../ui/primitives';
+import { Button, Field, IconButton, NumberInput, Segmented, Select, cx } from '../ui/primitives';
 import { NodeSelect, useInspector, useParam, OverrideMark } from './fields';
 
 const METRICS: { value: Extract<Operand, { kind: 'metric' }>['metric']; label: string }[] = [
-  { value: 'in', label: 'entrada' }, { value: 'out', label: 'salida' }, { value: 'result', label: 'resultado' }, { value: 'stock', label: 'stock' },
-  { value: 'lost', label: 'pérdida' }, { value: 'influence', label: 'influencia' }, { value: 'dim', label: 'dimensión' },
+  { value: 'in', label: 'lo que le llega' }, { value: 'out', label: 'lo que sale' }, { value: 'result', label: 'lo que llega a la meta' }, { value: 'stock', label: 'lo que tiene guardado' },
+  { value: 'lost', label: 'lo que pierde' }, { value: 'influence', label: 'su fuerza (empuja o frena)' }, { value: 'dim', label: 'otra cosa (calidad…)' },
 ];
-const OPS = [{ value: '>', label: '>' }, { value: '>=', label: '≥' }, { value: '<', label: '<' }, { value: '<=', label: '≤' }, { value: '==', label: '=' }, { value: '!=', label: '≠' }];
+const OPS = [{ value: '>', label: '> más de' }, { value: '>=', label: '≥ desde' }, { value: '<', label: '< menos de' }, { value: '<=', label: '≤ hasta' }, { value: '==', label: '= justo' }, { value: '!=', label: '≠ distinto de' }];
 type ClauseKind = 'compare' | 'iteration' | 'range' | 'threshold' | 'active' | 'group';
 
 export function newClause(kind: ClauseKind, nodeId: string): ConditionExpr {
@@ -31,10 +31,13 @@ function MetricOperand({ o, onChange }: { o: Operand; onChange: (o: Operand) => 
   const { doc } = useInspector();
   if (o.kind !== 'metric') return null;
   return (
-    <div className="flex flex-wrap gap-1">
-      <div className="min-w-0 flex-[2]"><NodeSelect label="Elemento" value={o.nodeId} onChange={(nodeId) => onChange({ ...o, nodeId })} /></div>
-      <Select label="Métrica" className="flex-1" value={o.metric} onChange={(metric) => onChange({ ...o, metric })} options={METRICS} />
-      {o.metric === 'dim' && <Select label="Dimensión" className="flex-1" value={o.dimensionId ?? 'quality'} onChange={(dimensionId) => onChange({ ...o, dimensionId })} options={Object.values(doc.dimensions).map((d) => ({ value: d.id, label: d.name }))} />}
+    <div className="space-y-1">
+      <div className="flex items-center gap-1"><span className="w-9 shrink-0 text-[11.5px] text-ink-2">En</span><div className="min-w-0 flex-1"><NodeSelect label="¿Qué idea miro?" value={o.nodeId} onChange={(nodeId) => onChange({ ...o, nodeId })} /></div></div>
+      <div className="flex items-center gap-1">
+        <span className="w-9 shrink-0 text-[11.5px] text-ink-2">miro</span>
+        <Select label="¿Qué le miro?" className="min-w-0 flex-1" value={o.metric} onChange={(metric) => onChange({ ...o, metric })} options={METRICS} />
+        {o.metric === 'dim' && <Select label="Dimensión" className="min-w-0 flex-1" value={o.dimensionId ?? 'quality'} onChange={(dimensionId) => onChange({ ...o, dimensionId })} options={Object.values(doc.dimensions).map((d) => ({ value: d.id, label: d.name }))} />}
+      </div>
     </div>
   );
 }
@@ -50,7 +53,7 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
     const child = expr.children[0];
     return (
       <div className="rounded-lg border border-dashed border-line p-1.5">
-        <div className="mb-1 flex items-center justify-between text-[10.5px] font-semibold text-cond">NO <IconButton size="xs" label="Eliminar" onClick={onRemove}><Trash2 className="size-3" /></IconButton></div>
+        <div className="mb-1 flex items-center justify-between text-[11px] font-semibold text-cond">AL REVÉS (que NO pase esto) <IconButton size="xs" label="Quitar" onClick={onRemove}><Trash2 className="size-3" /></IconButton></div>
         {child && <Clause expr={child} ownerNode={ownerNode} depth={depth + 1} onChange={(c) => onChange({ ...expr, children: [c] })} onRemove={onRemove} />}
       </div>
     );
@@ -58,29 +61,32 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
   return (
     <div className="space-y-1 rounded-lg bg-surface-2 p-1.5" data-testid="condition-clause">
       <div className="flex items-center gap-1">
-        <Select label="Tipo de cláusula" className="flex-1" value={expr.conditionType} onChange={(t) => onChange(newClause(t as ClauseKind, ownerNode))}
-          options={[{ value: 'compare', label: 'Comparación' }, { value: 'threshold', label: 'Umbral' }, { value: 'range', label: 'Rango' }, { value: 'iteration', label: 'Ronda / tiempo' }, { value: 'active', label: 'Depende de otro activo' }]} />
-        <IconButton size="xs" label="Negar (NO)" onClick={() => onChange({ id: newId('cx'), conditionType: 'not', operator: null, operands: [], children: [expr] })}><span className="text-[10px] font-bold">NO</span></IconButton>
-        <IconButton size="xs" label="Eliminar cláusula" onClick={onRemove}><Trash2 className="size-3" /></IconButton>
+        <Select label="¿Qué tiene que pasar?" className="flex-1" value={expr.conditionType} onChange={(t) => onChange(newClause(t as ClauseKind, ownerNode))}
+          options={[{ value: 'compare', label: '🔢 Que un número sea más o menos que…' }, { value: 'threshold', label: '📈 Que algo pase de una raya' }, { value: 'range', label: '↔️ Que algo esté entre dos números' }, { value: 'iteration', label: '🗓️ Que llegue cierta ronda' }, { value: 'active', label: '💡 Que otra idea esté encendida' }]} />
+        <IconButton size="xs" label="Darle la vuelta: que NO pase esto" onClick={() => onChange({ id: newId('cx'), conditionType: 'not', operator: null, operands: [], children: [expr] })}><span className="text-[10px] font-bold">NO</span></IconButton>
+        <IconButton size="xs" label="Quitar esta regla" onClick={onRemove}><Trash2 className="size-3" /></IconButton>
       </div>
       {expr.conditionType === 'compare' && (<>
         <MetricOperand o={expr.operands[0]} onChange={(o) => setOperand(0, o)} />
-        <div className="flex gap-1">
-          <Select label="Operador" className="w-16" value={expr.operator ?? '>'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
+        <div className="flex items-center gap-1">
+          <span className="w-9 shrink-0 text-[11.5px] text-ink-2">y que</span>
+          <Select label="Operador" className="w-28" value={expr.operator ?? '>'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
           <NumberInput className="flex-1" value={constVal(expr.operands[1])} onChange={(v) => setOperand(1, { kind: 'const', value: v })} />
         </div>
       </>)}
       {expr.conditionType === 'threshold' && (<>
         <MetricOperand o={expr.operands[0]} onChange={(o) => setOperand(0, o)} />
-        <div className="flex gap-1">
-          <Select label="Sentido" className="w-28" value={expr.operator ?? 'above'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={[{ value: 'above', label: 'supera' }, { value: 'below', label: 'por debajo de' }]} />
+        <div className="flex items-center gap-1">
+          <span className="w-9 shrink-0 text-[11.5px] text-ink-2">y que</span>
+          <Select label="Sentido" className="w-32" value={expr.operator ?? 'above'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={[{ value: 'above', label: 'pasa de' }, { value: 'below', label: 'no llega a' }]} />
           <NumberInput className="flex-1" value={constVal(expr.operands[1])} onChange={(v) => setOperand(1, { kind: 'const', value: v })} />
         </div>
       </>)}
       {expr.conditionType === 'range' && (<>
         <MetricOperand o={expr.operands[0]} onChange={(o) => setOperand(0, o)} />
         <div className="flex items-center gap-1">
-          <Select label="Rango" className="w-24" value={expr.operator ?? 'between'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={[{ value: 'between', label: 'entre' }, { value: 'outside', label: 'fuera de' }]} />
+          <span className="w-9 shrink-0 text-[11.5px] text-ink-2">y que</span>
+          <Select label="Rango" className="w-28" value={expr.operator ?? 'between'} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={[{ value: 'between', label: 'está entre' }, { value: 'outside', label: 'está fuera de' }]} />
           <NumberInput className="flex-1" value={constVal(expr.operands[1])} onChange={(v) => setOperand(1, { kind: 'const', value: v })} />
           <span className="text-[11px] text-ink-3">y</span>
           <NumberInput className="flex-1" value={constVal(expr.operands[2])} onChange={(v) => setOperand(2, { kind: 'const', value: v })} />
@@ -88,13 +94,15 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
       </>)}
       {expr.conditionType === 'iteration' && (
         <div className="flex items-center gap-1">
-          <span className="text-[11.5px] text-ink-2">Ronda</span>
-          <Select label="Operador" className="w-16" value={expr.operator ?? '>='} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
+          <span className="text-[11.5px] text-ink-2">La ronda es</span>
+          <Select label="Operador" className="w-28" value={expr.operator ?? '>='} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
           <NumberInput className="flex-1" value={constVal(expr.operands[0])} min={1} onChange={(v) => onChange({ ...expr, operands: [{ kind: 'const', value: Math.round(v) }] })} />
         </div>
       )}
       {expr.conditionType === 'active' && expr.operands[0]?.kind === 'metric' && (
-        <NodeSelect label="Elemento" value={expr.operands[0].nodeId} onChange={(nodeId) => setOperand(0, { ...(expr.operands[0] as Extract<Operand, { kind: 'metric' }>), nodeId })} />
+        <Field label="¿Qué idea tiene que estar encendida?">
+          <NodeSelect label="¿Qué idea tiene que estar encendida?" value={expr.operands[0].nodeId} onChange={(nodeId) => setOperand(0, { ...(expr.operands[0] as Extract<Operand, { kind: 'metric' }>), nodeId })} />
+        </Field>
       )}
     </div>
   );
@@ -105,9 +113,9 @@ function Group({ expr, onChange, onRemove, ownerNode, depth }: { expr: Condition
     <div className={cx('space-y-1.5', depth > 0 && 'rounded-lg border border-line p-1.5')}>
       <div className="flex items-center gap-1.5">
         <Segmented size="xs" label="Operador lógico" value={expr.conditionType} onChange={(t) => onChange({ ...expr, conditionType: t })}
-          options={[{ value: 'and', label: 'Y (todas)' }, { value: 'or', label: 'O (alguna)' }]} />
+          options={[{ value: 'and', label: 'Tienen que pasar todas' }, { value: 'or', label: 'Vale con una' }]} />
         <div className="flex-1" />
-        {depth > 0 && onRemove && <IconButton size="xs" label="Eliminar grupo" onClick={onRemove}><Trash2 className="size-3" /></IconButton>}
+        {depth > 0 && onRemove && <IconButton size="xs" label="Quitar este grupo" onClick={onRemove}><Trash2 className="size-3" /></IconButton>}
       </div>
       {expr.children.map((c, i) => (
         <Clause key={c.id} expr={c} ownerNode={ownerNode} depth={depth + 1}
@@ -115,8 +123,8 @@ function Group({ expr, onChange, onRemove, ownerNode, depth }: { expr: Condition
           onRemove={() => onChange({ ...expr, children: expr.children.filter((_, j) => j !== i) })} />
       ))}
       <div className="flex gap-1">
-        <Button size="xs" variant="subtle" onClick={() => onChange({ ...expr, children: [...expr.children, newClause('compare', ownerNode)] })} data-testid="add-clause"><Plus className="size-3" />Cláusula</Button>
-        {depth < 2 && <Button size="xs" variant="ghost" onClick={() => onChange({ ...expr, children: [...expr.children, newClause('group', ownerNode)] })}><Plus className="size-3" />Grupo</Button>}
+        <Button size="xs" variant="subtle" onClick={() => onChange({ ...expr, children: [...expr.children, newClause('compare', ownerNode)] })} data-testid="add-clause"><Plus className="size-3" />Otra regla</Button>
+        {depth < 2 && <Button size="xs" variant="ghost" onClick={() => onChange({ ...expr, children: [...expr.children, newClause('group', ownerNode)] })}><Plus className="size-3" />Grupo de reglas</Button>}
       </div>
     </div>
   );
@@ -132,19 +140,23 @@ export function ConditionBlock({ condition, ownerNode, onDelete }: { condition: 
     <div className="space-y-2 rounded-xl border border-line p-2" data-testid="condition-block">
       <div className="flex items-start gap-1.5">
         <Diamond className="mt-0.5 size-3.5 shrink-0 text-cond" />
-        <p className="flex-1 text-[11.5px] leading-snug text-ink-2">{describeExpr(root, title)}</p>
+        <p className="flex-1 text-[12px] leading-snug text-ink-2"><b className="text-ink">Funciona cuando</b> {describeExpr(root, title)}.</p>
         <OverrideMark {...o} />
-        <IconButton size="xs" label="Eliminar condición" variant="danger" onClick={onDelete}><Trash2 className="size-3" /></IconButton>
+        <IconButton size="xs" label="Quitar la condición" variant="danger" onClick={onDelete}><Trash2 className="size-3" /></IconButton>
       </div>
       <Group expr={root} onChange={setExpr} ownerNode={ownerNode} depth={0} />
       <div className="grid grid-cols-2 gap-1.5 border-t border-line pt-2">
-        <Select label="Resultado" value={condition.result} onChange={(result) => A.apply((d) => op.updateCondition(d, condition.id, { result }))}
-          options={[{ value: 'activate', label: 'Si se cumple: actúa' }, { value: 'deactivate', label: 'Si se cumple: no actúa' }]} />
-        <Select label="Activación" value={condition.activationRules.mode} onChange={(mode) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, mode } }))}
-          options={[{ value: 'always', label: 'Cada ronda' }, { value: 'latch', label: 'Una vez cierta, queda' }, { value: 'once', label: 'Solo una vez' }]} />
+        <Field label="Cuando se cumple…">
+          <Select label="Cuando se cumple…" value={condition.result} onChange={(result) => A.apply((d) => op.updateCondition(d, condition.id, { result }))}
+            options={[{ value: 'activate', label: '✅ Se enciende' }, { value: 'deactivate', label: '💤 Se apaga' }]} />
+        </Field>
+        <Field label="¿Cada cuánto lo miro?">
+          <Select label="¿Cada cuánto lo miro?" value={condition.activationRules.mode} onChange={(mode) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, mode } }))}
+            options={[{ value: 'always', label: 'En cada ronda' }, { value: 'latch', label: 'En cuanto pase, se queda así' }, { value: 'once', label: 'Solo una vez' }]} />
+        </Field>
       </div>
       <label className="flex items-center justify-between gap-2 text-[11px] text-ink-2">
-        Debe cumplirse durante
+        Tiene que pasar seguido durante
         <span className="flex w-24 items-center gap-1"><NumberInput value={condition.activationRules.sustain} min={1} onChange={(v) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, sustain: Math.max(1, Math.round(v)) } }))} /> rondas</span>
       </label>
     </div>

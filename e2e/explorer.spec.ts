@@ -55,7 +55,7 @@ test('Creador de estrategias: texto espontáneo → contexto con fricciones est�
   // resolver una fricción desde el inspector
   await page.locator('[data-node-title="Sin audiencia previa"]').click();
   await expect(page.getByTestId('discovery-block')).toBeVisible();
-  await page.getByTestId('discovery-block').getByRole('radio', { name: 'Otra ruta' }).click();
+  await page.getByTestId('discovery-block').getByRole('radio', { name: 'Buscar otro camino' }).click();
   await page.getByTestId('open-monitor').click();
   await expect(page.getByTestId('monitor')).toContainText('con decisión tomada');
 });

@@ -88,6 +88,10 @@ La aplicación usa palabras sencillas. En algunos apartados técnicos de este ma
 | Detalles | Inspector |
 | Pistas · Qué ha pasado | Diagnóstico · Eventos |
 | Qué hace · Cuándo funciona · Remedios | Comportamientos · Condiciones de activación · Mitigadores |
+| ✨ Fábrica · 🧺 Colador · 🐷 Hucha · 🚧 Límite · ↪️ Desvío… (en «Qué hace») | Generador · Filtro · Acumulador · Restrictor · Desviador… |
+| 💪 Empuja o frena · ⭐ Lo importante que es para ti · 🎯 Lo que esperas que pase | Influencia · Importancia · Impacto esperado |
+| Qué sale de aquí · Qué se mide | Dimensiones del flujo |
+| Línea (en Detalles) | Unión o conexión |
 | Cuánto empuja o frena | Peso e influencia |
 | Cómo reparte y cómo junta | Bifurcación y convergencia |
 | Zona · Bucle | Contenedor · Circuito |
@@ -406,7 +410,7 @@ En el nivel 2 cambias el papel en **Detalles → ¿Qué es esto?** (sección 4.5
 ### 5.5 Mover, cambiar el tamaño, copiar y borrar
 
 - **Mover**: arrastra el elemento.
-- **Cambiar el tamaño**: elígelo y arrastra los tiradores de las esquinas. En **Detalles → Aspecto → Tamaño automático** vuelve a su tamaño natural (nivel 3).
+- **Cambiar el tamaño**: elígelo y arrastra los tiradores de las esquinas. En **Detalles → 🎨 Cómo se ve → Volver a su tamaño** vuelve a su tamaño natural (nivel 3).
 - **Copiar / Cortar / Pegar**: Ctrl+C / Ctrl+X / Ctrl+V.
 - **Duplicar**: Ctrl+D. Crea una copia independiente.
 - **Clonar (la misma idea en otro sitio)** (nivel 3, menú del clic derecho o Ctrl+K): el clon es **el mismo elemento** colocado en otro lugar. Comparte propiedades y «Qué hace», y al probar cuenta una sola vez. En los detalles de un clon verás «Clon de «…»», **Ir al original** y **Convertir en elemento independiente**.
@@ -438,7 +442,7 @@ En el nivel 2 cambias el papel en **Detalles → ¿Qué es esto?** (sección 4.5
 2. Pasa el ratón sobre una idea: aparecen **cuatro puntos** en su borde (arriba, derecha, abajo, izquierda).
 3. Arrastra desde un punto hasta otra idea y suelta.
 
-Puedes cambiar el tipo después en **Detalles → Tipo de unión** (nivel 3).
+Puedes cambiar el tipo después en **Detalles → 🧩 ¿Qué tipo de línea es?** (nivel 3).
 
 ### 6.2 Tipos de unión
 
@@ -463,52 +467,48 @@ Haz clic sobre la línea para elegirla.
 
 **Niveles 1 y 2.** Arriba pone **🔗 Línea**, con **Quitar la línea** (y **Darle la vuelta** si solo dice que tienen que ver). Debajo: «Une A con B», qué significa y **¿Quieres escribir algo en la línea?** (sección 4.5).
 
-**Nivel 3.** Arriba: origen → destino, **Darle la vuelta** y **Borrar esta unión**. Después:
+**Nivel 3.** Arriba pone **🔗 Línea** con las dos ideas que une (origen → destino), **Darle la vuelta** y **Borrar esta unión**. Cada apartado lleva debajo de su título una frase que dice para qué sirve. Después:
 
-- **Tipo de unión**: Pasa, Influye, Info o Idea (con una frase que explica cada uno).
-- **Etiqueta**: el texto sobre la línea.
-- **Dirección**: Un sentido, Ambos o Sin sentido.
-- Al probar, en las uniones Pasa: **Asignado**, **Entregado**, **Perdido**, **Generado** y **Llega en la ronda**; y avisos como «bloqueada», «saturada», «vuelta» o «inhibe».
+- **🧩 ¿Qué tipo de línea es?**: Pasa, Influye, Info o Idea, con una frase que explica cada uno.
+- **✏️ Texto sobre la línea**: lo que pone encima de la línea.
+- **➡️ ¿Hacia dónde va?**: **→ Una flecha** (de una idea a la otra), **⇄ Dos flechas** (hacia los dos lados) o **— Sin flechas** (solo las une).
+- **🔎 En esta ronda** (al probar, en las líneas Pasa): **📦 Le toca llevar**, **📬 Llegan al otro lado**, **🕳️ Se pierden por el camino**, **✨ Se crean** y **⏳ Llega en la ronda**; y avisos como **⛔ cortada**, **🚧 llena**, **🔁 vuelta** o **🔻 resta**. En las líneas Influye se ve **💪 Cuánto cambia a la otra** o, si es un remedio, **🩹 Cuánta fuerza le quita al freno**.
 
-**Qué pasa por esta unión** (solo uniones Pasa):
-- **Transporte**:
-  - **Transfiere el flujo**: lo mueve del origen al destino. Es lo normal.
-  - **Réplica / retroalimentación (genera en destino)**: no mueve el flujo, sino que genera una cantidad proporcional en el destino. Su **Efecto del retorno** puede ser **+ Alimenta (refuerza)** o **− Inhibe (equilibra)**.
-- **Rol en el reparto del origen**:
-  - **Ruta principal**.
-  - **Ruta de rechazo (lo filtrado)**: recibe lo que un filtro no deja pasar.
-  - **Desborde (exceso de capacidad)**: recibe lo que no cabe en un restrictor.
-  - **Desvío**: recibe lo que manda un desviador.
-- **Multiplicador**: multiplica lo que pasa (1 = sin cambio).
-- **Pérdida**: porcentaje que se pierde por el camino.
-- **Capacidad** (por ronda): lo máximo que puede pasar en cada ronda.
-- **Retardo** (rondas): cuántas rondas tarda en llegar.
-- **Resistencia**: frena la velocidad del flujo.
-- **Velocidad**: multiplica la velocidad (×).
-- **Intensidad**: afecta al potencial.
-- **Prioridad**, **Peso del reparto** y **Reparto fijo**: cuánto le toca a esta unión cuando el origen reparte (sección 15).
-- **Peso en convergencia**: peso de esta llegada cuando el destino combina varias llegadas.
-- **Marcar como vuelta (llega en la ronda siguiente)**: convierte la unión en la vuelta de un círculo (sección 16).
-- **Dimensiones transportadas**: qué dimensiones viajan por esta unión (por defecto, todas).
+**🚚 Qué pasa por esta línea** (solo líneas Pasa):
+- **¿Qué hace la línea?**:
+  - **Lleva lo que pasa de un lado a otro**: es lo normal (técnico: transfiere el flujo).
+  - **Crea más al otro lado (como un eco)**: no mueve nada; crea en el destino una cantidad parecida a la que pasa (técnico: réplica o retroalimentación). En **¿Qué hace el eco?** eliges **+ Suma (hace crecer)** o **− Resta (frena)**.
+- **¿Para qué es esta línea?**: **Es el camino normal**, **Lleva lo que el colador no deja pasar**, **Lleva lo que no cabe (por el límite)** o **Lleva lo del desvío**.
+- **Se pierde por el camino** (%): 10 % = de cada 100, llegan 90.
+- **Cuántos caben por ronda**: lo máximo que puede pasar en cada ronda. Vacío = sin límite.
+- **Rondas que tarda en llegar**.
+- **Multiplica lo que pasa**: 1 = igual; 2 = el doble.
+- **Cuánto lo frena** (%): lo hace ir más despacio.
+- **Más rápido o más lento** (×): 1 = normal.
+- **Fuerza de la línea**: cuánta «energía» lleva (cambia el potencial de lo que pasa).
+- **Orden al repartir**, **Peso al repartir** y **Parte fija al repartir**: cuánto le toca a esta línea cuando la idea de origen reparte entre varias salidas (sección 15).
+- **Peso al juntarse**: cuánto cuenta esta llegada cuando el destino mezcla varias.
+- **🔁 Es la vuelta de un círculo (llega en la ronda siguiente)**: convierte la línea en la vuelta de un bucle (sección 16).
+- **¿Qué viaja por aquí?**: pulsa cada cosa que se mide para quitarla o ponerla (la cantidad viaja siempre).
 
-**Cómo influye** (solo uniones Influye):
-- **Qué hace**:
-  - **Modula al destino (refuerza o frena)**: cambia una dimensión del destino. Su fuerza depende de la influencia del origen, de la **Polaridad** (**+ Directa** o **− Inversa**), de la **Sensibilidad** y de la **Dimensión afectada**.
-  - **Compensa / mitiga una dificultad**: el origen es una medida que reduce el efecto negativo del destino. Tiene **Tipo** (Parcial, Total, Condicionada, Temporal), **Unidad** (Puntos de escala o Porcentaje), **Cantidad** y, si es temporal, **Desde la ronda / Hasta la ronda**.
-- **Intensidad de la relación**.
+**💪 Cómo influye** (solo líneas Influye):
+- **¿Qué hace?**:
+  - **Empuja o frena a la otra**: cambia algo del destino. Eliges **¿En qué sentido?** (**+ Igual**: si una sube, la otra sube; o **− Al revés**), **¿Qué le cambia?** (la cantidad, la calidad… o su fuerza) y **¿Cuánto, como mucho?** (lo que cambia cuando el origen empuja con toda su fuerza, 5).
+  - **Es un remedio: le quita fuerza a un freno**: la idea de origen hace que el destino frene menos. Eliges **¿Cuánto lo arregla?** (Una parte, Del todo, Solo si pasa algo o Solo un tiempo), **¿En qué lo cuento?** (Puntos de 0 a 5 o Porcentaje), **¿Cuánto le quita?** y, si es por un tiempo, **Desde la ronda** y **Hasta la ronda**. Por ejemplo, 2 puntos a un freno de −5 lo dejan en −3.
+- **Fuerza de la línea**: 1 = normal; 2 = el doble de fuerte.
 
-**Cuándo deja pasar** (uniones Pasa e Influye): la unión solo funciona si se cumplen estas condiciones (sección 12). Sin condiciones: «Siempre deja pasar.»
+**⏰ Cuándo deja pasar** (líneas Pasa e Influye): la línea solo funciona si se cumplen estas condiciones (sección 12). Sin condiciones pone «Siempre deja pasar.»
 
-**Bucle** (uniones Pasa e Influye): si la unión cierra un círculo, aparece **Convertir en bucle** (sección 16).
+**🔁 Bucle** (líneas Pasa e Influye): si la línea cierra un círculo, aparece **Convertir en bucle** (sección 16).
 
-**Aspecto**
-- **Trazado**: Curva, Recta u Ortogonal.
-- **Línea**: Continua, Discontinua o Punteada.
-- **Grosor**: Por magnitud (automático según la cantidad) o Manual (con un número).
-- **Anclaje origen / Anclaje destino**: Arriba, Derecha, Abajo o Izquierda.
-- **Color**: un color libre o, con «color semántico», el de su tipo.
+**🎨 Cómo se ve**
+- **Forma de la línea**: Curva, Recta o Con esquinas.
+- **Tipo de raya**: Seguida, A trozos o De puntos.
+- **Grosor**: **Según lo que pasa** (automático) o **Fijo** (con un número).
+- **Sale por** y **Llega por**: Arriba, Derecha, Abajo o Izquierda.
+- **Color**: un color libre, o **volver al color de su tipo**.
 
-**Comentarios**: anotaciones de la unión.
+**💬 Comentarios**: notas para ti sobre esta línea.
 
 ---
 
@@ -558,7 +558,7 @@ El botón **Capas** está abajo del todo en la barra lateral.
 
 ### 7.7 Comentarios y notas
 
-En **Detalles → Comentarios** → **Añadir comentario**. Cada anotación tiene un tipo: **Comentario**, **Nota**, **Hipótesis**, **Evidencia** o **Pregunta pendiente**. Úsalas para dejar claro qué es dato y qué es suposición.
+En **Detalles → 💬 Comentarios** → **Añadir comentario**. Cada comentario tiene un tipo: **💬 Comentario**, **📝 Nota**, **🤔 Lo que supongo** (técnico: hipótesis), **✅ Lo que he comprobado** (técnico: evidencia) o **❓ Duda por resolver**. Úsalos para dejar claro qué es dato y qué es suposición. Con **Ya está resuelto** lo das por cerrado (y con **Volver a abrirlo**, lo reabres).
 
 ---
 
@@ -586,121 +586,126 @@ En el nivel 3 el panel **Detalles** está siempre a la vista (botón **Mostrar d
 
 ### 9.1 Sin nada elegido: el mapa (nivel 3)
 
-- **Nombre del mapa** y **De qué va**.
-- **Probar → Rondas (semanas, meses…)**: cuántas rondas se calculan.
-- **Bucles**: la lista de bucles del mapa. Sin bucles: «Elige ideas en orden y pulsa «Bucle» para cerrar un círculo (como el boca a boca)».
-- **Qué se mide (dimensiones)**: las dimensiones del flujo (sección 14), con **Dimensión personalizada**.
-- **Ajustes → Más ajustes: escalas, colores, leyenda y atajos…** (sección 25).
+Arriba pone **🗺️ Tu mapa**: «No has elegido nada, así que aquí ves cosas de todo el mapa».
+
+- **¿Cómo se llama?** y **¿De qué va?**, y un recordatorio: «👉 Pulsa una idea o una línea para ver lo suyo. Doble clic en un hueco vacío para poner una idea nueva».
+- **⏱️ Cuánto tiempo pruebo → ¿Cuántas rondas?**: una ronda es un trozo de tiempo (una semana, un mes…). Más rondas = ver más lejos.
+- **🔁 Bucles**: los círculos del mapa, con cuánto vuelve («vuelve 15 %»). Sin bucles: «Aún no hay. Elige varias ideas en orden (con Mayús) y pulsa «🔁 Hacer un bucle»…».
+- **📏 Qué se mide**: lo que viaja por el mapa (sección 14), con **Medir otra cosa** para añadir lo tuyo.
+- **🧰 Ajustes → Abrir los ajustes…**: escalas, colores, leyenda y atajos (sección 25).
 
 ### 9.2 Varias ideas elegidas (nivel 3)
 
-Arriba pone «N elementos seleccionados».
+Arriba pone **👥 N ideas elegidas** («Lo que cambies aquí les pasa a todas a la vez») y una papelera para borrarlas.
 
-- **Cambiar todas a la vez**: **Color**, **Forma**, **Etiquetas comunes** («+ etiqueta para todos»), **Categoría**, **Asignar comportamiento a todos** e **Influencia (ponderada) para todos**. «Varios» o «varias» indica que ahora mismo tienen valores distintos. Lo que cambies se aplica a todas.
-- **Ordenar**: Grupo, Zona, Bucle, Ordenar, alinear, repartir y **Borrar lo elegido** (sección 7.1).
+- **🎨 Cambiarlas todas a la vez**: **Color**, **Forma** (Redondeada, Pastilla, Cuadrada, Círculo o Rombo), **Etiquetas que tienen todas** («+ escribe una y pulsa Intro»; pulsa una para quitársela a todas), **¿De qué tipo son?**, **Cuánto empujan o frenan** (de −5 a +5) y **Darles a todas algo que hacer** (sección 11). «Ahora son distintas» quiere decir que ahora mismo no tienen el mismo valor.
+- **📐 Ordenarlas**: **📦 Hacer un grupo**, **🗂️ Meter en una zona**, **🔁 Hacer un bucle**, **✨ Ordenar solas**, **Ponerlas en fila** (alinear a la izquierda, centrar horizontalmente, alinear a la derecha, arriba, centrar verticalmente, abajo, y repartir el mismo espacio a lo ancho o a lo alto) y **Borrar las elegidas** (sección 7.1).
 
 ### 9.3 Una idea elegida (nivel 3)
 
-Arriba aparece su tipo (Idea, Inicio, Meta…), un candado si está bloqueada y el botón **Borrar**. Después:
+Arriba aparecen su dibujito y su nombre (💡 Idea, 🌱 Inicio, 🎯 Meta… o su papel del camino, como 🪨 Piedra), una frase que explica para qué sirve, un candado si está bloqueada y el botón **Borrar**. Cada apartado lleva debajo de su título una frase que dice para qué sirve. Después:
 
 1. **Lo básico**:
-   - **Nombre**, **Descripción** y **Tipo** (Idea, Inicio, Meta, Nota, Texto suelto, Grupo o Zona).
-   - **Categoría** (por ejemplo «Operativa»).
-   - **Etiquetas** («+ etiqueta»).
-   - **Grado de confianza**: Hipótesis, Estimación, Observado o Verificado.
-2. **Resumen**: lo que hace la idea (o «Aquí no pasa nada especial»), su influencia y si está «condicionado». Al probar, en **Ronda N**: **Entra**, **Sale** (o **Resultado**, si es una meta), **Generado**, **Perdido**, **Consumido**, **Stock**, **En cola**, **Compensado**, **Influencia neta**, el estado del termómetro y los botones **¿A qué afecta?**, **¿De dónde le viene?** y **Centrarme en esto**.
-3. **Cuánto empuja o frena** (sección 10).
-4. **Qué hace** (sección 11).
-5. **Cuándo funciona** (sección 12).
-6. **Remedios** (sección 13).
-7. **Qué genera (dimensiones)** (sección 14). Se abre sola en los inicios.
-8. **Cómo reparte y cómo junta** (sección 15).
-9. **Con quién está unida**: las uniones que llegan (←) y las que salen (→), con su tipo (pasa, influye, info, idea). Haz clic en una para elegirla.
-10. **Aspecto**:
-    - **Forma**: Redondeado, Píldora, Recto, Círculo, Rombo o Hex.
-    - **Color**: Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua o Rosa.
-    - **Fondo propio**, para usar un color de fondo libre («quitar» lo devuelve al de su color).
-    - **Borde**: Continuo, Discontinuo, Punteado o Sin borde.
-    - **Tipografía**: Sans, Serif o Mono. **Tamaño / peso**: un número y Normal, Medio o Fuerte.
-    - **Icono**: una lista amplia o «Ninguno».
-    - **Imagen**: subir una imagen o **Quitar imagen**.
-    - **Tamaño automático** (si le cambiaste el tamaño a mano).
-11. **Comentarios** (sección 7.7).
-12. **Archivos**: **Adjuntar documento** (hasta 20 MB). Cada adjunto se puede **Descargar** o **Eliminar adjunto**.
-13. **Más opciones**:
-    - **Bloqueado** y **Rama plegada**.
-    - **Capas** (clic en una capa para meter o sacar la idea).
-    - **Puertos** («entradas y salidas lógicas»), con nombre y capacidad.
-    - **Documentación / enlaces** y el **ID** interno con la fecha de creación.
+   - **📝 Lo que pone**, **✏️ ¿Quieres explicar algo más?** y **🧩 ¿Qué es?** (Idea, Inicio, Meta, Nota, Texto suelto, Grupo o Zona). Cambiarlo cambia la cuenta: un Inicio crea cosas y una Meta las recoge.
+   - **🏷️ De qué tipo es** (para agrupar, por ejemplo «colegio» o «dinero») y **🔖 Etiquetas** («+ etiqueta y Enter»).
+   - **🤔 ¿Cuánto estás seguro de esto?**: Me lo imagino, Más o menos, Lo he visto o Comprobado.
+2. **🔎 Qué está pasando aquí** (el resumen), contado en frases: **⚙️ Hace: …** (lo que hace, por ejemplo «🧺 Colador (deja pasar 65 %)») o «Aquí no cambia nada: lo que le llega, sale igual»; **🪨 Frena** o **💪 Empuja a lo que tiene unido con «Influye»: −3 (frena bastante; va de −5 a +5)**; y **⏰ Solo funciona a veces**, si tiene condición. Al probar, en la **ronda N**: **✨ Crea**, **📥 Le llegan**, **📤 Salen** (o **🎯 Llegan a la meta**), **🕳️ Se pierden aquí**, **🍽️ Se gastan aquí**, **🐷 Guardadas en su hucha**, **⏳ Esperando turno**, **🩹 Sus remedios le quitan el N % de su fuerza para frenar**, **💪 Su fuerza ahora, con todo**, **🧪 Cómo es lo que sale**, **💤 Ahora está apagada** y **🌡️ Termómetro**. Si la idea no está en el camino (una piedra o una ayuda), lo dice: «No está en el camino: es una idea que empuja o frena a otras, y no necesita que le llegue nada». Debajo, los botones **¿A qué afecta?**, **¿De dónde le viene?** y **Centrarme en esto**.
+3. **💪 Cuánto empuja o frena** (sección 10).
+4. **⚙️ Qué hace** (sección 11).
+5. **⏰ Cuándo funciona** (sección 12).
+6. **🩹 Remedios** (sección 13).
+7. **✨ Qué sale de aquí** (sección 14). Se abre sola en los inicios.
+8. **🔀 Cómo reparte y cómo junta** (sección 15).
+9. **🔗 Con quién está unida**: las líneas que le llegan (←) y las que salen (→), con su tipo (pasa, influye, info, idea). Pulsa una para elegirla. Si no tiene ninguna: «Aún no está unida a nada».
+10. **🎨 Cómo se ve**:
+    - **🔷 Forma**: Redondeado, Píldora, Recto, Círculo, Rombo o Hex.
+    - **🎨 Color**: Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua o Rosa, y **Otro color de fondo** («quitar» lo devuelve al de su color).
+    - **Borde (la raya de fuera)**: Continuo, Discontinuo, Punteado o Sin borde.
+    - **Tipo de letra**: Normal, De libro o De máquina. **Tamaño y grosor de la letra**: un número y Normal, Medio o Fuerte.
+    - **Dibujito**: una lista amplia o «Ninguno».
+    - **Poner una foto** o **Quitar la foto**, y **Volver a su tamaño** (si le cambiaste el tamaño a mano).
+11. **💬 Comentarios** (sección 7.7).
+12. **📎 Archivos**: **Guardar un archivo aquí** (hasta 20 MB). Cada archivo se puede **Descargar** o **Quitar este archivo**.
+13. **🧰 Más opciones**:
+    - **🔒 Bloqueada (para no moverla sin querer)** y **🙈 Esconder lo que cuelga de ella**.
+    - **🗂️ Capas** (pulsa una capa para meter o sacar la idea).
+    - **🔌 Puertas de entrada y salida** (para expertos), con nombre y lo que cabe en cada una.
+    - **🔗 Enlaces y apuntes** y el **Código interno**, con la fecha de creación.
 
-Las notas, los textos sueltos, los grupos y las zonas muestran solo las secciones que les sirven.
+Las notas, los textos sueltos, los grupos y las zonas muestran solo los apartados que les sirven.
 
-**Bloque de descubrimiento.** Las ideas que mete «Ayúdame a pensar» muestran arriba de dónde vienen («Propuesto por IA», «Propuesto por plantilla» o «Descubrimiento») y su estado (sin confirmar, confirmado o descartado), con los botones **Confirmar**, **Dudoso** y **Descartar** (sección 23.6).
+**Bloque de descubrimiento.** Las ideas que mete «Ayúdame a pensar» muestran arriba de dónde vienen («Te lo propuso la IA», «Te lo propuso una plantilla» o «Lo descubriste tú») y su estado (sin confirmar, ¡confirmado! o descartado). Pregunta «¿Es verdad?» con los botones **✅ Sí, es así**, **🤔 No estoy seguro** y **🗑️ Quitar** (sección 23.6).
 
-**Marca de «¿Y si…?».** Si un valor está cambiado en el «¿Y si…?» activo, aparece una marca junto a su nombre. Con un clic vuelves al valor del original.
+**Marca de «¿Y si…?».** Si un valor está cambiado en el «¿Y si…?» activo, aparece una marca junto a su nombre: «Cambiado solo en «…». Pulsa para volver al valor del original». Arriba del panel se ve «🧪 Estás cambiando el «¿y si…?» «…». Tu mapa de verdad no cambia».
 
 ---
 
 ## 10. Peso, influencia e impacto
 
-Sección **Cuánto empuja o frena** de Detalles (nivel 3). Son tres cosas distintas:
+Apartado **💪 Cuánto empuja o frena** de Detalles (nivel 3): «Si esta idea ayuda (+) o frena (−) a otras, y cuánto». Son tres cosas distintas:
 
-| Campo | Qué es | ¿Lo usa el motor? |
-|---|---|---|
-| **Importancia** | Cuánto te interesa atender este elemento. | No: es para ti. |
-| **Influencia** | Cuánto modifica a otros. Puede ser positiva, negativa o neutra. | **Sí.** |
-| **Impacto esperado** | Tu expectativa sobre el resultado. | No. El impacto real lo calcula el Marcador. |
+| En pantalla | Nombre clásico | Qué es | ¿Lo usa el motor? |
+|---|---|---|---|
+| **💪 Empuja o frena** | Influencia | Cuánto cambia a otras: más (+) empuja y menos (−) frena. Solo hace efecto en lo que tenga unido con una línea **Influye**. | **Sí.** |
+| **⭐ Lo importante que es para ti** | Importancia | Solo para ti, para ordenar. | No. |
+| **🎯 Lo que esperas que pase** | Impacto esperado | Tu apuesta sobre cuánto cambiará el resultado. | No. El de verdad lo calcula el Marcador. |
 
-Cada uno se puede expresar en tres modos:
+Cada uno se puede decir de cuatro maneras:
 
-- **Núm.** (numérico): un número libre.
-- **Pond.** (ponderado): un valor en la escala ponderada, por defecto de **−5 a +5**.
-- **Cual.** (cualitativo): un nivel de una escala con palabras, por ejemplo Muy bajo, Bajo, Medio, Alto, Muy alto. El resultado se marca como **aproximación**.
+- **Nada**: sin valor.
+- **De -5 a +5** (técnico: ponderada): un número en la escala ponderada. Se mueve con una barra y se ve, por ejemplo, «−3» en rojo.
+- **Con palabras** (técnico: cualitativa): un nivel de una escala con palabras, por ejemplo Muy bajo, Bajo, Medio, Alto, Muy alto. El resultado se marca como **aproximación**.
+- **Número libre** (técnico: numérica): cualquier número.
 
-**La influencia depende de**:
-- **Su peso (fijo)**: el valor que pongas.
-- **El flujo que recibe**: la influencia crece con el flujo, hasta el **Flujo de referencia** (influencia máxima).
-- **Su stock**: la influencia depende de lo acumulado.
+**¿De qué depende su fuerza?** (solo en «Empuja o frena»):
+- **Siempre la misma**: el valor que pongas.
+- **De lo que le llega**: crece con lo que le llega, hasta **Con cuánto llega a toda su fuerza**. Por ejemplo, un rumor empuja más cuanta más gente lo oye.
+- **De lo que tiene guardado**: depende de lo que guarda en su hucha.
 
-**Ejemplo.** «Fricción tecnológica» con influencia −3, unida con una unión **Influye** a «Conversación comercial», frena esa conversación. Si su influencia fuera +3, la reforzaría.
+**Ejemplo.** «Fricción tecnológica» con −3, unida con una línea **Influye** a «Conversación comercial», frena esa conversación. Con +3 la empujaría.
 
 ---
 
 ## 11. Comportamientos
 
-Un comportamiento es **lo que hace una idea con el flujo**. Sin comportamientos, la idea deja pasar el flujo sin cambios (o solo es una idea suelta).
+Un comportamiento es **lo que hace una idea con lo que le llega**: colarlo, guardarlo, multiplicarlo… Sin comportamientos, la idea deja pasar todo igual (o solo es una idea suelta).
 
 - **Niveles 1 y 2:** no hace falta: las 🪨 piedras y las 🤝 ayudas hacen ese trabajo de forma sencilla (sección 4.1).
-- **Nivel 3:** en **Detalles → Qué hace**, pulsa **Añadir comportamiento** y elige entre los 14, agrupados en Origen, Forma, Impulso, Pérdida / fricción, Ruta, Reserva y Control.
+- **Nivel 3:** en **Detalles → ⚙️ Qué hace**, pulsa **Añadir lo que hace** y elige entre los 14, agrupados en Crear, Cambiar, Empujar, Frenar o perder, Repartir, Guardar y Vigilar y mandar. Cada uno lleva su dibujito y una frase que lo explica.
 
 ### 11.1 Los 14 comportamientos
 
-| Comportamiento | Qué hace | Parámetros principales |
-|---|---|---|
-| **Generador** | Produce flujo nuevo en cada ronda. | Cantidad por ronda (se usa si la idea no define la dimensión Cantidad) · Emisión: Continua (cada ronda) o Pulso único · Desde la ronda / Hasta la ronda (0 = sin fin) y Crecimiento por ronda (nivel 3). |
-| **Consumidor** | Absorbe parte del flujo. Se registra como **consumido**, no como perdido. | Modo: Proporción o Cantidad fija · Proporción consumida / Cantidad consumida. |
-| **Filtro** | Deja pasar una parte. Lo rechazado va a las uniones de **rechazo** o se pierde. | Criterio: Proporción que pasa (**Pasa** %) o Umbral de dimensión (Dimensión evaluada, Operador ≥ > ≤ <, Umbral). |
-| **Transformador** | Cambia características del flujo. | Operación: Escalar (×), Desplazar (+), Fijar valor o Convertir dimensión (Desde, Hacia, Proporción convertida) · Factor / Valor. |
-| **Multiplicador** | Amplifica. El aumento se registra como **generación**. | Factor (por ejemplo 1,5). |
-| **Reductor** | Disminuye. La reducción se registra como **pérdida**. | Modo: Proporción o Cantidad fija · Reducción / Cantidad. |
-| **Acelerador** | Cambia la velocidad: más de 1 acelera, menos de 1 frena. | Factor de velocidad. |
-| **Restrictor** | Limita lo que puede pasar en cada ronda. | Capacidad por ronda · Exceso: Encolar para la siguiente ronda, Se pierde o Desbordar a las uniones de desborde. |
-| **Desviador** | Manda una parte a las uniones marcadas como **Desvío**. | Proporción desviada. |
-| **Acumulador** | Guarda flujo (stock) para otro momento. | Stock máximo (0 = sin límite) · Stock inicial y Fuga del stock por ronda (nivel 3). |
-| **Liberador** | Devuelve al flujo lo acumulado. | Modo: Proporción del stock, Cantidad fija o Todo · Proporción / Cantidad liberada. |
-| **Compensador** | Mitiga el efecto negativo de otras ideas a través de sus uniones de compensación. | Eficacia (100 % = completa). |
-| **Detector** | Mide sin modificar y avisa al cruzar un umbral. | Mide: Entrada, Salida o Dimensión · Umbral de aviso (0 = ninguno). |
-| **Controlador** | Cuando está activo, cambia un parámetro de **otro** comportamiento («SI condición → ENTONCES ajuste»). | Comportamiento controlado · Parámetro (por ejemplo `capacity`) · Ajuste: Multiplicar, Fijar o Sumar · Valor. |
+| En pantalla | Nombre clásico | Qué hace | Lo que puedes cambiar |
+|---|---|---|---|
+| **✨ Fábrica** | Generador | Crea cosas nuevas en cada ronda, como un grifo que echa agua. | ¿Cuántos crea en cada ronda? (si la idea ya lo dice en «Qué sale de aquí», manda eso) · ¿Cuándo crea? (En todas las rondas o Solo una vez, al principio) · Empieza en la ronda, Para en la ronda (0 = nunca para) y Cada ronda crea un poco más (nivel 3). |
+| **🍽️ Se come una parte** | Consumidor | Usa o gasta una parte de lo que le llega. Cuenta como **gastado**, no como perdido. | ¿Cómo se lo come? (Una parte en % o Un número fijo) · Qué parte se come / Cuántos se come. |
+| **🧺 Colador** | Filtro | Solo deja pasar una parte. Lo demás se queda fuera (o va por la línea de «lo que el colador no deja pasar»). | ¿Cómo decide qué pasa? (Pasa una parte en % o Pasa lo que cumple una regla) · ¿Qué parte pasa? · o ¿Qué mira?, ¿Cómo compara? y ¿Con qué número?. |
+| **🔄 Cambia cómo es** | Transformador | Cambia algo de lo que pasa: mejor calidad, más peso… | ¿Qué cambio hace? (Multiplicarlo, Sumarle, Ponerle un valor fijo o Convertir una cosa en otra) · ¿Por cuánto? / ¿Cuánto? · Convierte esto… …en esto y Qué parte convierte. |
+| **✖️ Multiplica** | Multiplicador | Lo que llega sale más grande. Lo que crece cuenta como **creado**. | ¿Por cuánto multiplica? (2 = el doble; 1,5 = la mitad más). |
+| **💧 Se escapa algo** | Reductor | Por el camino se pierde un poco. Cuenta como **perdido**. | ¿Cómo se escapa? (Una parte en % o Un número fijo) · Qué parte se escapa / Cuántos se escapan. |
+| **⚡ Más rápido** | Acelerador | Hace que vaya más rápido (o más lento). | ¿Cuánto más rápido? (más de 1 = más rápido; menos de 1 = más lento). |
+| **🚧 Límite** | Restrictor | Solo caben unos cuantos en cada ronda; los demás esperan o se pierden. | ¿Cuántos caben en cada ronda? · ¿Qué pasa con los que no caben? (Esperan a la ronda siguiente, Se pierden o Van por la línea de «lo que no cabe»). |
+| **↪️ Desvío** | Desviador | Manda una parte por otro camino (una línea marcada como «Lleva lo del desvío»). | Qué parte va por el desvío. |
+| **🐷 Hucha** | Acumulador | Lo va guardando para más adelante. | Qué parte guarda · ¿Cuánto cabe en la hucha? (0 = sin límite) · Lo que ya hay al empezar y Se escapa de la hucha en cada ronda (nivel 3). |
+| **🎁 Suelta lo guardado** | Liberador | Saca lo que había en la hucha. | ¿Cuánto suelta? (Una parte en %, Un número fijo o Todo) · Qué parte suelta / Cuántos suelta. |
+| **🩹 Remedio** | Compensador | Les quita fuerza a los frenos a los que está unido con una línea de remedio. | ¿Qué tal funciona? (100 % = tal cual; 50 % = solo la mitad). |
+| **👀 Chivato** | Detector | Mira lo que pasa sin tocar nada y avisa al llegar a un número. | ¿Qué mira? (Lo que le llega, Lo que sale u Otra cosa) · ¿Cuál? · Avisa al llegar a (0 = no avisa). |
+| **🎛️ Mando** | Controlador | Cuando se cumple algo, cambia cómo funciona otra cosa («SI pasa esto → ENTONCES cambia aquello»). | ¿A qué le cambia algo? · ¿Qué número cambia? (su nombre interno, por ejemplo `capacity`) · ¿Cómo lo cambia? (Multiplicándolo, Poniéndole un valor o Sumándole) · ¿Cuánto?. |
 
 ### 11.2 Opciones de cada comportamiento
 
-- **Nombre propio** (por ejemplo «Tasa de respuesta»), botón de encendido (**Activar / Desactivar**) y **Eliminar comportamiento**.
-- **Dimensiones afectadas**: sobre qué dimensiones actúa. Las demás no cambian.
-- **Combinación con otros del mismo tipo** (si hay varios iguales en la idea): Encadenada (uno tras otro), Aditiva, Multiplicativa, El mayor o El menor.
-- **SI … (condiciones)** → **Añadir SI**: el comportamiento solo actúa si se cumple la condición. Sin condiciones: «Siempre activo.»
-- **SI NO**: qué pasa si no se cumple. **No actúa**, o **Actúa con otros valores** (parámetros alternativos).
-- **Incertidumbre (escenario favorable / desfavorable)** (nivel 3): un valor favorable y otro desfavorable para cada parámetro numérico. El valor central es el actual.
-- **Efectos secundarios**: notas descriptivas con polaridad (+/−). Por ejemplo: «consume tiempo del operador». No cambian el cálculo.
+Pulsa su tarjeta para abrirla. Dentro verás:
+
+- Una caja con su dibujito, su nombre y la frase que lo explica.
+- **¿A qué le afecta?**: qué cambia (cantidad, calidad…). Lo demás no se toca.
+- Lo que puedes cambiar de ese comportamiento (tabla 11.1), muchas veces con un ejemplo debajo.
+- **Ponle un nombre (si quieres)**: por ejemplo «Solo contestan algunos».
+- **⏰ ¿Solo a veces?** → **Añadir «solo si…»**: solo lo hace cuando se cumple la condición (sección 12). Sin condiciones: «Siempre lo hace.» Con condición aparece **Y si no se cumple…**: **No hace nada** o **Lo hace con otros números**.
+- **Si hay varios iguales…** (por si la idea tiene, por ejemplo, dos coladores): Uno detrás de otro, Se suman, Se multiplican, Solo cuenta el mayor o Solo cuenta el menor.
+- **🎲 ¿Y si sale mejor o peor?** (nivel 3): un valor si sale bien y otro si sale mal para cada número. El del centro es el actual.
+- **🌀 Otras cosas que provoca**: notas con + (bueno) o − (malo), por ejemplo «me cansa más». No cambian la cuenta.
+
+En la cabecera de la tarjeta están el botón de encendido (**Apagarlo un rato (sin borrarlo)** / **Volver a encenderlo**) y **Quitar**.
 
 ### 11.3 Orden en que actúan
 
@@ -720,7 +725,7 @@ Dentro de cada elemento, el motor siempre sigue este orden:
 12. Retroalimentación.
 13. Registro.
 
-Por eso un filtro siempre actúa antes que un restrictor de la misma idea.
+Por eso un colador siempre actúa antes que un límite de la misma idea.
 
 ---
 
@@ -728,96 +733,93 @@ Por eso un filtro siempre actúa antes que un restrictor de la misma idea.
 
 Las condiciones encienden o apagan cosas según lo que va pasando al probar. Se ponen en:
 
-- una **idea** (**Cuándo funciona**; sin condiciones: «Siempre activo.»);
-- un **comportamiento** (**SI …**);
-- una **unión** (**Cuándo deja pasar**; sin condiciones: «Siempre deja pasar.»);
-- un **bucle** (**Condición del bucle**).
+- una **idea** (**⏰ Cuándo funciona**; sin condiciones: «Ahora funciona siempre»);
+- un **comportamiento** (**⏰ ¿Solo a veces?**);
+- una **línea** (**⏰ Cuándo deja pasar**; sin condiciones: «Siempre deja pasar.»);
+- un **bucle** (en su apartado **Bucle**; sin condición: «Vuelve en cada ronda.»).
 
 ### 12.1 Construir una condición
 
-**Añadir condición** y elige el **Tipo de cláusula**:
+Pulsa **Añadir condición**. Arriba de la caja se lee la condición entera como una frase, por ejemplo: «**Funciona cuando** lo que le llega a «Clasificación de llamadas» es más de 0 y además desde la ronda 2».
 
-| Tipo | Ejemplo |
-|---|---|
-| **Comparación** | «Stock de *Almacén* ≥ 50». |
-| **Rango** | «Calidad de *Leads* **entre** 0,4 y 0,8» (o **fuera de**). |
-| **Umbral** | «Salida de *Ventas* **supera** 30» (o **por debajo de**). |
-| **Ronda / tiempo** | «Ronda ≥ 4» (a partir de la semana 4). |
-| **Depende de otro activo** | «Solo si *Campaña* está activa». |
+En cada regla eliges **¿Qué tiene que pasar?**:
 
-En las cláusulas que miden una idea eliges el **Elemento** y la **Métrica**: entrada, salida, resultado, stock, pérdida, influencia o dimensión (con su **Dimensión**). Operadores: > ≥ < ≤ = ≠.
+| En pantalla | Nombre clásico | Ejemplo |
+|---|---|---|
+| **🔢 Que un número sea más o menos que…** | Comparación | «En *Almacén*, miro lo que tiene guardado, y que ≥ desde 50». |
+| **📈 Que algo pase de una raya** | Umbral | «Lo que sale de *Ventas* pasa de 30» (o **no llega a**). |
+| **↔️ Que algo esté entre dos números** | Rango | «La calidad de *Leads* está entre 0,4 y 0,8» (o **está fuera de**). |
+| **🗓️ Que llegue cierta ronda** | Ronda / tiempo | «La ronda es ≥ desde 4» (a partir de la semana 4). |
+| **💡 Que otra idea esté encendida** | Depende de otro activo | «Solo si *Campaña* está encendida». |
 
-Para combinar, añade **Cláusula** o **Grupo**. Un grupo usa el **Operador lógico** **Y (todas)** u **O (alguna)**. **Negar (NO)** invierte una cláusula.
+Las reglas que miran una idea se leen así: **En** [la idea] · **miro** [lo que le llega, lo que sale, lo que llega a la meta, lo que tiene guardado, lo que pierde, su fuerza u otra cosa (calidad…)] · **y que** [> más de, ≥ desde, < menos de, ≤ hasta, = justo o ≠ distinto de] [un número].
+
+Para juntar varias, pulsa **Otra regla** o **Grupo de reglas** y elige **Tienen que pasar todas** (técnico: Y) o **Vale con una** (técnico: O). El botón **NO** le da la vuelta a una regla: «AL REVÉS (que NO pase esto)».
 
 ### 12.2 Resultado y activación
 
-- **Resultado**: «Si se cumple: actúa» o «Si se cumple: no actúa».
-- **Activación**:
-  - **Cada ronda**: se evalúa siempre.
-  - **Una vez cierta, queda**: en cuanto se cumple, se queda activa.
+- **Cuando se cumple…**: **✅ Se enciende** o **💤 Se apaga**.
+- **¿Cada cuánto lo miro?**:
+  - **En cada ronda**: se mira siempre.
+  - **En cuanto pase, se queda así**: en cuanto se cumple, se queda encendida.
   - **Solo una vez**: actúa solo la primera vez.
-- **Debe cumplirse durante N rondas**: tiene que cumplirse N rondas seguidas antes de activar.
+- **Tiene que pasar seguido durante N rondas**: tiene que cumplirse N rondas seguidas antes de encenderse.
 
 ### 12.3 Elemento inactivo
 
-En **Cómo reparte y cómo junta → Si el elemento está inactivo** decides qué pasa cuando sus condiciones no se cumplen: **Deja pasar** el flujo sin cambios, o lo **Bloquea**.
+En **🔀 Cómo reparte y cómo junta → 💤 Si está apagada (no se cumple su condición)…** decides qué pasa cuando sus condiciones no se cumplen: **Deja pasar todo igual** o **No deja pasar nada**.
 
 ---
 
 ## 13. Mitigadores y compensaciones
 
-Sirven para modelar **«tengo un problema y una medida que lo suaviza»**.
+Sirven para decir **«tengo un problema y algo que lo arregla un poco»**. Un remedio es algo que hace que una idea frene menos (y pierda menos). Por ejemplo: si «No tengo tiempo» frena, un remedio puede ser «Hacer un horario».
 
-1. Elige la idea problemática (nivel 3), por ejemplo «Fricción tecnológica», con influencia negativa.
-2. Abre **Remedios** (mitigadores y compensaciones):
-   - **Medida existente** + **Vincular**: usa una idea que ya existe como medida.
-   - **Nueva medida compensatoria**: crea una idea verde «Medida compensatoria» ya unida.
-3. Para cada medida ajusta:
-   - **Tipo**: Parcial, Total, Condicionada o Temporal (si es condicionada, añade la condición que la activa).
-   - **Unidad**: **pt** (puntos de la escala) o **%**.
-   - **Cantidad**.
-   - **De la ronda … a …** (∞ = sin final), si es temporal.
-   - **Quitar medida** la desvincula.
-4. **Cómo se combinan varias medidas**:
-   - **Se suman**.
-   - **Solo cuenta la mayor**.
-   - **Rendimientos decrecientes (se solapan)**.
+1. Elige la idea que frena (nivel 3), por ejemplo «Fricción tecnológica», con −3.
+2. Abre **🩹 Remedios** («Cosas que le quitan fuerza cuando frena»):
+   - **🩹 Poner un remedio nuevo**: crea una idea verde «Medida compensatoria», ya unida, para que le cambies el nombre.
+   - **¿Ya tienes en el mapa algo que lo arregle?**: elígelo y pulsa **Usarla**; se une con una línea de remedio.
+3. Cada remedio sale en una tarjeta con su nombre (púlsalo para ir a él) y se lee como una frase:
+   - **¿Cuánto lo arregla?**: Una parte, Del todo, Solo si pasa algo (añade debajo cuándo funciona) o Solo un tiempo (**Desde la ronda … hasta la …**; ∞ = sin final).
+   - **Le quita [N] [puntos o % de fuerza] al freno**.
+   - Debajo, la cuenta hecha con tus números: «Ahora frena −3: con este remedio se queda en −1» o «… deja de frenar del todo».
+   - La papelera, **Quitar este remedio**, lo desune.
+4. **Si hay varios remedios…** («¿Ayudan todos juntos o se pisan un poco?»): **Se suman**, **Solo cuenta el más fuerte** o **Se pisan un poco (cada uno ayuda algo menos)**.
 
-Una medida reduce la **influencia negativa** del problema y también **las pérdidas** de sus filtros, reductores y consumidores.
+Un remedio quita fuerza al **freno** (la influencia negativa) y también arregla **lo que se pierde** en sus coladores, escapes y consumos. Los puntos se cuentan sobre lo que frena la idea: en un freno de −3, 3 puntos lo arreglan del todo. Si la idea no frena, se cuentan sobre 5: 2 puntos arreglan el 40 % de lo que se pierde allí.
 
-**Ejemplo.** Problema con influencia −5. Dos medidas de +2 y +1 (que se suman) dejan una influencia neta de **−2**.
+**Ejemplo.** Un freno de −5. Dos remedios de 2 y 1 puntos (que se suman) lo dejan en **−2**.
 
-Por dentro, una medida es una unión **Influye** con **Qué hace: Compensa / mitiga una dificultad**. También puedes crearla a mano así.
+Por dentro, un remedio es una línea **Influye** con **¿Qué hace?: Es un remedio: le quita fuerza a un freno**. También puedes crearlo a mano así.
 
 ---
 
 ## 14. Dimensiones del flujo
 
-El flujo no es solo una cantidad. Tiene varias **dimensiones** independientes:
+Por el mapa no viaja solo una cantidad: cada cosa que viaja tiene varias **dimensiones** (cosas que se miden), y cada una va por su lado:
 
-| Dimensión | Qué mide | Cómo se combina |
+| Dimensión | Qué mide (así lo explica la app) | Cómo se juntan |
 |---|---|---|
-| **Cantidad** | Volumen que circula. | Se **suma** (y se reparte al dividir). |
-| **Calidad** | Proporción con valor (0–1). | Se **promedia** ponderado por cantidad. |
-| **Velocidad** | Rapidez relativa (1 = normal). | Se promedia. |
-| **Potencial** | Capacidad para producir resultado (0–1). | Se promedia. |
-| **Carga** | Recursos necesarios para procesarlo. | Se suma. |
+| **Cantidad** | Cuántas cosas salen en cada ronda. | Se **suman** (y se reparten al dividir). |
+| **Calidad** | Cómo de buenas son: de 0 (nada) a 1 (perfectas). | Se hace la **media**, contando cuántas hay de cada. |
+| **Velocidad** | Lo rápido que van: 1 es normal y 2, el doble de rápido. | Media. |
+| **Potencial** | Lo que pueden llegar a dar: de 0 a 1. | Media. |
+| **Carga** | El trabajo que cuestan, en horas. | Se suman. |
 
-**En los inicios** (nivel 3), abre **Qué genera (dimensiones)** y pulsa **Definir** en cada dimensión que quieras dar. Para cada una:
+**En los inicios** (nivel 3), abre **✨ Qué sale de aquí** («Cuánto sale y cómo es») y pulsa **Dar un valor** en lo que quieras. En las demás ideas solo cuenta si tienen una **✨ Fábrica**. Para cada valor:
 
-- **Valor** y **Modo** (Núm., Pond. o Cual.).
-- **Nivel**, si es cualitativo.
-- **Confianza**: Hipótesis, Estimación, Observado o Verificado.
-- **Origen del dato**.
-- En el nivel 3, un rango **bajo / alto** para la incertidumbre.
+- **Cómo lo dices**: **Número**, **−5…+5** o **Palabras** (con su **Nivel**), y el valor.
+- **¿Estás seguro?**: Me lo imagino, Más o menos, Lo he visto o Comprobado.
+- **¿De dónde lo sacas?**: una web, un amigo…
+- En el nivel 3, **Si sale mal / si sale bien:** dos números para la incertidumbre.
 
-Con **Quitar valor** borras una dimensión.
+Con la papelera, **Quitar este valor**, lo borras.
 
-**Dimensiones propias.** Sin nada elegido (nivel 3), en **Detalles → Qué se mide (dimensiones)** → **Dimensión personalizada** puedes añadir las tuyas: confianza, riesgo, coste, motivación… Cada una lleva:
+**Medir otras cosas.** Sin nada elegido (nivel 3), en **Detalles → 📏 Qué se mide → Medir otra cosa** puedes añadir las tuyas: confianza, riesgo, dinero, ganas… Cada una lleva:
 
-- **Nombre** y **Unidad**.
-- **Agregación**: **Suma** para magnitudes como cantidad o coste; **Media** para cualidades como calidad o confianza.
-- **Mínimo**, **Máximo** y **Color**. Las tuyas se pueden borrar con **Eliminar dimensión**; las cinco de serie, no.
+- **Nombre**, **Color** y **Se cuenta en…** (la unidad: €, personas…).
+- **¿Cómo se juntan?**: **Se suman** para lo que se cuenta (si llegan 3 y 2, hay 5) o **Media** para cómo son las cosas (si llega un 8 y un 6, queda un 7).
+- **Lo menos** y **Lo más**. Las tuyas se borran con **Dejar de medir esto**; las cinco de serie, no.
 
 Una operación sobre una dimensión **nunca** cambia las demás.
 
@@ -825,33 +827,37 @@ Una operación sobre una dimensión **nunca** cambia las demás.
 
 ## 15. Bifurcación y convergencia
 
-Sección **Cómo reparte y cómo junta** de Detalles de una idea (nivel 3).
+Apartado **🔀 Cómo reparte y cómo junta** de Detalles de una idea (nivel 3): «Qué hace si le llegan cosas de varios sitios o si salen hacia varios».
 
 ### 15.1 Convergencia: cuando llegan varios flujos
 
-| Regla | Efecto |
-|---|---|
-| **Suma** | Se suman todos. |
-| **Combinación ponderada** | Se combinan según el **Peso en convergencia** de cada unión. |
-| **Prioridad** | Primero el de mayor prioridad. |
-| **Máximo / Mínimo** | Solo el mayor o el menor. |
-| **Deduplicación (misma entidad)** | Evita contar dos veces lo mismo que llega por dos caminos. **Solapamiento entre rutas**: 100 % = son la misma oportunidad. |
-| **Fórmula personalizada** (nivel 3) | Escribe una fórmula con `in1`, `in2`… y `sum`, `max`, `min`, `count`. |
+En pantalla: **📥 Si le llegan cosas de varios sitios… ¿Cómo las junta?**
 
-Las retroalimentaciones negativas (inhibición) restan en este paso.
+| En pantalla | Nombre clásico | Qué hace |
+|---|---|---|
+| **Las suma todas** | Suma | Se suman todas. |
+| **Las mezcla según su peso** | Combinación ponderada | Se juntan según el **Peso al juntarse** de cada línea. |
+| **Primero la más importante** | Prioridad | Primero la de mayor prioridad. |
+| **Se queda con la mayor** / **Se queda con la menor** | Máximo / Mínimo | Solo la mayor o la menor. |
+| **No cuenta dos veces lo mismo** | Deduplicación | Evita contar dos veces lo que llega por dos caminos. **¿Cuánto se repiten?**: 100 % = lo que llega por cada lado es lo mismo (por ejemplo, la misma persona por dos caminos). |
+| **Con una fórmula (para expertos)** | Fórmula personalizada | Escribe una fórmula con `in1`, `in2`… (cada línea que llega) y `sum`, `max`, `min`, `count`. |
+
+Los ecos que restan (− Resta) se descuentan en este paso.
 
 ### 15.2 Bifurcación: cómo se reparte entre varias salidas
 
-| Reparto | Efecto |
-|---|---|
-| **Proporcional al peso** | Según el **Peso del reparto** de cada unión. |
-| **Porcentajes fijos** | Según el **Reparto fijo** de cada unión. |
-| **Condicionado** | Según lo que diga **Cuándo deja pasar** en cada unión. |
-| **Prioritario (llena por orden)** | Llena la primera salida (por **Prioridad**) hasta su capacidad y luego la siguiente. |
-| **Competitivo (por capacidad)** | En proporción a la capacidad de cada salida. |
-| **Dinámico (según influencia)** | Según la influencia de la idea elegida en **Influencia que reparte**. |
+En pantalla: **📤 Si sale hacia varios sitios… ¿Cómo lo reparte?**
 
-El reparto **conserva** el flujo: lo que entra sale repartido, sin crear ni destruir nada.
+| En pantalla | Nombre clásico | Qué hace |
+|---|---|---|
+| **Según el peso de cada línea** | Proporcional al peso | Según el **Peso al repartir** de cada línea. |
+| **Con porcentajes fijos** | Porcentajes fijos | Según la **Parte fija al repartir** de cada línea. |
+| **Según una condición en cada línea** | Condicionado | Según lo que diga **⏰ Cuándo deja pasar** en cada línea. |
+| **Llena la primera y luego la siguiente** | Prioritario | Llena la primera salida (por **Orden al repartir**) hasta lo que cabe y luego la siguiente. |
+| **Según cuánto cabe en cada una** | Competitivo | En proporción a lo que cabe en cada salida. |
+| **Según la fuerza de otra idea** | Dinámico | Según cuánto empuja la idea que elijas en **¿Qué idea decide el reparto?**. |
+
+El reparto **no crea ni destruye nada**: lo que entra sale repartido.
 
 ---
 
@@ -861,32 +867,32 @@ Un **bucle** es un círculo: A → B → C → vuelve a A. Ejemplo: «más venta
 
 ### 16.1 Por qué no se cuelga
 
-El motor calcula ronda a ronda. **Lo que vuelve por la unión de vuelta se usa en la ronda siguiente**, así que un círculo nunca se calcula sin fin dentro de la misma ronda. El motor detecta solo qué unión cierra cada círculo. También puedes elegirla tú con **Marcar como vuelta (llega en la ronda siguiente)** en los detalles de la unión.
+El motor calcula ronda a ronda. **Lo que vuelve por la línea de vuelta se usa en la ronda siguiente**, así que un círculo nunca se calcula sin fin dentro de la misma ronda. El motor detecta solo qué línea cierra cada círculo. También puedes elegirla tú con **🔁 Es la vuelta de un círculo (llega en la ronda siguiente)** en los detalles de la línea.
 
 ### 16.2 Crear un bucle (nivel 3)
 
-- Elige las ideas **en orden** y pulsa **Bucle** (barra lateral o **Detalles → Ordenar**), o busca «Bucle con lo elegido» con Ctrl+K.
-- O elige la unión que cierra el círculo y, en **Detalles → Bucle**, pulsa **Convertir en bucle**.
+- Elige las ideas **en orden** (con Mayús) y pulsa **Bucle** en la barra lateral o **🔁 Hacer un bucle** en **Detalles → 📐 Ordenarlas**, o busca «Bucle con lo elegido» con Ctrl+K.
+- O elige la línea que cierra el círculo y, en **Detalles → 🔁 Bucle**, pulsa **Convertir en bucle**.
 
 ### 16.3 Ajustes del bucle
 
-Están en los detalles de la unión de vuelta, sección **Bucle**:
+Están en los detalles de la línea de vuelta, apartado **🔁 Bucle** («Si esta línea cierra un círculo, como el boca a boca»):
 
-| Ajuste | Qué hace |
-|---|---|
-| **Nombre** · **Borrar el bucle** | Ponerle nombre o quitarlo (las uniones se quedan). |
-| **Tipo de bucle** | Automático (por polaridades), Reforzador, Equilibrador o Mixto. |
-| **% de retorno** | Qué parte vuelve. |
-| **Intensidad** | Fuerza de la vuelta. |
-| **Retardo** (rondas) | Cuántas rondas tarda en volver. |
-| **Frecuencia** (cada N rondas) | Actúa cada N rondas. |
-| **Persistencia** (rondas) | Cuántas rondas dura su efecto. |
-| **Saturación** (suave) | Límite suave: el efecto se aplana al acercarse a ese valor. |
-| **Límite máximo / Límite mínimo** | Límites duros. |
-| **Activo** | Enciende o apaga el bucle. |
-| **Condición del bucle** | Solo actúa si se cumple. Sin condición: «Vuelve en cada ronda.» |
+| En pantalla | Nombre clásico | Qué hace |
+|---|---|---|
+| **Nombre del bucle** · **Borrar el bucle** | Nombre · Borrar | Ponerle nombre o quitarlo (las líneas se quedan). |
+| **¿Qué tipo de círculo es?** | Tipo de bucle | **Que lo averigüe solo**, **📈 Crece y crece** (reforzador), **⚖️ Se frena solo** (equilibrador) o **🔀 Un poco de los dos** (mixto). |
+| **Qué parte vuelve** | % de retorno | 100 % = vuelve todo. |
+| **Fuerza de la vuelta** | Intensidad | 1 = normal. |
+| **Rondas que tarda** | Retardo | Cuántas rondas tarda en volver. |
+| **Cada cuántas rondas** | Frecuencia | Actúa cada N rondas. |
+| **Cuántas rondas dura** | Persistencia | Cuántas rondas dura su efecto. |
+| **Hasta dónde crece** | Saturación | Un tope suave: cerca de él, crece menos. |
+| **Como mucho** / **Como poco** | Límite máximo / mínimo | Topes duros. |
+| **Encendido** | Activo | Enciende o apaga el bucle. |
+| **Añadir «solo si…»** | Condición del bucle | Solo actúa si se cumple. Sin condición: «Vuelve en cada ronda.» |
 
-Si quieres que la vuelta **genere** en vez de mover (por ejemplo, cada venta trae 0,2 llamadas nuevas), en la unión pon **Transporte: Réplica / retroalimentación (genera en destino)** y elige su **Efecto del retorno**: **+ Alimenta (refuerza)** o **− Inhibe (equilibra)**.
+Si quieres que la vuelta **cree** en vez de mover (por ejemplo, cada venta trae 0,2 llamadas nuevas), en la línea elige **¿Qué hace la línea?: Crea más al otro lado (como un eco)** y en **¿Qué hace el eco?**: **+ Suma (hace crecer)** o **− Resta (frena)**.
 
 Los bucles que encuentra el motor aparecen en **Resultados → Bucles detectados**, clasificados como **reforzadores** (todo suma), **equilibradores** (algo frena) o **mixtos**. Haz clic en uno para verlo en el mapa.
 
@@ -1042,19 +1048,23 @@ Pulsa el **Termómetro** de la barra superior o la tecla **H** (nivel 3). Cada i
 | Estado | Qué significa |
 |---|---|
 | **Frío: le falta** (azul) | Le falta flujo, está infrautilizado, apagado o bloqueado. |
-| **A buen ritmo** (verde) | Fluye sin fricción relevante. |
+| **A buen ritmo** (verde) | Todo pasa bien, sin frenos. |
 | **Caliente** (ámbar) | Mucho uso, pérdidas o una cola que crece. |
 | **Agobiado** (rojo) | Supera su capacidad, está saturado, llega tarde o va con prisas. |
 
-Al pasar el ratón por la franja de color de una idea ves las causas. Por ejemplo:
+Al pasar el ratón por la franja de color de una idea ves las causas (y también salen en **Detalles → 🔎 Qué está pasando aquí → 🌡️ Termómetro**). Por ejemplo:
 
-- «Presión 140% de la capacidad (…)».
-- «Infrautilizado: 20% de la capacidad».
-- «Cola creciendo (…)».
-- «Fricción: pierde 30%».
-- «Llega fuera de plazo».
-- «Prisas: colocado antes que su causa».
-- «Fluye sin fricción relevante».
+- «Le llegan más de las que caben: 140 % de su sitio (…)».
+- «Va al 80 % de lo que puede».
+- «Le sobra sitio: usa solo el 20 % de lo que puede».
+- «Le llega poco: el 25 % de lo más que le ha llegado».
+- «Cada vez hay más esperando turno (…)».
+- «Está lleno».
+- «Aquí se pierde el 30 %».
+- «Corta el paso».
+- «Llega tarde (después de la fecha límite)».
+- «Va con prisas: está antes que lo que lo causa».
+- «Todo pasa bien, sin frenos».
 
 El **Marcador** incluye el termómetro completo, ronda a ronda (sección 21).
 
@@ -1198,20 +1208,21 @@ La propuesta muestra:
 - **J · Incertidumbres**;
 - **K · Primer experimento**: qué probar, cuánto tiempo, «Confirma si», «Cuestiona si», «Parar cuando» y «Registrar».
 
-En cada fricción eliges ya qué harás: **Pendiente**, **Eliminar**, **Convivir**, **Compensar** u **Otra ruta**.
+En cada fricción (freno) eliges ya qué harás: **Aún no sé**, **Quitarlo**, **Vivir con él**, **Ponerle remedio** o **Buscar otro camino**. La columna de la izquierda las reúne en **Frenos por resolver**, cada una con de dónde viene (de mí, de fuera o de cómo está montado).
 
 - En **Meterlo en mi mapa** eliges dónde (**En un mapa nuevo**, **En este mapa** o **Unido a la idea elegida**; para esta última, elige antes una idea en el lienzo) y el botón **Meter N ideas en el mapa** crea **elementos normales**: ideas, uniones, comportamientos y medidas, que puedes cambiar y probar. No se sobrescribe nada y **Ctrl+Z deshace toda la inserción.**
 - **Seguir preguntando** vuelve a la entrevista.
 - Los datos que faltan se marcan como «sin dato: se usará un índice base 100».
 - Las retroalimentaciones sin porcentaje se insertan **desactivadas** (multiplicador 0) con la etiqueta «(define el %)», para que pongas tú el valor.
 
-Cada idea insertada lleva un **bloque de descubrimiento** en **Detalles** (nivel 3):
+Cada idea insertada lleva un **bloque de descubrimiento** en **Detalles** (nivel 3). Arriba dice de dónde viene («Te lo propuso la IA», «Te lo propuso una plantilla» o «Lo descubriste tú») y cómo está (sin confirmar, ¡confirmado! o descartado). Debajo pregunta «¿Es verdad? Confírmalo si lo es, márcalo como dudoso o quítalo»:
 
-- **Confirmar / Dudoso / Descartar**.
-- **Categoría**: Fricción propia, Fricción externa o Fricción del sistema.
-- **Control**: Control directo, Influencia parcial, Dependencia externa o Incontrolable.
-- **¿Qué hacemos con ella?**: Pendiente, Eliminar, Convivir, Compensar u Otra ruta. Si eliges **Compensar**, añade abajo una medida compensatoria para que el motor lo tenga en cuenta.
-- **Etapa** y **Evidencia**.
+- **✅ Sí, es así**, **🤔 No estoy seguro** o **🗑️ Quitar**.
+- En los frenos (fricciones), además:
+  - **¿De dónde viene este freno?**: 🙋 De mí, 🌍 De fuera o ⚙️ De cómo está montado (técnico: fricción propia, externa o del sistema).
+  - **¿Puedes cambiarlo?**: Sí, depende de mí; Un poco; Depende de otros; o No se puede.
+  - **¿Qué hacemos con este freno?**: Aún no sé, Quitarlo, Vivir con él, Ponerle remedio o Buscar otro camino. Si eliges **Ponerle remedio**, añade un remedio en **🩹 Remedios** (más abajo) para que cuente.
+- **En qué momento** (la etapa) y **¿Cómo lo sabemos?** (es un dato, lo has visto, más o menos, lo imaginas, es lo que prefieres o no se sabe).
 
 ### 23.7 Memoria
 
@@ -1560,9 +1571,9 @@ Solo si quieres ejecutarla sin internet o modificarla.
 
 ### C. Un freno y su remedio (nivel 3)
 
-1. Crea «Falta de tiempo» con **Influencia** −3 (Pond.) en **Cuánto empuja o frena**.
-2. Únela con una unión **Influye** (Qué hace: Modula al destino) a «Citas».
-3. En «Falta de tiempo» → **Remedios → Nueva medida compensatoria** → llámala «Agenda fija», con Cantidad 2 pt.
+1. Crea «Falta de tiempo» y, en **💪 Cuánto empuja o frena → 💪 Empuja o frena**, elige **De -5 a +5** y pon −3.
+2. Únela con una línea **Influye** (¿Qué hace?: Empuja o frena a la otra) a «Citas».
+3. En «Falta de tiempo» → **🩹 Remedios → 🩹 Poner un remedio nuevo** → llámalo «Agenda fija» y pon **Le quita 2 puntos al freno**. Debajo verás «Ahora frena −3: con este remedio se queda en −1».
 4. Compara el resultado con y sin la medida usando un **«¿Y si…?»**.
 
 ### D. Probar una idea sin estropear el original (nivel 3)
@@ -1619,6 +1630,7 @@ Solo si quieres ejecutarla sin internet o modificarla.
 | **Bifurcación** | Reparto de un flujo entre varias salidas. |
 | **Bucle (circuito)** | Círculo de ideas. **Reforzador** si se amplifica, **equilibrador** si se frena, **mixto** si tiene de las dos cosas. |
 | **Remedio (compensación / mitigador)** | Medida que reduce el efecto negativo de un freno. |
+| **Comportamiento («Qué hace»)** | Lo que hace una idea con lo que le llega: ✨ Fábrica, 🧺 Colador, 🐷 Hucha, 🚧 Límite… (sección 11). |
 | **Conservación** | Comprobación de que todo lo que entra se explica: o sale, o se pierde, o se consume, o queda guardado o en camino («Las cuentas cuadran»). |
 | **Convergencia** | Cómo se combinan varios flujos que llegan a la misma idea. |
 | **Dimensión** | Cada característica independiente del flujo (cantidad, calidad…). |

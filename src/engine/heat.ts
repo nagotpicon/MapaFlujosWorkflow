@@ -106,23 +106,23 @@ export function computeHeat(doc: ProjectDoc, r: SimulationResult): HeatMap {
       }
       if (cap != null && cap > 0) {
         utilization = (thr) / cap;
-        if (utilization > 1) { t += Math.min(1, 0.4 + (utilization - 1) * 1.2); causes.push(`Presión ${Math.round(utilization * 100)}% de la capacidad (${thr.toFixed(1)} / ${cap})`); }
-        else if (utilization >= 0.6) causes.push(`Utilización ${Math.round(utilization * 100)}%`);
-        else { t -= Math.min(0.9, (0.6 - utilization) * 1.6); causes.push(`Infrautilizado: ${Math.round(utilization * 100)}% de la capacidad`); }
+        if (utilization > 1) { t += Math.min(1, 0.4 + (utilization - 1) * 1.2); causes.push(`Le llegan más de las que caben: ${Math.round(utilization * 100)} % de su sitio (${thr.toFixed(1)} de ${cap})`); }
+        else if (utilization >= 0.6) causes.push(`Va al ${Math.round(utilization * 100)} % de lo que puede`);
+        else { t -= Math.min(0.9, (0.6 - utilization) * 1.6); causes.push(`Le sobra sitio: usa solo el ${Math.round(utilization * 100)} % de lo que puede`); }
       } else if ((peak[id] ?? 0) > 1e-9) {
         const rel = thr / peak[id];
-        if (rel < 0.3) { t -= (0.3 - rel) * 2; causes.push(`Caudal al ${Math.round(rel * 100)}% de su máximo`); }
+        if (rel < 0.3) { t -= (0.3 - rel) * 2; causes.push(`Le llega poco: el ${Math.round(rel * 100)} % de lo más que le ha llegado`); }
       }
-      if (queue > prevQueue + 1e-6) { t += 0.3; causes.push(`Cola creciendo (${prevQueue.toFixed(1)} → ${queue.toFixed(1)})`); }
+      if (queue > prevQueue + 1e-6) { t += 0.3; causes.push(`Cada vez hay más esperando turno (${prevQueue.toFixed(1)} → ${queue.toFixed(1)})`); }
       prevQueue = queue;
-      if (st.saturated && !(utilization != null && utilization > 1)) { t += 0.45; causes.push('Saturado'); }
+      if (st.saturated && !(utilization != null && utilization > 1)) { t += 0.45; causes.push('Está lleno'); }
       const lossRate = thr > 0 ? lost / thr : 0;
-      if (lossRate > 0.05) { t += Math.min(0.6, lossRate * 0.9); causes.push(`Fricción: pierde ${Math.round(lossRate * 100)}%`); }
-      if (st.blocked) { t -= 0.5; causes.push('Bloquea el paso'); }
-      if (lateEvents.has(`${it.iteration}:${id}`)) { t += 0.35; causes.push('Llega fuera de plazo'); }
-      if (inversion.has(id)) { t += 0.3; causes.push('Prisas: colocado antes que su causa'); }
+      if (lossRate > 0.05) { t += Math.min(0.6, lossRate * 0.9); causes.push(`Aquí se pierde el ${Math.round(lossRate * 100)} %`); }
+      if (st.blocked) { t -= 0.5; causes.push('Corta el paso'); }
+      if (lateEvents.has(`${it.iteration}:${id}`)) { t += 0.35; causes.push('Llega tarde (después de la fecha límite)'); }
+      if (inversion.has(id)) { t += 0.3; causes.push('Va con prisas: está antes que lo que lo causa'); }
       const temperature = clamp(t);
-      if (causes.length === 0) causes.push('Fluye sin fricción relevante');
+      if (causes.length === 0) causes.push('Todo pasa bien, sin frenos');
       readings.push({ temperature, state: heatState(temperature), utilization, causes });
     }
     nodes[id] = readings;

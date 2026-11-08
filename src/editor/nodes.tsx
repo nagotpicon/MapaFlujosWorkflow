@@ -5,7 +5,7 @@ import {
   Ban, ChevronDown, ChevronRight, Database, Gauge, Link2, Lock, MessageSquare, Moon, ShieldCheck, Shuffle, Sparkles, Thermometer, TrendingDown, Waypoints,
 } from 'lucide-react';
 import type { MapNode } from '../core/model/schema';
-import { BEHAVIOR_LIBRARY } from '../core/model/behaviorLibrary';
+import { BEHAVIOR_KID } from '../core/model/behaviorLibrary';
 import * as op from '../core/operations';
 import { useProject } from '../store/projectStore';
 import { useSim } from '../store/simStore';
@@ -191,7 +191,7 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
       {!easy && (flowView || annCount > 0 || raw.aliasOf || raw.locked || node.branchCollapsed) && (
         <div className={cx('relative flex flex-wrap items-center gap-1 px-3 pb-2 text-[10.5px] text-ink-3', (shape === 'circle' || svgShape) && 'justify-center')}>
           {flowView && bhs.slice(0, 5).map((b) => (
-            <span key={b!.id} title={BEHAVIOR_LIBRARY[b!.behaviorType].label} className="inline-flex size-[18px] items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_8%,transparent)]" style={{ color: ac }}>
+            <span key={b!.id} title={`${BEHAVIOR_KID[b!.behaviorType].name}: ${BEHAVIOR_KID[b!.behaviorType].hint}`} className="inline-flex size-[18px] items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_8%,transparent)]" style={{ color: ac }}>
               <BehaviorIcon type={b!.behaviorType} className="size-3" />
             </span>
           ))}

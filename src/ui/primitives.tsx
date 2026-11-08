@@ -161,11 +161,15 @@ export function Modal({ open, onOpenChange, title, subtitle, children, width = '
 
 /* ---------------- Formularios ---------------- */
 
-export function Field({ label, hint, children, inline }: { label: ReactNode; hint?: ReactNode; children: ReactNode; inline?: boolean }) {
+export function Field({ label, hint, help, children, inline }: { label: ReactNode; hint?: ReactNode; help?: ReactNode; children: ReactNode; inline?: boolean }) {
   return (
-    <label className={cx('block', inline ? 'flex items-center justify-between gap-3' : 'space-y-1')}>
-      <span className="block text-[11px] font-medium text-ink-2">{label}{hint && <span className="ml-1 font-normal text-ink-3">· {hint}</span>}</span>
-      {children}
+    <label className={cx(inline ? 'flex items-center justify-between gap-3' : 'flex flex-col gap-1')}>
+      <span className="block">
+        <span className="block text-[12px] font-medium text-ink-2">{label}{hint && <span className="ml-1 font-normal text-ink-3">· {hint}</span>}</span>
+        {help && <span className="mt-0.5 block text-[11.5px] font-normal leading-snug text-ink-3">{help}</span>}
+      </span>
+      {/* en dos columnas, la casilla baja al fondo para que queden a la misma altura */}
+      {inline ? children : <div className="mt-auto">{children}</div>}
     </label>
   );
 }
@@ -254,16 +258,21 @@ export function Segmented<T extends string>({ value, onChange, options, size = '
 
 /* ---------------- Secciones ---------------- */
 
-export function Section({ title, icon, children, defaultOpen = true, aside, count, testId }: { title: ReactNode; icon?: ReactNode; children: ReactNode; defaultOpen?: boolean; aside?: ReactNode; count?: number; testId?: string }) {
+export function Section({ title, icon, emoji, hint, children, defaultOpen = true, aside, count, testId }: { title: ReactNode; icon?: ReactNode; emoji?: string; hint?: ReactNode; children: ReactNode; defaultOpen?: boolean; aside?: ReactNode; count?: number; testId?: string }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <section className="border-b border-line last:border-b-0" data-testid={testId}>
       <div className="flex items-center gap-1 px-4">
-        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex flex-1 items-center gap-2 py-2.5 text-left">
-          <ChevronRight className={cx('size-3.5 text-ink-3 transition-transform', open && 'rotate-90')} />
-          {icon && <span className="text-ink-3 [&>svg]:size-3.5">{icon}</span>}
-          <span className="text-[12.5px] font-semibold text-ink-2">{title}</span>
-          {count != null && count > 0 && <span className="rounded-full bg-surface-2 px-1.5 text-[10px] tabular text-ink-3">{count}</span>}
+        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={cx('flex flex-1 gap-2 text-left', hint ? 'items-start py-3' : 'items-center py-2.5')}>
+          <ChevronRight className={cx('size-3.5 shrink-0 text-ink-3 transition-transform', open && 'rotate-90', hint ? 'mt-[3px]' : null)} />
+          {emoji ? <span className="shrink-0 text-[16px] leading-none" aria-hidden>{emoji}</span> : icon && <span className="text-ink-3 [&>svg]:size-3.5">{icon}</span>}
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-2">
+              <span className={cx('font-semibold', hint ? 'text-[13.5px] text-ink' : 'text-[12.5px] text-ink-2')}>{title}</span>
+              {count != null && count > 0 && <span className="rounded-full bg-surface-2 px-1.5 text-[10px] tabular text-ink-3">{count}</span>}
+            </span>
+            {hint && <span className="mt-0.5 block text-[12px] font-normal leading-snug text-ink-3">{hint}</span>}
+          </span>
         </button>
         {aside}
       </div>

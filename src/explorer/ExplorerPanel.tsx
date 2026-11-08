@@ -94,16 +94,16 @@ function Sidebar() {
       <PlanDocs />
       {frictions.length > 0 && (
         <div data-testid="friction-resolution">
-          <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-3">Fricciones por resolver · {pending.length}/{frictions.length}</div>
+          <div className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-3">Frenos por resolver · {pending.length}/{frictions.length}</div>
           <ul className="space-y-1">
             {frictions.slice(0, 12).map((n) => (
               <li key={n.id} className="rounded-lg border border-line p-1.5">
                 <button type="button" className="block w-full truncate text-left text-[12px] text-ink hover:underline" onClick={() => { useUI.setState({ overlay: null }); useUI.getState().setSelection([n.id]); setTimeout(() => A.fit([n.id]), 80); }}>{n.title}</button>
                 <div className="mt-1 flex items-center gap-1">
-                  <Badge tone={n.metadata.discovery?.frictionCategory === 'personal' ? 'accent' : n.metadata.discovery?.frictionCategory === 'system' ? 'transform' : 'cond'}>{n.metadata.discovery?.frictionCategory === 'personal' ? 'propia' : n.metadata.discovery?.frictionCategory === 'system' ? 'sistema' : 'externa'}</Badge>
-                  <select aria-label="Resolución" className="ml-auto h-5 rounded border border-line bg-surface text-[10.5px] text-ink-2" value={n.metadata.discovery?.resolution ?? 'pending'}
+                  <Badge tone={n.metadata.discovery?.frictionCategory === 'personal' ? 'accent' : n.metadata.discovery?.frictionCategory === 'system' ? 'transform' : 'cond'}>{n.metadata.discovery?.frictionCategory === 'personal' ? 'de mí' : n.metadata.discovery?.frictionCategory === 'system' ? 'de cómo está montado' : 'de fuera'}</Badge>
+                  <select aria-label="¿Qué hacemos con este freno?" className="ml-auto h-5 rounded border border-line bg-surface text-[10.5px] text-ink-2" value={n.metadata.discovery?.resolution ?? 'pending'}
                     onChange={(e) => A.apply((d) => op.updateNode(d, n.id, { metadata: { ...d.nodes[n.id].metadata, discovery: { ...d.nodes[n.id].metadata.discovery!, resolution: e.target.value as never } } }))}>
-                    <option value="pending">Pendiente</option><option value="eliminate">Eliminar</option><option value="accept">Convivir</option><option value="compensate">Compensar</option><option value="reroute">Otra ruta</option>
+                    <option value="pending">Aún no sé</option><option value="eliminate">Quitarlo</option><option value="accept">Vivir con él</option><option value="compensate">Ponerle remedio</option><option value="reroute">Buscar otro camino</option>
                   </select>
                 </div>
               </li>

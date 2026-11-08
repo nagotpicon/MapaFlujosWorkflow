@@ -79,8 +79,9 @@ export async function loadSessions(projectId: string) {
 
 async function persist(s: ExplorerSession) {
   const next = { ...s, updatedAt: Date.now() };
-  await getDB().explorerSessions.put({ id: next.id, projectId: next.projectId, title: next.title, createdAt: next.createdAt, updatedAt: next.updatedAt, state: next });
+  // primero el estado (así dos cambios seguidos no se pisan) y luego el disco, en el mismo orden
   useExplorer.setState((x) => ({ current: x.current?.id === next.id ? next : x.current, sessions: [next, ...x.sessions.filter((y) => y.id !== next.id)] }));
+  await getDB().explorerSessions.put({ id: next.id, projectId: next.projectId, title: next.title, createdAt: next.createdAt, updatedAt: next.updatedAt, state: next });
   return next;
 }
 
