@@ -1,9 +1,7 @@
 /** Vistas de nodos del lienzo. Cada nodo se suscribe solo a su propio estado. */
 import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Handle, NodeResizer, Position, type NodeProps, type Node } from '@xyflow/react';
-import {
-  Ban, ChevronDown, ChevronRight, Database, Gauge, Link2, Lock, MessageSquare, Moon, ShieldCheck, Shuffle, Sparkles, Thermometer, TrendingDown, Waypoints,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, MessageSquare } from 'lucide-react';
 import type { MapNode } from '../core/model/schema';
 import { BEHAVIOR_KID } from '../core/model/behaviorLibrary';
 import * as op from '../core/operations';
@@ -11,13 +9,15 @@ import { useProject } from '../store/projectStore';
 import { useSim } from '../store/simStore';
 import { useUI } from '../store/uiStore';
 import { nodeIcon } from '../ui/icons';
-import { BehaviorIcon } from '../ui/behaviorIcon';
 import { cx, fmt } from '../ui/primitives';
 import { qty } from '../engine/packet';
 import { HEAT_LABEL } from '../engine/heat';
 import { PAPEL, type Papel } from '../kid/model';
 import { useHighlight } from './highlight';
 import type { RFNodeData } from './derive';
+import { isMuted } from '../engine/mute';
+import { toggleMute } from '../app/mute';
+import { Ico } from '../ui/ico';
 
 type P = NodeProps<Node<RFNodeData>>;
 
@@ -84,22 +84,37 @@ function ShapeBg({ shape, color, border, dashed }: { shape: string; color: strin
   );
 }
 
-const StateIcon = ({ flag }: { flag: string }) => {
-  const map: Record<string, [typeof Gauge, string, string]> = {
-    saturated: [Gauge, 'text-loss', 'Saturado'],
-    blocked: [Ban, 'text-loss', 'Bloqueo'],
-    accumulating: [Database, 'text-cond', 'Acumulando'],
-    compensated: [ShieldCheck, 'text-gain', 'Compensado'],
-    loss: [TrendingDown, 'text-loss', 'Pérdida'],
-    transforming: [Shuffle, 'text-transform', 'Transformando'],
-    generating: [Sparkles, 'text-flow', 'Generando'],
-    inactive: [Moon, 'text-ink-3', 'Inactivo'],
-  };
-  const e = map[flag];
-  if (!e) return null;
-  const [I, c, label] = e;
-  return <span title={label} aria-label={label} className={cx('inline-flex', c)}><I className="size-3" /></span>;
+
+interface Chip { key: string; e: string; text: string; title: string; tone?: 'neutral' | 'loss' | 'gain' | 'cond' | 'flow'; feature?: string; testId?: string }
+const CHIP_TONE: Record<NonNullable<Chip['tone']>, string> = {
+  neutral: 'border-line bg-surface text-ink-2',
+  loss: 'border-[color-mix(in_srgb,var(--loss)_35%,transparent)] bg-[color-mix(in_srgb,var(--loss)_8%,var(--surface))] text-loss',
+  gain: 'border-[color-mix(in_srgb,var(--gain)_35%,transparent)] bg-[color-mix(in_srgb,var(--gain)_8%,var(--surface))] text-gain',
+  cond: 'border-[color-mix(in_srgb,var(--condition)_40%,transparent)] bg-[color-mix(in_srgb,var(--condition)_10%,var(--surface))] text-cond',
+  flow: 'border-[color-mix(in_srgb,var(--flow)_35%,transparent)] bg-[color-mix(in_srgb,var(--flow)_8%,var(--surface))] text-flow',
 };
+const pctOf = (v: unknown) => `${Math.round(Number(v ?? 0) * 100)} %`;
+const fmtSigned = (v: number) => (Math.abs(v) < 0.005 ? '0' : `${v > 0 ? '+' : '−'}${fmt(Math.abs(v))}`);
+/** Lo que hace, en dos o tres palabras: «pasa el 65 %», «caben 50»… */
+function behaviorChip(b: { behaviorType: string; parameters: Record<string, unknown> }): string {
+  const p = b.parameters;
+  switch (b.behaviorType) {
+    case 'generator': return p.mode === 'once' ? `crea ${fmt(Number(p.amount ?? 0))} una vez` : `crea ${fmt(Number(p.amount ?? 0))}`;
+    case 'filter': return p.mode === 'threshold' ? 'pasa si cumple' : `pasa el ${pctOf(p.passRatio)}`;
+    case 'consumer': return p.mode === 'amount' ? `gasta ${fmt(Number(p.amount ?? 0))}` : `gasta el ${pctOf(p.ratio)}`;
+    case 'reducer': return p.mode === 'amount' ? `se escapan ${fmt(Number(p.amount ?? 0))}` : `se escapa el ${pctOf(p.ratio)}`;
+    case 'multiplier': return `×${fmt(Number(p.factor ?? 1))}`;
+    case 'accelerator': return `×${fmt(Number(p.factor ?? 1))} de rápido`;
+    case 'restrictor': return `caben ${fmt(Number(p.capacity ?? 0))}`;
+    case 'diverter': return `desvía el ${pctOf(p.ratio)}`;
+    case 'accumulator': return 'guarda';
+    case 'releaser': return 'suelta lo guardado';
+    case 'compensator': return 'remedio';
+    case 'detector': return Number(p.threshold ?? 0) > 0 ? `avisa en ${fmt(Number(p.threshold))}` : 'vigila';
+    case 'controller': return 'manda en otra';
+    default: return 'cambia lo que pasa';
+  }
+}
 
 export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const raw = useProject((s) => s.doc?.nodes[id]);
@@ -107,6 +122,7 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const node = raw ? (original ? { ...original, id: raw.id, position: raw.position, dimensions: raw.dimensions } : raw) : undefined;
   const logicalId = raw?.aliasOf ?? id;
   const behaviors = useProject((s) => s.doc?.behaviors);
+  const remedyCount = useProject((s) => (s.doc ? Object.values(s.doc.edges).filter((e) => e.targetNodeId === logicalId && e.type === 'causal' && e.behavior.influence.mode === 'compensate').length : 0));
   const annCount = useProject((s) => (s.doc ? Object.values(s.doc.annotations).filter((a) => a.ownerId === logicalId).length : 0));
   const unit = useProject((s) => s.doc?.dimensions.quantity?.unit ?? '');
   const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[logicalId]);
@@ -130,6 +146,10 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
   const papel = custom.papel && custom.papel in PAPEL ? (custom.papel as Papel) : null;
   const shape = vs.shape;
   const svgShape = shape === 'diamond' || shape === 'hexagon';
+  // dibujito y texto centrados salvo que se elija «a la izquierda» en Detalles
+  const centered = vs.textAlign !== 'left';
+  // 🔇 silenciada: se calcula como si no estuviera
+  const muted = isMuted(node);
   const dims = node.dimensions;
   const dimmed = hl.active && !hl.nodes.has(id);
   const flowView = view !== 'mental';
@@ -154,14 +174,43 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
     fontSize: vs.fontSize,
     fontWeight: vs.fontWeight,
     boxShadow: selected ? '0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent), var(--shadow-md)' : '0 1px 2px rgba(60, 45, 25, 0.05), 0 4px 12px -6px rgba(60, 45, 25, 0.12)',
-    opacity: dimmed ? 0.18 : inactive && view === 'simulation' ? 0.55 : 1,
+    opacity: dimmed ? 0.18 : muted ? 0.5 : inactive && view === 'simulation' ? 0.55 : 1,
+    filter: muted ? 'grayscale(0.7)' : undefined,
     ['--pulse' as string]: ac,
   };
   const heatColor = heat ? HEAT_VAR[heat.state] : undefined;
+  // chips: lo que pasa en la burbuja, con dibujito y palabras; al pulsarlos se abre ahí mismo
+  const chips: Chip[] = [];
+  if (!easy) {
+    if (flowView) for (const b of bhs.slice(0, 3)) chips.push({ key: b!.id, e: BEHAVIOR_KID[b!.behaviorType].emoji, text: behaviorChip(b!), title: `${BEHAVIOR_KID[b!.behaviorType].name}: ${BEHAVIOR_KID[b!.behaviorType].hint} Pulsa para cambiarlo.`, feature: 'behaviors' });
+    const inf = node.weight.influence;
+    if (view !== 'mental' && inf && inf.mode !== 'qualitative' && inf.value !== 0) {
+      const v = st ? st.influence : inf.value;
+      chips.push(inf.value < 0
+        ? { key: 'inf', e: '🪨', text: `frena ${fmtSigned(v)}`, tone: 'loss', title: 'Estorba a lo que tiene unido con «Influye». Pulsa para cambiarlo.', feature: 'influence' }
+        : { key: 'inf', e: '💪', text: `ayuda ${fmtSigned(v)}`, tone: 'gain', title: 'Ayuda a lo que tiene unido con «Influye». Pulsa para cambiarlo.', feature: 'influence' });
+    }
+    if (view !== 'mental' && remedyCount > 0) chips.push({ key: 'rem', e: '🩹', text: remedyCount > 1 ? `${remedyCount} remedios` : 'con remedio', tone: 'gain', title: 'Tiene remedios que le quitan fuerza. Pulsa para verlos.', feature: 'remedies' });
+    if (view !== 'mental' && node.activationConditionId) chips.push({ key: 'cond', e: '⏰', text: 'a veces', tone: 'cond', title: 'Solo funciona cuando se cumple una condición. Pulsa para verla.', feature: 'conditions' });
+    if ((view === 'flow' || view === 'simulation') && st && (q > 0 || inQ > 0)) chips.push({ key: 'flow', e: node.type === 'input' ? '🌱' : node.type === 'output' ? '🎯' : '📥', text: `${fmt(q)}${unit && unit !== 'u' && unit !== 'u.' ? ` ${unit}` : ''} ${node.type === 'input' ? 'salen' : node.type === 'output' ? 'llegan' : 'pasan'}`, tone: 'flow', title: 'Lo que pasa por aquí en esta vuelta.', testId: 'node-flow' });
+    if (view === 'energy' && st) {
+      if ((st.generated.quantity ?? 0) > 0) chips.push({ key: 'gen', e: '✨', text: `+${fmt(st.generated.quantity)} nuevas`, tone: 'gain', title: 'Lo que se crea aquí en esta vuelta.' });
+      if ((st.lost.quantity ?? 0) > 0) chips.push({ key: 'lost', e: '🕳️', text: `−${fmt(st.lost.quantity)} perdidas`, tone: 'loss', title: 'Lo que se pierde aquí en esta vuelta.' });
+      if ((st.consumed.quantity ?? 0) > 0) chips.push({ key: 'cons', e: '🍽️', text: `${fmt(st.consumed.quantity)} gastadas`, tone: 'cond', title: 'Lo que se gasta aquí en esta vuelta.' });
+    }
+    if (showState && st?.blocked) chips.push({ key: 'blk', e: '⛔', text: 'corta el paso', tone: 'loss', title: 'Ahora no deja pasar nada.' });
+    if (showState && st?.saturated) chips.push({ key: 'sat', e: '🚧', text: 'lleno', tone: 'cond', title: 'No caben más: los demás esperan o se pierden.' });
+    if (showState && st && !st.active) chips.push({ key: 'off', e: '💤', text: 'apagada', tone: 'neutral', title: 'Ahora está apagada: no se cumple su condición.' });
+    if (annCount > 0) chips.push({ key: 'ann', e: '💬', text: String(annCount), title: `${annCount} comentario(s). Pulsa para verlos.`, feature: 'comments' });
+    if (raw.aliasOf) chips.push({ key: 'alias', e: '🔗', text: 'clon', title: 'Es la misma idea puesta en otro sitio: si cambias la original, cambia esta.' });
+    if (raw.locked) chips.push({ key: 'lock', e: '🔒', text: 'bloqueada', title: 'No se mueve sin querer. Desbloquéala en «Más cosas».', feature: 'more' });
+    if (node.branchCollapsed) chips.push({ key: 'fold', e: '🙈', text: 'hay más', title: 'Tiene cosas escondidas que cuelgan de ella.', feature: 'more' });
+    if (showHeat && heat && (heat.state === 'warm' || heat.state === 'overheated' || heat.state === 'cold')) chips.push({ key: 'heat', e: '🌡️', text: HEAT_LABEL[heat.state].toLowerCase(), tone: heat.state === 'cold' ? 'flow' : 'cond', title: heat.causes.join(' · ') });
+  }
   return (
     <div
       className={cx('mdf-pop group relative flex text-ink transition-[opacity,box-shadow] duration-200',
-        shape === 'circle' || svgShape ? 'items-center justify-center text-center' : 'flex-col',
+        shape === 'circle' || svgShape ? 'items-center justify-center text-center' : cx('flex-col', centered && 'justify-center'),
         view === 'simulation' && animate && st?.active && q > 0 && !dimmed && 'mdf-glow',
         stepActive && 'ring-2 ring-accent ring-offset-2 ring-offset-[var(--canvas)]')}
       style={style}
@@ -170,55 +219,41 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
       data-node-title={node.title}
     >
       <ShapeBg shape={shape} color={bg} border={selected ? 'var(--accent)' : bd} dashed={vs.borderStyle === 'dashed' ? '6 4' : vs.borderStyle === 'dotted' ? '1.5 3' : undefined} />
-      <NodeResizer isVisible={selected && !raw.locked} minWidth={100} minHeight={40} color="var(--accent)"
+      <NodeResizer isVisible={selected && !raw.locked} minWidth={130} minHeight={44} color="var(--accent)"
         onResizeStart={() => useProject.getState().begin()}
         onResizeEnd={() => useProject.getState().end()} />
       {showHeat && heat && heat.state !== 'idle' && (
         <div className="absolute -left-[3px] top-2 bottom-2 w-[4px] rounded-full" style={{ background: heatColor }} title={`${HEAT_LABEL[heat.state]}: ${heat.causes.join(' · ')}`} aria-label={`Termómetro: ${HEAT_LABEL[heat.state]}`} />
       )}
       {vs.image && !svgShape && <img src={vs.image} alt="" className="w-full rounded-t-[13px] object-cover" style={{ maxHeight: dims ? '55%' : 110 }} draggable={false} />}
-      <div className={cx('relative flex min-w-0 items-start gap-2', shape === 'pill' ? 'px-4' : 'px-3.5', svgShape ? 'max-w-[70%] py-1' : 'py-3', shape === 'circle' && 'flex-col items-center')}>
-        {Icon && <span className="mt-[1px] shrink-0" style={{ color: ac }}><Icon className="size-4" strokeWidth={1.75} /></span>}
-        {papel ? <span className="shrink-0 leading-snug" aria-hidden title={PAPEL[papel].name} data-testid="node-papel">{PAPEL[papel].emoji}</span>
-          : !Icon && isIO && <span className="mt-[6px] size-2 shrink-0 rounded-full" style={{ background: ac }} aria-hidden title={node.type === 'input' ? 'Inicio' : 'Meta'} />}
-        <InlineTitle node={raw.aliasOf ? { ...node, id: raw.aliasOf } : node} className={cx('min-w-0 flex-1 whitespace-pre-wrap break-words leading-snug', custom.hecho === '1' && 'text-ink-2')} />
+      <div className={cx('relative flex min-w-0 gap-2', centered ? 'items-center justify-center text-center' : 'items-start', shape === 'pill' ? 'px-4' : 'px-3.5', svgShape ? 'max-w-[70%] py-1' : 'py-3', shape === 'circle' && 'flex-col items-center')}>
+        {Icon && <span className={cx('shrink-0', !centered && 'mt-[1px]')} style={{ color: ac }}><Icon className="size-4" strokeWidth={1.75} /></span>}
+        {papel ? <span className="inline-flex shrink-0" title={PAPEL[papel].name} data-testid="node-papel" data-papel={papel}><Ico e={PAPEL[papel].emoji} size={17} /></span>
+          : !Icon && isIO && <span className="inline-flex shrink-0" title={node.type === 'input' ? 'Inicio: de aquí sale lo que mueves' : 'Meta: aquí se cuenta lo que llega'}><Ico e={node.type === 'input' ? '🌱' : '🎯'} size={17} /></span>}
+        {/* las palabras se cortan por sílabas (con guion), nunca letra a letra */}
+        <InlineTitle node={raw.aliasOf ? { ...node, id: raw.aliasOf } : node} className={cx('min-w-0 whitespace-pre-wrap break-words hyphens-auto leading-snug', centered ? 'text-center' : 'flex-1', custom.hecho === '1' && 'text-ink-2')} />
         {(custom.primero === '1' || custom.hecho === '1' || custom.conseguido === '1') && (
           <span className="shrink-0 leading-snug" data-testid="node-marks" title={[custom.primero === '1' && 'Primer paso', custom.hecho === '1' && 'Hecho', custom.conseguido === '1' && '¡Conseguido!'].filter(Boolean).join(' · ')}>
-            {custom.conseguido === '1' ? '🎉' : ''}{custom.primero === '1' ? '⭐' : ''}{custom.hecho === '1' ? '✅' : ''}
+            <span className="inline-flex gap-0.5">{custom.conseguido === '1' && <Ico e="🎉" size={15} />}{custom.primero === '1' && <Ico e="⭐" size={15} />}{custom.hecho === '1' && <Ico e="✅" size={15} />}</span>
           </span>
         )}
       </div>
-      {!easy && (flowView || annCount > 0 || raw.aliasOf || raw.locked || node.branchCollapsed) && (
-        <div className={cx('relative flex flex-wrap items-center gap-1 px-3 pb-2 text-[10.5px] text-ink-3', (shape === 'circle' || svgShape) && 'justify-center')}>
-          {flowView && bhs.slice(0, 5).map((b) => (
-            <span key={b!.id} title={`${BEHAVIOR_KID[b!.behaviorType].name}: ${BEHAVIOR_KID[b!.behaviorType].hint}`} className="inline-flex size-[18px] items-center justify-center rounded-md bg-[color-mix(in_srgb,currentColor_8%,transparent)]" style={{ color: ac }}>
-              <BehaviorIcon type={b!.behaviorType} className="size-3" />
-            </span>
+      {node.description.trim() && !svgShape && (
+        <p className={cx('relative -mt-2 line-clamp-4 whitespace-pre-wrap break-words hyphens-auto px-3.5 pb-2.5 leading-snug text-ink-2', centered && 'text-center')}
+          style={{ fontSize: Math.max(10.5, Math.round(vs.fontSize * 0.82)), fontWeight: 400 }} data-testid="node-description">
+          {node.description.trim()}
+        </p>
+      )}
+      {!easy && chips.length > 0 && (
+        <div className={cx('relative flex flex-wrap items-center gap-1 px-3 pb-2', (shape === 'circle' || svgShape || centered) && 'justify-center')} data-testid="node-chips">
+          {chips.map((c) => (
+            <button key={c.key} type="button" title={c.title} data-testid={c.testId}
+              className={cx('nodrag nopan inline-flex items-center gap-1 rounded-full border px-1.5 py-[1px] text-[10.5px] font-medium leading-tight transition-colors hover:border-accent', CHIP_TONE[c.tone ?? 'neutral'])}
+              onPointerDown={(ev) => ev.stopPropagation()}
+              onClick={(ev) => { ev.stopPropagation(); useUI.getState().setSelection([logicalId]); if (c.feature) useUI.setState({ actionFeature: { id: logicalId, feature: c.feature } }); }}>
+              <Ico e={c.e} size={12} />{c.text}
+            </button>
           ))}
-          {view === 'system' && node.weight.influence && (
-            <span className={cx('rounded px-1 font-semibold tabular', (st?.influence ?? node.weight.influence.value) < 0 ? 'text-loss' : 'text-gain')} title="Influencia neta">
-              {(() => { const v = st ? st.influence : node.weight.influence!.value; return `${v > 0 ? '+' : ''}${fmt(v)}`; })()}
-            </span>
-          )}
-          {view === 'system' && node.activationConditionId && <span className="text-cond" title="Tiene condición de activación">◆</span>}
-          {(view === 'flow' || view === 'simulation') && st && (q > 0 || inQ > 0) && (
-            <span className="ml-auto rounded-md bg-[color-mix(in_srgb,var(--flow)_12%,transparent)] px-1.5 py-px font-semibold tabular text-flow" title="Lo que pasa por aquí en esta ronda" data-testid="node-flow">
-              {fmt(q)}{unit ? ` ${unit}` : ''}
-            </span>
-          )}
-          {view === 'energy' && st && (
-            <span className="ml-auto flex gap-1 tabular font-semibold">
-              {(st.generated.quantity ?? 0) > 0 && <span className="text-gain" title="Generado">+{fmt(st.generated.quantity)}</span>}
-              {(st.lost.quantity ?? 0) > 0 && <span className="text-loss" title="Perdido">−{fmt(st.lost.quantity)}</span>}
-              {(st.consumed.quantity ?? 0) > 0 && <span className="text-cond" title="Consumido">◦{fmt(st.consumed.quantity)}</span>}
-            </span>
-          )}
-          {showState && st.flags.filter((f) => !['active', 'receiving', 'emitting', 'terminal'].includes(f)).map((f) => <StateIcon key={f} flag={f} />)}
-          {annCount > 0 && <span className="inline-flex items-center gap-0.5" title={`${annCount} comentario(s)`}><MessageSquare className="size-3" />{annCount}</span>}
-          {raw.aliasOf && <span title="Clon (misma identidad)"><Link2 className="size-3" /></span>}
-          {raw.locked && <span title="Bloqueado"><Lock className="size-3" /></span>}
-          {node.branchCollapsed && <span title="Rama plegada" className="text-accent"><Waypoints className="size-3" /></span>}
-          {showHeat && heat && heat.state !== 'idle' && <span title={heat.causes.join(' · ')} style={{ color: heatColor }}><Thermometer className="size-3" /></span>}
         </div>
       )}
       {node.type === 'output' && view === 'simulation' && st && (
@@ -230,6 +265,11 @@ export const MapNodeView = memo(function MapNodeView({ id, selected }: P) {
         <div className="absolute inset-x-0 bottom-0 h-[3px] overflow-hidden rounded-b-[inherit]" aria-hidden>
           <div className="h-full bg-cond opacity-70" style={{ width: `${Math.min(100, ((st!.stock.quantity ?? 0) / Math.max(1, hl.maxFlow * 3)) * 100)}%` }} />
         </div>
+      )}
+      {muted && (
+        <button type="button" className="nodrag nopan absolute -right-2 -top-2 z-10 flex size-6 items-center justify-center rounded-full border border-line bg-surface text-[12px] shadow-sm hover:scale-110"
+          title="Silenciada: ahora no cuenta. Pulsa para que vuelva a contar" aria-label="Volver a activarla" data-testid="node-unmute"
+          onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); toggleMute(logicalId); }}>🔇</button>
       )}
       <Handles />
     </div>

@@ -3,7 +3,7 @@
  * sea, una o dos preguntas sencillas. Cada cosa dice para qué sirve y qué cambia.
  */
 import { ArrowLeft, ArrowLeftRight, ArrowRight, Trash2 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import * as A from '../app/actions';
 import { levelOf, setLevel } from '../app/levels';
 import * as op from '../core/operations';
@@ -14,6 +14,7 @@ import { Field, TextArea, TextInput, cx } from '../ui/primitives';
 import { applyKid } from './kidActions';
 import { useKid } from './kidStore';
 import * as K from './model';
+import { Ico, icoChildren } from '../ui/ico';
 
 const num = (v: number) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1).replace('.', ','));
 
@@ -22,7 +23,7 @@ function Chip({ on, onClick, children, testId, title }: { on?: boolean; onClick:
     <button type="button" onClick={onClick} aria-pressed={on} data-testid={testId} title={title}
       className={cx('inline-flex min-h-9 items-center gap-1.5 rounded-xl border px-3 py-1.5 text-left text-[13.5px] font-medium transition-colors',
         on ? 'border-accent bg-accent-soft text-accent-text' : 'border-line bg-surface text-ink hover:border-accent/60')}>
-      {children}
+      {icoChildren(children)}
     </button>
   );
 }
@@ -43,7 +44,9 @@ const TIP: Record<K.Papel, string> = {
   pregunta: 'Algo que te falta saber. Averiguarlo también es avanzar.',
 };
 
-export function KidNodeInspector({ id }: { id: string }) {
+/** compact: dentro de la tarjeta del lienzo (sin cabecera; el «¿Qué es esto?» se abre a petición). */
+export function KidNodeInspector({ id, compact = false }: { id: string; compact?: boolean }) {
+  const [showRoles, setShowRoles] = useState(false);
   const doc = useProject((s) => s.doc)!;
   const a = useKid((s) => s.analysis);
   const n = doc.nodes[id];
@@ -77,16 +80,16 @@ export function KidNodeInspector({ id }: { id: string }) {
   const iStep = c.pasos.findIndex((p) => p.id === id);
   return (
     <div data-testid="node-inspector" data-papel={papel}>
-      <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-        <span className="text-[22px] leading-none" aria-hidden>{info.emoji}</span>
+      {!compact && <div className="flex items-center gap-2 border-b border-line px-4 py-3">
+        <Ico e={info.emoji} size={22} />
         <span className="font-display text-[17px] font-medium text-ink">{info.name}</span>
         <span className="flex-1" />
         <button type="button" onClick={A.deleteSelection} data-testid="kid-delete" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12.5px] font-medium text-ink-3 hover:bg-[color-mix(in_srgb,var(--loss)_10%,transparent)] hover:text-loss">
           <Trash2 className="size-3.5" />Quitar
         </button>
-      </div>
-      <div className="space-y-4 px-4 py-4">
-        <Field label="Lo que pone"><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${id}`)} data-testid="inspector-title" /></Field>
+      </div>}
+      <div className={compact ? 'space-y-3' : 'space-y-4 px-4 py-4'}>
+        {!compact && <Field label="Lo que pone"><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${id}`)} data-testid="inspector-title" /></Field>}
 
         {level === 1 ? (
           <div className="space-y-2">
@@ -97,13 +100,18 @@ export function KidNodeInspector({ id }: { id: string }) {
             </div>
             <p className="text-[12.5px] leading-snug text-ink-3">Si eliges una, empezamos el camino: de cómo está hoy a lo que quieres.</p>
           </div>
+        ) : compact && !showRoles ? (
+          <div className="flex items-center gap-2 text-[12.5px] text-ink-2">
+            <span className="inline-flex items-center gap-1">Es: <Ico e={info.emoji} size={14} /><b>{info.name}</b></span>
+            <button type="button" className="rounded-lg px-1.5 py-0.5 text-[12px] font-medium text-accent-text underline-offset-2 hover:underline" onClick={() => setShowRoles(true)} data-testid="kid-change-role">Cambiar lo que es</button>
+          </div>
         ) : (
           <div className="space-y-2">
             <div className="text-[12.5px] font-semibold text-ink-2">¿Qué es esto?</div>
             <div className="grid grid-cols-2 gap-1.5">
               {K.PAPELES.map((p) => (
                 <Chip key={p} on={p === papel} testId={`kid-role-${p}`} title={K.PAPEL[p].hint} onClick={() => p !== papel && setPapel(p)}>
-                  <span aria-hidden>{K.PAPEL[p].emoji}</span><span className="leading-tight">{K.PAPEL[p].name}</span>
+                  <Ico e={K.PAPEL[p].emoji} size={15} /><span className="leading-tight">{K.PAPEL[p].name}</span>
                 </Chip>
               ))}
             </div>
@@ -188,7 +196,7 @@ export function KidNodeInspector({ id }: { id: string }) {
         )}
         {papel === 'hoy' && <Effect>De aquí salen tus <b>10 empujones</b> en cada vuelta. Por el camino, las piedras se quedan con algunos.</Effect>}
 
-        <Field label="¿Quieres apuntar algo más?"><TextArea rows={3} value={n.description} onChange={(description) => upd({ description }, `desc-${id}`)} placeholder="Lo que quieras recordar…" /></Field>
+        <Field label="✏️ Explicación" help="Sale dentro de la burbuja, debajo del nombre."><TextArea rows={compact ? 2 : 3} value={n.description} onChange={(description) => upd({ description }, `desc-${id}`)} placeholder="Cuéntalo en una frase…" /></Field>
 
         {papel === 'idea' && (
           <Field label="Color">
@@ -201,6 +209,11 @@ export function KidNodeInspector({ id }: { id: string }) {
               ))}
             </div>
           </Field>
+        )}
+        {compact && (
+          <button type="button" onClick={A.deleteSelection} data-testid="kid-delete" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12.5px] font-medium text-ink-3 hover:bg-[color-mix(in_srgb,var(--loss)_10%,transparent)] hover:text-loss">
+            <Trash2 className="size-3.5" />Quitar
+          </button>
         )}
       </div>
     </div>
@@ -220,11 +233,11 @@ export function KidEdgeInspector({ id }: { id: string }) {
   return (
     <div data-testid="edge-inspector">
       <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-        <span className="text-[20px] leading-none" aria-hidden>🔗</span>
+        <Ico e="🔗" size={20} />
         <span className="font-display text-[17px] font-medium text-ink">Línea</span>
         <span className="flex-1" />
         {e.type === 'conceptual' && (
-          <button type="button" aria-label="Darle la vuelta" title="Darle la vuelta" onClick={() => A.apply((d) => op.reverseEdge(d, id))} className="rounded-lg p-1.5 text-ink-3 hover:bg-surface-2 hover:text-ink"><ArrowLeftRight className="size-4" /></button>
+          <button type="button" aria-label="Cambiar el sentido" title="Cambiar el sentido" onClick={() => A.apply((d) => op.reverseEdge(d, id))} className="rounded-lg p-1.5 text-ink-3 hover:bg-surface-2 hover:text-ink"><ArrowLeftRight className="size-4" /></button>
         )}
         <button type="button" onClick={A.deleteSelection} data-testid="kid-delete" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12.5px] font-medium text-ink-3 hover:text-loss"><Trash2 className="size-3.5" />Quitar la línea</button>
       </div>

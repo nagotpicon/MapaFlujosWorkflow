@@ -1,29 +1,28 @@
 /** Inspector de burbujas: identidad y resumen visibles; el detalle se despliega bajo demanda. */
-import {
-  Activity, Boxes, Diamond, Download, FileUp, Fingerprint, Gauge, ImagePlus, Link2, Lock, MessageSquare, Paintbrush, Plus, Route,
-  ScanSearch, ShieldCheck, Sliders, Trash2, Waypoints, Workflow, Compass,
-} from 'lucide-react';
+import { Download, FileUp, Fingerprint, ImagePlus, Link2, Lock, Paintbrush, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { DimensionValue, MapNode } from '../core/model/schema';
+import type { DimensionValue, MapNode, ProjectDoc } from '../core/model/schema';
 import * as op from '../core/operations';
 import * as A from '../app/actions';
 import * as repo from '../persistence/repository';
 import { useSim } from '../store/simStore';
 import { useUI } from '../store/uiStore';
 import { qty } from '../engine/packet';
-import { HEAT_LABEL } from '../engine/heat';
 import { scaleValueToWeighted } from '../engine/scales';
-import { BEHAVIOR_KID, BEHAVIOR_LIBRARY } from '../core/model/behaviorLibrary';
+import { BEHAVIOR_KID } from '../core/model/behaviorLibrary';
 import { NODE_COLORS, NODE_ICONS, COLOR_LABEL } from '../ui/icons';
-import { Badge, Button, Field, IconButton, NumberInput, Popover, Section, Segmented, Select, TextArea, TextInput, Toggle, cx, fmt } from '../ui/primitives';
+import { Badge, Button, Field, IconButton, NumberInput, Popover, Segmented, Select, TextArea, TextInput, Toggle, cx, fmt } from '../ui/primitives';
 import { Annotations } from './Annotations';
-import { BehaviorList, behaviorSummary } from './BehaviorEditor';
+import { BehaviorList } from './BehaviorEditor';
 import { ConditionsList } from './ConditionEditor';
-import { NodeSelect, OverrideMark, ScaleValueEditor, useInspector, useParam } from './fields';
+import { NodeSelect, OverrideMark, useInspector, useParam } from './fields';
 import { download } from '../app/io';
 import { levelOf } from '../app/levels';
 import { KidNodeInspector } from '../kid/KidInspector';
 import { PAPEL, type Papel } from '../kid/model';
+import { canMute, isMuted } from '../engine/mute';
+import { toggleMute } from '../app/mute';
+import { Ico } from '../ui/ico';
 
 const TYPE_LABEL: Record<MapNode['type'], string> = {
   bubble: 'Idea', input: 'Inicio', output: 'Meta', note: 'Nota', label: 'Texto suelto', comment: 'Comentario', group: 'Grupo', container: 'Zona',
@@ -39,39 +38,66 @@ const TYPE_INFO: Record<MapNode['type'], { emoji: string; hint: string }> = {
   container: { emoji: '🗺️', hint: 'Marca una parte del mapa (un equipo, una fase…).' },
 };
 
-function Identity({ n }: { n: MapNode }) {
+/** Nombre y explicación: lo que se lee en la burbuja. */
+function TextFields({ n }: { n: MapNode }) {
+  const upd = (patch: Partial<MapNode>, key?: string) => A.apply((d) => op.updateNode(d, n.id, patch), key);
+  return (
+    <div className="space-y-3">
+      <Field label="📝 Nombre" help="Lo que pone en la burbuja, en grande."><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${n.id}`)} data-testid="inspector-title" /></Field>
+      <Field label="✏️ Explicación" help="Sale en la burbuja, debajo del nombre y en pequeño. Cuéntalo en una frase.">
+        <TextArea rows={3} value={n.description} onChange={(description) => upd({ description }, `desc-${n.id}`)} placeholder="Por ejemplo: «Me levanto y vamos viendo»" data-testid="inspector-description" />
+      </Field>
+    </div>
+  );
+}
+
+/** ¿Qué es? Inicio, idea, meta, nota… */
+function RoleField({ n }: { n: MapNode }) {
+  return (
+    <div className="space-y-2.5">
+      <Select label="¿Qué es?" value={n.type} onChange={(type) => A.apply((d) => op.convertNodeType(d, n.id, type))} options={(['bubble', 'input', 'output', 'note', 'label', 'group', 'container'] as const).map((t) => ({ value: t, label: `${TYPE_INFO[t].emoji} ${TYPE_LABEL[t]}` }))} />
+      <ul className="space-y-1 text-[12px] leading-snug text-ink-2">
+        <li>🌱 <b>Inicio</b>: de aquí sale lo que mueves (clientes, dinero, horas…).</li>
+        <li>💡 <b>Idea</b>: un paso o algo que pasa por el medio.</li>
+        <li>🎯 <b>Meta</b>: lo que quieres conseguir. Aquí se cuenta lo que llega.</li>
+        <li>📝 <b>Nota</b> y 🔤 <b>Texto suelto</b>: para apuntar. No cambian las cuentas.</li>
+        <li>📦 <b>Grupo</b> y 🗺️ <b>Zona</b>: para juntar varias cosas y moverlas a la vez.</li>
+      </ul>
+    </div>
+  );
+}
+
+/** ¿Es un dato o lo pones a ojo? */
+function ConfidenceField({ n }: { n: MapNode }) {
+  return (
+    <Segmented size="sm" label="Confianza" value={n.metadata.confidence} onChange={(confidence) => A.apply((d) => op.updateNode(d, n.id, { metadata: { ...d.nodes[n.id].metadata, confidence } }))}
+      options={[{ value: 'hypothesis', label: '🤷 A ojo', title: 'Hipótesis: lo supones' }, { value: 'estimate', label: 'Más o menos', title: 'Estimación' }, { value: 'observation', label: 'Lo he visto', title: 'Observado' }, { value: 'verified', label: '✅ Comprobado', title: 'Verificado con datos' }]} />
+  );
+}
+
+/** Grupo y etiquetas: para encontrarla luego. */
+function TagFields({ n }: { n: MapNode }) {
   const upd = (patch: Partial<MapNode>, key?: string) => A.apply((d) => op.updateNode(d, n.id, patch), key);
   const [tag, setTag] = useState('');
   return (
-    <div className="space-y-3">
-      <Field label="📝 Lo que pone"><TextInput value={n.title} onChange={(title) => upd({ title }, `title-${n.id}`)} data-testid="inspector-title" /></Field>
-      <Field label="✏️ ¿Quieres explicar algo más?"><TextArea rows={2} value={n.description} onChange={(description) => upd({ description }, `desc-${n.id}`)} placeholder="Qué es, por qué está aquí…" /></Field>
-      <Field label="🧩 ¿Qué es?" help="Cambiarlo cambia la cuenta: un Inicio crea cosas y una Meta las recoge.">
-        <Select label="Tipo" value={n.type} onChange={(type) => A.apply((d) => op.convertNodeType(d, n.id, type))} options={(['bubble', 'input', 'output', 'note', 'label', 'group', 'container'] as const).map((t) => ({ value: t, label: `${TYPE_INFO[t].emoji} ${TYPE_LABEL[t]}` }))} />
-      </Field>
-      <div className="grid grid-cols-2 gap-2">
-        <Field label="🏷️ De qué tipo es" help="Opcional, para agrupar."><TextInput value={n.metadata.category} onChange={(category) => upd({ metadata: { ...n.metadata, category } }, `cat-${n.id}`)} placeholder="Ej.: colegio, dinero" /></Field>
-        <Field label="🔖 Etiquetas" help="Para buscarla y filtrar.">
-          <div className="flex flex-wrap items-center gap-1">
-            {n.tags.map((t) => (
-              <button key={t} type="button" onClick={() => upd({ tags: n.tags.filter((x) => x !== t) })} title="Quitar etiqueta"><Badge tone="accent">#{t} ×</Badge></button>
-            ))}
-            <form onSubmit={(e) => { e.preventDefault(); if (tag.trim()) upd({ tags: [...new Set([...n.tags, tag.trim()])] }); setTag(''); }} className="min-w-24 flex-1">
-              <input value={tag} onChange={(e) => setTag(e.target.value)} placeholder="+ etiqueta y Enter" aria-label="Añadir etiqueta" className="h-7 w-full rounded-lg border border-line bg-surface px-2 text-[12px] text-ink outline-none placeholder:text-ink-3 focus:border-accent" data-testid="tag-input" />
-            </form>
-          </div>
-        </Field>
-      </div>
-      <Field label="🤔 ¿Cuánto estás seguro de esto?" help="Así sabes qué es un dato de verdad y qué es una suposición.">
-        <Segmented size="xs" label="Confianza" value={n.metadata.confidence} onChange={(confidence) => upd({ metadata: { ...n.metadata, confidence } })}
-          options={[{ value: 'hypothesis', label: 'Me lo imagino', title: 'Hipótesis: lo supones' }, { value: 'estimate', label: 'Más o menos', title: 'Estimación: lo calculas por encima' }, { value: 'observation', label: 'Lo he visto', title: 'Observado: lo has visto pasar' }, { value: 'verified', label: 'Comprobado', title: 'Verificado: lo has comprobado con datos' }]} />
+    <div className="grid grid-cols-2 gap-2">
+      <Field label="🏷️ Grupo" help="Para juntarla con otras parecidas."><TextInput value={n.metadata.category} onChange={(category) => upd({ metadata: { ...n.metadata, category } }, `cat-${n.id}`)} placeholder="Ej.: dinero, casa" /></Field>
+      <Field label="🔖 Etiquetas" help="Para encontrarla con el buscador.">
+        <div className="flex flex-wrap items-center gap-1">
+          {n.tags.map((t) => (
+            <button key={t} type="button" onClick={() => upd({ tags: n.tags.filter((x) => x !== t) })} title="Quitar etiqueta"><Badge tone="accent">#{t} ×</Badge></button>
+          ))}
+          <form onSubmit={(e) => { e.preventDefault(); if (tag.trim()) upd({ tags: [...new Set([...n.tags, tag.trim()])] }); setTag(''); }} className="min-w-24 flex-1">
+            <input value={tag} onChange={(e) => setTag(e.target.value)} placeholder="+ una y Enter" aria-label="Añadir etiqueta" className="h-7 w-full rounded-lg border border-line bg-surface px-2 text-[12px] text-ink outline-none placeholder:text-ink-3 focus:border-accent" data-testid="tag-input" />
+          </form>
+        </div>
       </Field>
     </div>
   );
 }
 
 function Line({ emoji, children, tone, title }: { emoji: string; children: ReactNode; tone?: string; title?: string }) {
-  return <p className={cx('flex items-start gap-2 text-[12.5px] leading-snug text-ink-2', tone)} title={title}><span className="w-4 shrink-0 text-center" aria-hidden>{emoji}</span><span className="min-w-0 flex-1">{children}</span></p>;
+  return <p className={cx('flex items-start gap-2 text-[12.5px] leading-snug text-ink-2', tone)} title={title}><Ico e={emoji} size={15} className="mt-[1px]" /><span className="min-w-0 flex-1">{children}</span></p>;
 }
 
 /** −3, +2, 0: con el signo de verdad y sin «-0». */
@@ -80,107 +106,114 @@ function signed(v: number): string {
   return `${v > 0 ? '+' : '−'}${fmt(Math.abs(v))}`;
 }
 
-function strength(v: number): string {
-  const a = Math.abs(v);
-  const how = a >= 4 ? 'mucho' : a >= 2 ? 'bastante' : 'un poco';
-  return v < 0 ? `frena ${how}` : `empuja ${how}`;
-}
+const howMuch = (v: number) => { const a = Math.abs(v); return a >= 4 ? 'mucho' : a >= 2 ? 'bastante' : 'un poco'; };
 
-function SimSummary({ n }: { n: MapNode }) {
-  const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[n.aliasOf ?? n.id]);
-  const heat = useSim((s) => s.heat?.nodes[n.aliasOf ?? n.id]?.[s.cursor]);
-  const cursor = useSim((s) => s.cursor);
+/** Lo que pasa ahora en esta idea, contado en una o dos frases (se actualiza al momento). */
+export function NodeLive({ n }: { n: MapNode }) {
   const { doc } = useInspector();
-  const bhs = n.behaviorIds.map((b) => doc.behaviors[b]).filter(Boolean);
+  const id = n.aliasOf ?? n.id;
+  const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[id]);
+  const edgeSt = useSim((s) => s.result?.iterations[s.cursor]?.edges);
+  const total = useSim((s) => (n.type === 'output' && s.result ? s.result.iterations.reduce((a, it) => a + (it.nodes[id] ? qty(it.nodes[id].terminal) : 0), 0) : null));
+  const heat = useSim((s) => s.heat?.nodes[id]?.[s.cursor]);
   const raw = doc.dimensions.quantity?.unit ?? '';
   const unit = raw && raw !== 'u' && raw !== 'u.' ? ` ${raw}` : '';
   const q = (v: number | undefined) => `${fmt(v ?? 0)}${unit}`;
-  const dimName = (id: string) => doc.dimensions[id]?.name ?? id;
-  const inf = n.weight.influence;
-  const flowEdges = Object.values(doc.edges).filter((e) => e.type === 'flow' && (e.sourceNodeId === n.id || e.targetNodeId === n.id)).length;
-  const inQ = st ? qty(st.in) : 0;
-  const outQ = st ? Math.max(qty(st.out), qty(st.terminal)) : 0;
-  // fuera del camino: nada le llega ni sale por una línea «Pasa» (p. ej., una piedra o una ayuda)
-  const offPath = n.type !== 'input' && flowEdges === 0 && inQ <= 1e-9 && outQ <= 1e-9;
+  const lines: { e: string; t: ReactNode; tone?: string }[] = [];
+  const causalOut = Object.values(doc.edges).filter((e) => e.sourceNodeId === id && e.type === 'causal');
+  const linked = Object.values(doc.edges).some((e) => e.sourceNodeId === id || e.targetNodeId === id);
+  if (isMuted(n)) lines.push({ e: '🔇', t: <>Silenciada: ahora se calcula como si no estuviera. Pulsa <b>🔊 Volver a activar</b> para que cuente.</>, tone: 'text-ink-3' });
+  else if (st) {
+    const inQ = qty(st.in);
+    const outQ = Math.max(qty(st.out), qty(st.terminal));
+    const lost = (st.lost.quantity ?? 0) + (st.consumed.quantity ?? 0);
+    if (n.type === 'input') lines.push({ e: '🌱', t: <>De aquí salen <b>{q(outQ)}</b> en cada vuelta.</> });
+    else if (n.type === 'output') lines.push({ e: '🎯', t: <>Aquí llegan <b>{q(qty(st.terminal))}</b> en esta vuelta{total != null ? <> y <b>{q(total)}</b> sumando todas</> : null}.</>, tone: 'text-flow' });
+    else if (inQ > 1e-9 || outQ > 1e-9) lines.push({ e: '📥', t: <>Le llegan <b>{q(inQ)}</b> y siguen <b>{q(outQ)}</b>{lost > 1e-9 ? <>: aquí se quedan <b>{q(lost)}</b></> : null}.</> });
+    for (const e of causalOut) {
+      const es = edgeSt?.[e.id];
+      const to = doc.nodes[e.targetNodeId]?.title ?? '?';
+      if (e.behavior.influence.mode === 'compensate') {
+        const f = es?.compensationApplied ?? 0;
+        if (f > 1e-6) lines.push({ e: '🩹', t: <>A «{to}» le quita el <b>{Math.round(f * 100)} %</b> de su fuerza para frenar.</>, tone: 'text-gain' });
+      } else if (es?.influenceFactor != null && e.behavior.influence.targetDimension !== '__influence' && Math.abs(es.influenceFactor - 1) > 1e-4) {
+        const pc = Math.round((es.influenceFactor - 1) * 100);
+        lines.push(pc < 0 ? { e: '🪨', t: <>A «{to}» le quita el <b>{-pc} %</b>.</>, tone: 'text-loss' } : { e: '💪', t: <>A «{to}» le suma un <b>{pc} %</b>.</>, tone: 'text-gain' });
+      }
+    }
+    if (st.compensation > 1e-6) lines.push({ e: '🩹', t: <>Tus remedios le quitan el <b>{Math.round(st.compensation * 100)} %</b> de su fuerza para frenar.</>, tone: 'text-gain' });
+    if ((st.queue.quantity ?? 0) > 1e-9) lines.push({ e: '⏳', t: <>Esperan turno <b>{q(st.queue.quantity)}</b>: no caben todos.</>, tone: 'text-cond' });
+    if ((st.stock.quantity ?? 0) > 1e-9) lines.push({ e: '🐷', t: <>Tiene guardadas <b>{q(st.stock.quantity)}</b>.</> });
+    if (!st.active) lines.push({ e: '💤', t: <>Ahora está apagada: no se cumple lo que pusiste en «⏰ ¿Funciona siempre?».</>, tone: 'text-cond' });
+    if (heat && (heat.state === 'warm' || heat.state === 'overheated')) lines.push({ e: '🌡️', t: <>Ojo: {heat.causes.join(' · ')}.</>, tone: 'text-cond' });
+  }
+  if (!lines.length) lines.push({ e: '💡', t: linked ? 'Ahora mismo no le llega nada.' : 'Está suelta: todavía no cambia nada. Únela a otra idea para que cuente.' });
+  return <div className="space-y-1.5" data-testid="node-live">{lines.map((l, i) => <Line key={i} emoji={l.e} tone={l.tone}>{l.t}</Line>)}</div>;
+}
+
+/** Tres botones para entender el mapa desde esta idea. */
+function TraceButtons({ n }: { n: MapNode }) {
   return (
-    <div className="space-y-2 rounded-xl bg-surface-2/70 p-3" data-testid="node-summary">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="text-[13px] font-semibold text-ink">🔎 Qué está pasando aquí</span>
-        {st && <span className="text-[11px] text-ink-3" title="Cada ronda es una vuelta: una semana, un mes… La cambias en el panel de abajo.">ronda {cursor + 1}</span>}
-      </div>
-      {bhs.length ? (
-        <Line emoji="⚙️">Hace: {bhs.map((b, k) => <span key={b.id}>{k ? ', ' : ''}<b className="text-ink" title={BEHAVIOR_LIBRARY[b.behaviorType].label}>{BEHAVIOR_KID[b.behaviorType].emoji} {b.label || BEHAVIOR_KID[b.behaviorType].name}</b> ({behaviorSummary(b, dimName).toLowerCase()})</span>)}.</Line>
-      ) : offPath ? null : (
-        <Line emoji="⚙️">Aquí no cambia nada: lo que le llega, sale igual.</Line>
-      )}
-      {inf && inf.mode !== 'qualitative' && inf.value !== 0 && <Line emoji={inf.value < 0 ? '🪨' : '💪'} tone={inf.value < 0 ? 'text-loss' : 'text-gain'}>{inf.value < 0 ? 'Frena' : 'Empuja'} a lo que tiene unido con «Influye»: <b>{signed(inf.value)}</b> ({strength(inf.value)}; va de −5 a +5).</Line>}
-      {inf && inf.mode === 'qualitative' && <Line emoji="💪">Empuja o frena «con palabras» (sección «Cuánto empuja o frena»).</Line>}
-      {n.activationConditionId && <Line emoji="⏰">Solo funciona a veces: tiene una condición (mira «Cuándo funciona»).</Line>}
-      {st && (
-        <div className="space-y-1.5 border-t border-line pt-2">
-          {(st.generated.quantity ?? 0) > 0 && <Line emoji="✨" tone="text-gain">Crea <b>{q(st.generated.quantity)}</b> nuevas en esta ronda.</Line>}
-          {!offPath && n.type !== 'input' && <Line emoji="📥">Le llegan <b>{q(inQ)}</b>.</Line>}
-          {!offPath && (n.type === 'output' ? <Line emoji="🎯" tone="text-flow">Llegan a la meta <b>{q(qty(st.terminal))}</b>.</Line> : <Line emoji="📤" tone="text-flow">Salen <b>{q(outQ)}</b>.</Line>)}
-          {(st.lost.quantity ?? 0) > 0 && <Line emoji="🕳️" tone="text-loss">Se pierden aquí <b>{q(st.lost.quantity)}</b>.</Line>}
-          {(st.consumed.quantity ?? 0) > 0 && <Line emoji="🍽️">Se gastan aquí <b>{q(st.consumed.quantity)}</b>.</Line>}
-          {(st.stock.quantity ?? 0) > 0 && <Line emoji="🐷">Guardadas en su hucha: <b>{q(st.stock.quantity)}</b>.</Line>}
-          {(st.queue.quantity ?? 0) > 0 && <Line emoji="⏳">Esperando turno: <b>{q(st.queue.quantity)}</b>.</Line>}
-          {st.compensation > 0 && <Line emoji="🩹" tone="text-gain">Sus remedios le quitan el <b>{Math.round(st.compensation * 100)} %</b> de su fuerza para frenar.</Line>}
-          {inf && Math.abs(st.influence - (inf.mode === 'qualitative' ? st.influence : inf.value)) > 1e-6 && <Line emoji="💪">Su fuerza ahora, con todo: <b>{signed(st.influence)}</b>{Math.abs(st.influence) < 0.005 ? ((inf.mode !== 'qualitative' && inf.value < 0) ? ' (ya no frena nada)' : ' (ahora no empuja)') : ''}.</Line>}
-          {Object.entries({ ...st.out.int, ...st.terminal.int }).slice(0, 4).length > 0 && (
-            <Line emoji="🧪">Cómo es lo que sale: {Object.entries({ ...st.out.int, ...st.terminal.int }).slice(0, 4).map(([d, v]) => `${doc.dimensions[d]?.name ?? d} ${fmt(v, 2)}`).join(' · ')}.</Line>
-          )}
-          {!st.active && <Line emoji="💤" tone="text-cond">Ahora está apagada: no se cumple su condición.</Line>}
-          {n.type !== 'input' && inQ <= 1e-9 && outQ <= 1e-9 && (
-            <Line emoji="💡">{flowEdges ? 'Ahora mismo no le llega nada.' : inf ? 'No está en el camino: es una idea que empuja o frena a otras, y no necesita que le llegue nada.' : 'No le llega nada. Para que le llegue algo, únela con una línea «Pasa» a algo que venga del inicio.'}</Line>
-          )}
-          <div className="flex flex-wrap gap-1 pt-0.5">{st.flags.filter((f) => !['receiving', 'emitting', 'active'].includes(f)).map((f) => <Badge key={f}>{FLAG[f] ?? f}</Badge>)}</div>
-          {heat && heat.state !== 'idle' && <Line emoji="🌡️">Termómetro: <b>{HEAT_LABEL[heat.state]}</b>. {heat.causes.join(' · ')}.</Line>}
-        </div>
-      )}
-      <div className="flex flex-wrap gap-1 border-t border-line pt-2">
-        <Button size="xs" variant="subtle" title="Ilumina todo lo que cambia si cambias esto" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'forward', isolate: false } })} data-testid="trace-forward"><Route className="size-3" />¿A qué afecta?</Button>
-        <Button size="xs" variant="subtle" title="Ilumina todo lo que llega hasta aquí" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'backward', isolate: false } })} data-testid="trace-backward"><ScanSearch className="size-3" />¿De dónde le viene?</Button>
-        <Button size="xs" variant="subtle" title="Apaga lo demás para verlo mejor (Escape para salir)" onClick={() => { useUI.setState({ focusNodeId: n.id }); A.fit([n.id]); }}><Compass className="size-3" />Centrarme en esto</Button>
-      </div>
+    <div className="flex flex-wrap gap-1">
+      <Button size="xs" variant="subtle" title="Te ilumino en el mapa todo lo que cambiaría si cambias esta idea" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'forward', isolate: false } })} data-testid="trace-forward">🔦 ¿Qué cambia si la toco?</Button>
+      <Button size="xs" variant="subtle" title="Te ilumino todo lo que llega hasta aquí" onClick={() => useUI.setState({ trace: { rootId: n.id, direction: 'backward', isolate: false } })} data-testid="trace-backward">🔍 ¿De qué depende?</Button>
+      <Button size="xs" variant="subtle" title="Apago lo demás para que la veas bien (Escape para salir)" onClick={() => { useUI.setState({ focusNodeId: n.id }); A.fit([n.id]); }}>🎯 Ver solo esto</Button>
     </div>
   );
 }
 
-const FLAG: Record<string, string> = {
-  active: '✅ encendida', inactive: '💤 apagada', loss: '🕳️ pierde', blocked: '⛔ corta el paso', transforming: '🔄 cambia cosas', saturated: '🚧 está llena',
-  accumulating: '🐷 guarda', compensated: '🩹 tiene remedio', generating: '✨ crea', terminal: '🏁 final',
-};
-
-function Weights({ n }: { n: MapNode }) {
-  const [imp, setImp, o1] = useParam<MapNode['weight']['importance']>('node', n.id, 'weight.importance');
+/** ¿Ayuda o estorba a otra? Una barra de −5 a +5, sin modos raros. */
+export function Weights({ n }: { n: MapNode }) {
+  const { doc } = useInspector();
   const [inf, setInf, o2] = useParam<MapNode['weight']['influence']>('node', n.id, 'weight.influence');
-  const [impact, setImpact] = useParam<MapNode['weight']['impact']>('node', n.id, 'weight.impact');
   const [src, setSrc] = useParam<MapNode['influenceSource']>('node', n.id, 'influenceSource');
   const [ref, setRef] = useParam<number>('node', n.id, 'influenceReference');
+  const [pick, setPick] = useState('');
+  const ws = doc.project.settings.weightedScale;
+  const v = inf ? Math.round(scaleValueToWeighted(inf, doc.project.settings).value * 10) / 10 : 0;
+  const targets = Object.values(doc.edges).filter((e) => e.sourceNodeId === n.id && e.type === 'causal' && e.behavior.influence.mode !== 'compensate');
+  const word = v < 0 ? 'estorba' : 'ayuda';
   return (
-    <div className="space-y-4">
-      <div className="flex items-start gap-1"><div className="flex-1"><ScaleValueEditor label="💪 Empuja o frena" id="Influencia" value={inf} onChange={setInf}
-        help="Más (+) empuja y menos (−) frena, de −5 a +5. Solo hace efecto en lo que esta idea tenga unido con una línea «Influye»." /></div><OverrideMark {...o2} /></div>
-      {inf && (
-        <div className={cx('grid gap-2', src !== 'static' && 'grid-cols-2')}>
-          <Field label="¿De qué depende su fuerza?" help="Por ejemplo, un rumor empuja más cuanta más gente lo oye.">
-            <Select label="Origen de la influencia" value={src} onChange={setSrc} options={[{ value: 'static', label: 'Siempre la misma' }, { value: 'throughput', label: 'De lo que le llega' }, { value: 'stock', label: 'De lo que tiene guardado' }]} />
-          </Field>
-          {src !== 'static' && <Field label="Con cuánto llega a toda su fuerza" help="Cuando le llegue (o guarde) esta cantidad, empujará o frenará del todo."><NumberInput value={ref} min={0.0001} onChange={setRef} /></Field>}
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="shrink-0 text-[11.5px] font-medium text-loss">😣 Estorba</span>
+        <input type="range" className="mdf-range min-w-0 flex-1" min={ws.min} max={ws.max} step={1} value={v} aria-label="¿Ayuda o estorba?" data-testid="influence-slider"
+          onChange={(e) => { const x = Number(e.target.value); setInf(x === 0 ? null : { mode: 'weighted', value: x, scaleId: null }); }} />
+        <span className="shrink-0 text-[11.5px] font-medium text-gain">Ayuda 😀</span>
+        <OverrideMark {...o2} />
+      </div>
+      <p className={cx('text-center text-[13px] font-semibold', v < 0 ? 'text-loss' : v > 0 ? 'text-gain' : 'text-ink-2')} data-testid="scale-Influencia">
+        {v === 0 ? 'Ni ayuda ni estorba (0)' : `${v < 0 ? 'Estorba' : 'Ayuda'} ${howMuch(v)} (${signed(v)})`}
+      </p>
+      {v !== 0 && (targets.length > 0 ? (
+        <p className="text-[12px] leading-snug text-ink-2">Ahora {word} a {targets.map((e, i) => <span key={e.id}>{i ? ', ' : ''}<b>«{doc.nodes[e.targetNodeId]?.title}»</b></span>)}. Si quieres que {word} a otra, únela también con una línea «Influye».</p>
+      ) : (
+        <div className="space-y-1.5 rounded-lg bg-[color-mix(in_srgb,var(--condition)_10%,transparent)] p-2.5">
+          <p className="text-[12px] leading-snug text-ink-2">⚠️ Ojo: así todavía no cuenta. Dime a quién {word} y la uno yo:</p>
+          <div className="flex gap-1.5">
+            <div className="min-w-0 flex-1"><NodeSelect label={`¿A quién ${word}?`} value={pick || null} allowNone onChange={setPick} exclude={[n.id]} /></div>
+            <Button size="sm" variant="solid" disabled={!pick} onClick={() => { A.connect(n.id, pick, 'causal'); setPick(''); }} data-testid="influence-link">Unir</Button>
+          </div>
         </div>
+      ))}
+      {v !== 0 && (
+        <details className="text-[12px] text-ink-2">
+          <summary className="cursor-pointer text-ink-3">Para expertos: ¿su fuerza cambia con lo que le llega?</summary>
+          <div className={cx('mt-2 grid gap-2', src !== 'static' && 'grid-cols-2')}>
+            <Field label="¿De qué depende su fuerza?" help="Ejemplo: un rumor empuja más cuanta más gente lo oye.">
+              <Select label="Origen de la influencia" value={src} onChange={setSrc} options={[{ value: 'static', label: 'Siempre igual' }, { value: 'throughput', label: 'De lo que le llega' }, { value: 'stock', label: 'De lo que tiene guardado' }]} />
+            </Field>
+            {src !== 'static' && <Field label="¿Con cuánto llega a toda su fuerza?" help="Cuando le llegue (o guarde) esto, empuja o frena del todo."><NumberInput value={ref} min={0.0001} onChange={setRef} /></Field>}
+          </div>
+        </details>
       )}
-      <div className="flex items-start gap-1"><div className="flex-1"><ScaleValueEditor label="⭐ Lo importante que es para ti" id="Importancia" value={imp} onChange={setImp}
-        help="Solo para ti, para ordenar. No cambia la cuenta." /></div><OverrideMark {...o1} /></div>
-      <ScaleValueEditor label="🎯 Lo que esperas que pase" id="Impacto" value={impact} onChange={setImpact}
-        help="Tu apuesta sobre cuánto cambiará el resultado. El Marcador calcula lo que pasa de verdad." />
     </div>
   );
 }
 
 /** Qué es cada cosa que viaja por el mapa, dicho para un niño. */
 const DIM_KID: Record<string, string> = {
-  quantity: 'Cuántas cosas salen en cada ronda.',
+  quantity: 'Cuántas cosas salen en cada vuelta.',
   quality: 'Cómo de buenas son: de 0 (nada) a 1 (perfectas).',
   speed: 'Lo rápido que van: 1 es normal y 2, el doble de rápido.',
   potential: 'Lo que pueden llegar a dar: de 0 a 1.',
@@ -191,63 +224,71 @@ const unitWord = (u: string) => (u === 'h' ? 'horas' : u === 'u' || u === 'u.' |
 function DimensionValues({ n }: { n: MapNode }) {
   const { doc, eff } = useInspector();
   const dv = eff.nodes[n.id]?.dimensionValues ?? {};
-  const isGen = n.behaviorIds.some((b) => doc.behaviors[b]?.behaviorType === 'generator');
   const setDim = (dim: string, patch: Partial<DimensionValue>) => {
     const cur: DimensionValue = dv[dim] ?? { value: doc.dimensions[dim]?.defaultValue ?? 0, mode: 'numeric', unit: doc.dimensions[dim]?.unit ?? '', confidence: 'estimate', source: '', range: null };
     A.apply((d) => op.setParam(d, 'node', n.id, `dimensionValues.${dim}`, { ...cur, ...patch }), `dv-${n.id}-${dim}`);
   };
+  const qv = dv.quantity;
+  const others = Object.values(doc.dimensions).filter((d) => d.id !== 'quantity');
   return (
-    <div className="space-y-2">
-      <p className="text-[12px] leading-snug text-ink-3">{isGen ? 'Dile cuánto sale de aquí en cada ronda y cómo es: la cantidad, la calidad (de 0 a 1), la rapidez… Pulsa «Dar un valor» en lo que quieras.' : 'Esto solo cuenta en un Inicio o en una idea con «✨ Fábrica»: es lo que sale de ella.'}</p>
-      {Object.values(doc.dimensions).map((d) => {
-        const v = dv[d.id];
-        return (
-          <div key={d.id} className="rounded-lg border border-line p-2" data-testid={`dim-${d.id}`}>
-            <div className="flex items-start gap-2">
-              <span className="mt-[5px] size-2 shrink-0 rounded-full" style={{ background: d.color }} />
-              <span className="min-w-0 flex-1">
-                <span className="block text-[12px] font-medium text-ink">{d.name}{unitWord(d.unit) ? <span className="font-normal text-ink-3"> · en {unitWord(d.unit)}</span> : null}</span>
-                {(DIM_KID[d.key] ?? d.description) && <span className="block text-[11px] leading-snug text-ink-3">{d.builtin ? DIM_KID[d.key] ?? d.description : d.description}</span>}
-              </span>
-              {v ? (
-                <IconButton size="xs" label="Quitar este valor" onClick={() => { const next = { ...dv }; delete next[d.id]; A.apply((x) => op.setParam(x, 'node', n.id, 'dimensionValues', next)); }}><Trash2 className="size-3" /></IconButton>
-              ) : (
-                <Button size="xs" variant="subtle" onClick={() => setDim(d.id, {})}><Plus className="size-3" />Dar un valor</Button>
-              )}
-            </div>
-            {v && (
-              <div className="mt-2 space-y-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Segmented size="xs" label="Cómo lo dices" value={v.mode} onChange={(mode) => setDim(d.id, { mode, value: mode === 'qualitative' ? 2 : v.value })}
-                    options={[{ value: 'numeric', label: 'Número', title: 'Numérica' }, { value: 'weighted', label: '−5…+5', title: 'Ponderada' }, { value: 'qualitative', label: 'Palabras', title: 'Cualitativa' }]} />
-                  {v.mode === 'qualitative' ? (
-                    <Select label="Nivel" className="flex-1" value={String(Math.round(v.value))} onChange={(x) => setDim(d.id, { value: Number(x) })}
-                      options={(doc.project.settings.qualitativeScales.find((s) => s.id === (d.scaleId ?? doc.project.settings.defaultScaleId)) ?? doc.project.settings.qualitativeScales[0]).levels.map((l, i) => ({ value: String(i), label: l.label }))} />
+    <div className="space-y-3">
+      <Field label="¿Cuántos salen de aquí en cada vuelta?" help="Por ejemplo: 100 llamadas, 20 clientes o 500 €.">
+        <NumberInput value={qv?.value ?? null} placeholder="pon un número" min={0} onChange={(value) => setDim('quantity', { value, mode: 'numeric' })} data-param="dim-quantity" />
+      </Field>
+      {qv && (
+        <div className="grid grid-cols-2 gap-1.5">
+          <Field label="¿Es un dato o a ojo?">
+            <Select label="¿Cuánto estás seguro?" value={qv.confidence} onChange={(confidence) => setDim('quantity', { confidence })}
+              options={[{ value: 'hypothesis', label: '🤷 A ojo' }, { value: 'estimate', label: 'Más o menos' }, { value: 'observation', label: 'Lo he visto' }, { value: 'verified', label: '✅ Comprobado' }]} />
+          </Field>
+          <Field label="¿De dónde lo sacas?">
+            <TextInput value={qv.source} onChange={(source) => setDim('quantity', { source })} placeholder="Una web, un amigo…" aria-label="¿De dónde lo sacas?" />
+          </Field>
+        </div>
+      )}
+      <details className="text-[12px]">
+        <summary className="cursor-pointer text-ink-3">Para expertos: otras cosas que se pueden medir (calidad, rapidez…)</summary>
+        <div className="mt-2 space-y-2">
+          {others.map((d) => {
+            const v = dv[d.id];
+            return (
+              <div key={d.id} className="rounded-lg border border-line p-2" data-testid={`dim-${d.id}`}>
+                <div className="flex items-start gap-2">
+                  <span className="mt-[5px] size-2 shrink-0 rounded-full" style={{ background: d.color }} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12px] font-medium text-ink">{d.name}{unitWord(d.unit) ? <span className="font-normal text-ink-3"> · en {unitWord(d.unit)}</span> : null}</span>
+                    {(DIM_KID[d.key] ?? d.description) && <span className="block text-[11px] leading-snug text-ink-3">{d.builtin ? DIM_KID[d.key] ?? d.description : d.description}</span>}
+                  </span>
+                  {v ? (
+                    <IconButton size="xs" label="Quitar este valor" onClick={() => { const next = { ...dv }; delete next[d.id]; A.apply((x) => op.setParam(x, 'node', n.id, 'dimensionValues', next)); }}><Trash2 className="size-3" /></IconButton>
                   ) : (
-                    <NumberInput className="flex-1" value={v.value} onChange={(value) => setDim(d.id, { value })} data-param={`dim-${d.id}`} />
+                    <Button size="xs" variant="subtle" onClick={() => setDim(d.id, {})}><Plus className="size-3" />Dar un valor</Button>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-1.5">
-                  <Field label="¿Estás seguro?">
-                    <Select label="¿Cuánto estás seguro?" value={v.confidence} onChange={(confidence) => setDim(d.id, { confidence })}
-                      options={[{ value: 'hypothesis', label: 'Me lo imagino' }, { value: 'estimate', label: 'Más o menos' }, { value: 'observation', label: 'Lo he visto' }, { value: 'verified', label: 'Comprobado' }]} />
-                  </Field>
-                  <Field label="¿De dónde lo sacas?">
-                    <TextInput value={v.source} onChange={(source) => setDim(d.id, { source })} placeholder="Una web, un amigo…" aria-label="¿De dónde lo sacas?" />
-                  </Field>
-                </div>
-                {doc.project.settings.depth === 'expert' && v.mode !== 'qualitative' && (
-                  <div className="flex items-center gap-1.5 text-[11px] text-ink-3">
-                    Si sale mal / si sale bien:
-                    <NumberInput className="flex-1" value={v.range?.low ?? null} placeholder="mal" onChange={(low) => setDim(d.id, { range: { low, high: v.range?.high ?? v.value } })} />
-                    <NumberInput className="flex-1" value={v.range?.high ?? null} placeholder="bien" onChange={(high) => setDim(d.id, { range: { high, low: v.range?.low ?? v.value } })} />
+                {v && (
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <Segmented size="xs" label="Cómo lo dices" value={v.mode} onChange={(mode) => setDim(d.id, { mode, value: mode === 'qualitative' ? 2 : v.value })}
+                      options={[{ value: 'numeric', label: 'Número', title: 'Numérica' }, { value: 'weighted', label: '−5…+5', title: 'Ponderada' }, { value: 'qualitative', label: 'Palabras', title: 'Cualitativa' }]} />
+                    {v.mode === 'qualitative' ? (
+                      <Select label="Nivel" className="flex-1" value={String(Math.round(v.value))} onChange={(x) => setDim(d.id, { value: Number(x) })}
+                        options={(doc.project.settings.qualitativeScales.find((s) => s.id === (d.scaleId ?? doc.project.settings.defaultScaleId)) ?? doc.project.settings.qualitativeScales[0]).levels.map((l, i) => ({ value: String(i), label: l.label }))} />
+                    ) : (
+                      <NumberInput className="flex-1" value={v.value} onChange={(value) => setDim(d.id, { value })} data-param={`dim-${d.id}`} />
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        );
-      })}
+            );
+          })}
+          {doc.project.settings.depth === 'expert' && qv && qv.mode !== 'qualitative' && (
+            <div className="flex items-center gap-1.5 text-[11px] text-ink-3">
+              Cuántos salen si va mal / si va bien:
+              <NumberInput className="flex-1" value={qv.range?.low ?? null} placeholder="mal" onChange={(low) => setDim('quantity', { range: { low, high: qv.range?.high ?? qv.value } })} />
+              <NumberInput className="flex-1" value={qv.range?.high ?? null} placeholder="bien" onChange={(high) => setDim('quantity', { range: { high, low: qv.range?.low ?? qv.value } })} />
+            </div>
+          )}
+        </div>
+      </details>
     </div>
   );
 }
@@ -257,22 +298,9 @@ function Mitigators({ n }: { n: MapNode }) {
   const [comb, setComb] = useParam<MapNode['mitigationCombination']>('node', n.id, 'mitigationCombination');
   const [pick, setPick] = useState<string>('');
   const edges = Object.values(doc.edges).filter((e) => e.targetNodeId === n.id && e.type === 'causal' && e.behavior.influence.mode === 'compensate');
-  const addMitigator = (sourceId: string | null) => {
-    A.apply((d) => {
-      let out = d;
-      let src = sourceId;
-      if (!src) {
-        const r = op.addNode(out, 'bubble', { title: 'Medida compensatoria', position: { x: n.position.x - 40, y: n.position.y - 140 }, parentId: n.parentId, visualStyle: { color: 'emerald', icon: 'ShieldCheck' } as never });
-        out = r.doc;
-        src = r.id;
-      }
-      return op.addEdge(out, src, n.id, 'causal', { behavior: { influence: { mode: 'compensate', compensationUnit: 'points', amount: 1 } as never }, visualStyle: { label: 'mitiga', sourceAnchor: 'bottom', targetAnchor: 'top' } }).doc;
-    });
-    setPick('');
-  };
+  const addMitigator = (sourceId: string | null) => { A.addRemedy(n.id, sourceId); setPick(''); };
   return (
     <div className="space-y-2">
-      <p className="text-[12px] leading-snug text-ink-3">Un remedio es algo que hace que esta idea frene menos (y pierda menos). Por ejemplo: si «No tengo tiempo» frena, un remedio puede ser «Hacer un horario».</p>
       {edges.map((e) => <MitigatorRow key={e.id} edgeId={e.id} />)}
       {edges.length > 1 && (
         <Field label="Si hay varios remedios…" help="¿Ayudan todos juntos o se pisan un poco?">
@@ -290,7 +318,7 @@ function Mitigators({ n }: { n: MapNode }) {
   );
 }
 
-function MitigatorRow({ edgeId }: { edgeId: string }) {
+export function MitigatorRow({ edgeId }: { edgeId: string }) {
   const { doc, eff } = useInspector();
   const e = doc.edges[edgeId];
   // mismo cálculo que el motor: los puntos se cuentan sobre lo que frena la idea (o sobre 5 si no frena)
@@ -324,12 +352,12 @@ function MitigatorRow({ edgeId }: { edgeId: string }) {
       ) : null}
       <p className="text-[11px] leading-snug text-ink-3" data-testid="mitigator-explain">{(() => {
         const frac = type === 'total' ? 1 : Math.min(1, Math.max(0, unit === 'percent' ? amount / 100 : amount / (base < 0 ? -base : wmax)));
-        const cuando = type === 'conditional' ? ' (solo cuando se cumple lo de abajo)' : type === 'temporal' ? ' (solo en esas rondas)' : '';
+        const cuando = type === 'conditional' ? ' (solo cuando se cumple lo de abajo)' : type === 'temporal' ? ' (solo en esas vueltas)' : '';
         if (base < 0) return frac >= 1 ? `Ahora frena ${signed(base)}: con este remedio deja de frenar del todo${cuando}.` : `Ahora frena ${signed(base)}: con este remedio se queda en ${signed(base * (1 - frac))}${cuando}.`;
         return frac >= 1 ? `Arregla del todo lo que se pierde aquí${cuando}.` : `Arregla el ${fmt(frac * 100, 0)} % de lo que se pierde aquí${cuando}${unit === 'points' ? ` (${fmt(amount)} de ${wmax} puntos)` : ''}.`;
       })()}</p>
       {type === 'temporal' && (
-        <div className="flex items-center gap-1.5 text-[11px] text-ink-3">Desde la ronda<NumberInput className="w-14" value={from} min={1} onChange={(v) => setFrom(Math.round(v))} />hasta la<NumberInput className="w-14" value={to} placeholder="∞" min={1} onChange={(v) => setTo(Math.round(v))} /></div>
+        <div className="flex items-center gap-1.5 text-[11px] text-ink-3">Desde la vuelta<NumberInput className="w-14" value={from} min={1} onChange={(v) => setFrom(Math.round(v))} />hasta la<NumberInput className="w-14" value={to} placeholder="∞" min={1} onChange={(v) => setTo(Math.round(v))} /></div>
       )}
       {type === 'conditional' && <ConditionsList ownerType="edge" ownerId={edgeId} ids={e.conditions} ownerNode={e.sourceNodeId} emptyText="Dime cuándo funciona este remedio." />}
     </div>
@@ -369,7 +397,9 @@ function Routing({ n }: { n: MapNode }) {
   const expert = doc.project.settings.depth === 'expert';
   return (
     <div className="space-y-3">
-      <Field label={<span className="inline-flex items-center gap-1">📥 Si le llegan cosas de varios sitios… <OverrideMark {...o1} /></span>} hint={`le llegan ${ins.length} líneas`} help="¿Cómo las junta?">
+      {ins.length < 2 && outs.length < 2 && <p className="text-[12px] leading-snug text-ink-3">Ahora no hace falta: le llega una sola línea y sale una sola. Cuando le lleguen varias, aquí decides cómo se juntan o se reparten.</p>}
+      {ins.length >= 2 && (<>
+      <Field label={<span className="inline-flex items-center gap-1">📥 Le llegan cosas de {ins.length} sitios: ¿cómo las junta? <OverrideMark {...o1} /></span>}>
         <Select label="Convergencia" value={rule} onChange={setRule} options={[
           { value: 'sum', label: 'Las suma todas' }, { value: 'weighted', label: 'Las mezcla según su peso' }, { value: 'priority', label: 'Primero la más importante' }, { value: 'max', label: 'Se queda con la mayor' },
           { value: 'min', label: 'Se queda con la menor' }, { value: 'dedupe', label: 'No cuenta dos veces lo mismo' }, ...(expert ? [{ value: 'custom' as const, label: 'Con una fórmula (para expertos)' }] : []),
@@ -377,21 +407,28 @@ function Routing({ n }: { n: MapNode }) {
       </Field>
       {rule === 'dedupe' && <Field label="¿Cuánto se repiten?" help="100 % = lo que llega por cada lado es lo mismo (por ejemplo, la misma persona por dos caminos)."><NumberInput percent value={overlap} min={0} max={1} onChange={setOverlap} /></Field>}
       {rule === 'custom' && <Field label="Fórmula" help="Usa in1, in2… (cada línea que llega) y sum, max, min, count."><TextInput value={formula} onChange={setFormula} className="font-mono" /></Field>}
-      <Field label={<span className="inline-flex items-center gap-1">📤 Si sale hacia varios sitios… <OverrideMark {...o2} /></span>} hint={`salen ${outs.length} líneas`} help="¿Cómo lo reparte?">
+      </>)}
+      {outs.length >= 2 && (<>
+      <Field label={<span className="inline-flex items-center gap-1">📤 Sale hacia {outs.length} sitios: ¿cómo lo reparte? <OverrideMark {...o2} /></span>}>
         <Select label="Reparto" value={mode} onChange={setMode} options={[
           { value: 'proportional', label: 'Según el peso de cada línea' }, { value: 'fixed', label: 'Con porcentajes fijos' }, { value: 'conditional', label: 'Según una condición en cada línea' },
           { value: 'priority', label: 'Llena la primera y luego la siguiente' }, { value: 'competitive', label: 'Según cuánto cabe en cada una' }, { value: 'dynamic', label: 'Según la fuerza de otra idea' },
         ]} />
       </Field>
       {mode === 'dynamic' && <Field label="¿Qué idea decide el reparto?"><NodeSelect label="Nodo de referencia" value={dyn} onChange={setDyn} exclude={[n.id]} /></Field>}
-      {outs.length > 0 && (
-        <div className="space-y-1 rounded-lg bg-surface-2/70 p-2">
-          {outs.map((e) => <ShareRow key={e.id} edgeId={e.id} mode={mode} />)}
+      {mode === 'dynamic' && dyn && doc.nodes[dyn] && (
+        <div className="space-y-1.5 rounded-lg border border-line p-2" data-testid="door-dynamic">
+          <p className="text-[12px] leading-snug text-ink-2">Esta es la fuerza de «{doc.nodes[dyn].title}»: cuanto más empuje, más se lleva su lado. Cámbiala aquí mismo.</p>
+          <Weights n={doc.nodes[dyn]} />
         </div>
       )}
-      <Field label="💤 Si está apagada (no se cumple su condición)…">
+      <div className="space-y-1 rounded-lg bg-surface-2/70 p-2">
+        {outs.map((e) => <ShareRow key={e.id} edgeId={e.id} mode={mode} />)}
+      </div>
+      </>)}
+      {n.activationConditionId && <Field label="💤 Cuando está apagada (no se cumple su condición)…">
         <Segmented size="xs" label="Modo inactivo" value={inactiveMode} onChange={setInactiveMode} options={[{ value: 'passthrough', label: 'Deja pasar todo igual' }, { value: 'block', label: 'No deja pasar nada' }]} />
-      </Field>
+      </Field>}
     </div>
   );
 }
@@ -430,6 +467,10 @@ function StyleSection({ n }: { n: MapNode }) {
   };
   return (
     <div className="space-y-3">
+      <Field label="↔️ ¿Dónde va el texto?" help="Centrado queda más limpio; a la izquierda se lee mejor si es largo.">
+        <Segmented size="xs" label="Alineación" value={n.visualStyle.textAlign ?? 'center'} onChange={(textAlign) => upd({ textAlign })}
+          options={[{ value: 'center', label: 'Centrado' }, { value: 'left', label: 'A la izquierda' }]} />
+      </Field>
       <Field label="🔷 Forma">
         <Segmented size="xs" label="Forma" value={n.visualStyle.shape} onChange={(shape) => upd({ shape })}
           options={[{ value: 'rounded', label: 'Redondeado' }, { value: 'pill', label: 'Píldora' }, { value: 'rect', label: 'Recto' }, { value: 'circle', label: 'Círculo' }, { value: 'diamond', label: 'Rombo' }, { value: 'hexagon', label: 'Hex.' }]} />
@@ -516,6 +557,7 @@ function Advanced({ n }: { n: MapNode }) {
   const ports = n.portIds.map((p) => doc.ports[p]).filter(Boolean);
   return (
     <div className="space-y-3">
+      <TagFields n={n} />
       <Field label="🔒 Bloqueada (para no moverla sin querer)" inline><Toggle label="Bloqueado" checked={n.locked} onChange={(locked) => upd({ locked })} /></Field>
       <Field label="🙈 Esconder lo que cuelga de ella" inline><Toggle label="Rama plegada" checked={n.branchCollapsed} onChange={(branchCollapsed) => upd({ branchCollapsed })} /></Field>
       <Field label="🗂️ Capas" help="Pulsa una capa para meter o sacar esta idea.">
@@ -546,7 +588,7 @@ function Advanced({ n }: { n: MapNode }) {
   );
 }
 
-function DiscoveryBlock({ n }: { n: MapNode }) {
+export function DiscoveryBlock({ n }: { n: MapNode }) {
   const disc = n.metadata.discovery;
   if (!disc) return null;
   const upd = (patch: Partial<NonNullable<MapNode['metadata']['discovery']>>) => A.apply((d) => op.updateNode(d, n.id, { metadata: { ...d.nodes[n.id].metadata, discovery: { ...d.nodes[n.id].metadata.discovery!, ...patch } } }));
@@ -585,62 +627,161 @@ function DiscoveryBlock({ n }: { n: MapNode }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Lo que puedes hacer con una idea: cada cosa dice para qué te sirve   */
+/* ------------------------------------------------------------------ */
+
+export interface NodeFeature {
+  id: string;
+  emoji: string;
+  /** lo que pone en el botón */
+  title: string;
+  /** para qué te sirve, en una línea */
+  sub: string;
+  /** lo que te cuento al abrirlo, como un colega */
+  intro: string;
+  testId: string;
+  badge?: string | null;
+  tone?: 'loss' | 'gain' | 'cond' | null;
+  render: () => ReactNode;
+}
+
+export function nodeFeatures(doc: ProjectDoc, n: MapNode): NodeFeature[] {
+  const isMeta = ['note', 'label', 'comment'].includes(n.type);
+  const isGroup = n.type === 'group' || n.type === 'container';
+  const edges = Object.values(doc.edges);
+  const flowIn = edges.filter((e) => e.type === 'flow' && e.targetNodeId === n.id).length;
+  const flowOut = edges.filter((e) => e.type === 'flow' && e.sourceNodeId === n.id).length;
+  const bhs = n.behaviorIds.map((b) => doc.behaviors[b]).filter(Boolean);
+  const v = n.weight.influence ? scaleValueToWeighted(n.weight.influence, doc.project.settings).value : 0;
+  const loses = bhs.some((b) => ['filter', 'reducer', 'consumer', 'restrictor'].includes(b.behaviorType));
+  const mitig = edges.filter((e) => e.targetNodeId === n.id && e.type === 'causal' && e.behavior.influence.mode === 'compensate').length;
+  const isGen = n.type === 'input' || bhs.some((b) => b.behaviorType === 'generator');
+  const linkCount = edges.filter((e) => e.sourceNodeId === n.id || e.targetNodeId === n.id).length;
+  const annCount = Object.values(doc.annotations).filter((x) => x.ownerId === n.id).length;
+  const qv = n.dimensionValues.quantity?.value;
+  const f: NodeFeature[] = [];
+  f.push({ id: 'text', emoji: '✏️', title: 'Nombre y explicación', sub: 'Lo que se lee en la burbuja.', testId: 'section-text', badge: n.description.trim() ? 'con explicación' : null,
+    intro: 'Lo que pongas en «Explicación» sale dentro de la burbuja, debajo del nombre. Así, cuando mires el mapa, sabes de qué va cada cosa sin abrir nada.', render: () => <TextFields n={n} /> });
+  if (!isMeta && !isGroup) {
+    if (isGen) f.push({ id: 'output', emoji: '✨', title: '¿Cuánto sale de aquí?', sub: 'Lo que pones en marcha en cada vuelta.', testId: 'section-dimensions', badge: qv != null ? `${fmt(qv)} por vuelta` : null,
+      intro: 'De aquí sale lo que mueves por el mapa. Pon cuántos salen en cada vuelta. Una vuelta es un trozo de tiempo: una semana, un mes… lo que tú decidas. Luego ves cuántos llegan a tu meta.', render: () => <DimensionValues n={n} /> });
+    f.push({ id: 'behaviors', emoji: '⚙️', title: '¿Qué le pasa a lo que llega?', sub: 'Si aquí se pierde algo, se guarda o se multiplica.', testId: 'section-behaviors',
+      badge: bhs.length ? `${BEHAVIOR_KID[bhs[0]!.behaviorType].emoji} ${BEHAVIOR_KID[bhs[0]!.behaviorType].name}${bhs.length > 1 ? ` +${bhs.length - 1}` : ''}` : null,
+      intro: 'Aquí dices qué pasa con lo que llega a esta idea. Por ejemplo: de 100 llamadas solo valen 65; eso es un 🧺 Colador que deja pasar el 65 %. Si no pones nada, lo que llega sigue igual.', render: () => <BehaviorList nodeId={n.id} /> });
+    f.push({ id: 'influence', emoji: '💪', title: '¿Ayuda o estorba a otra?', sub: 'Para que cuente lo que te facilita o te complica.', testId: 'section-weights',
+      badge: v < 0 ? `estorba ${signed(v)}` : v > 0 ? `ayuda ${signed(v)}` : null, tone: v < 0 ? 'loss' : v > 0 ? 'gain' : null,
+      intro: 'Si esto te pone las cosas más fáciles o más difíciles, díselo aquí. Ejemplo: «la lluvia» estorba a «ir en bici». Mueve la barra y dime a quién: yo hago la línea.', render: () => <Weights n={n} /> });
+    if (v < 0 || loses || mitig > 0) f.push({ id: 'remedies', emoji: '🩹', title: '¿Qué haces contra esto?', sub: 'Apunta tu remedio y mira cuánto lo arregla.', testId: 'section-mitigators', badge: mitig ? `${mitig} remedio${mitig > 1 ? 's' : ''}` : null, tone: mitig ? 'gain' : null,
+      intro: 'Si esto te frena o aquí se pierde algo, apunta lo que haces para que frene menos. Por ejemplo: si «No tengo tiempo» frena, un remedio es «Hacer un horario». Te digo al momento cuánto lo arregla.', render: () => <Mitigators n={n} /> });
+    f.push({ id: 'conditions', emoji: '⏰', title: '¿Funciona siempre?', sub: 'Por si solo cuenta a veces.', testId: 'section-conditions', badge: n.activationConditionId ? 'solo a veces' : null, tone: n.activationConditionId ? 'cond' : null,
+      intro: '¿Esto solo funciona a veces? Por ejemplo, a partir de la semana 4 o cuando a otra idea le llegue bastante. Si no pones nada, funciona siempre.',
+      render: () => <ConditionsList ownerType="node" ownerId={n.id} ids={n.activationConditionId ? [n.activationConditionId] : []} ownerNode={n.id} emptyText="Ahora funciona siempre." /> });
+    if (flowIn >= 2 || flowOut >= 2 || n.activationConditionId) f.push({ id: 'routing', emoji: '🔀', title: '¿Cómo junta y reparte?', sub: 'Le llega de varios sitios o sale hacia varios.', testId: 'section-routing',
+      intro: 'A esta idea le llegan cosas de varios sitios o salen hacia varios. Aquí decides cómo las junta y cómo las reparte.', render: () => <Routing n={n} /> });
+  }
+  f.push({ id: 'links', emoji: '🔗', title: '¿Con quién está unida?', sub: 'Sus líneas, para saltar a ellas.', testId: 'section-links', badge: linkCount ? `${linkCount} línea${linkCount > 1 ? 's' : ''}` : 'suelta',
+    intro: 'Estas son sus líneas: ← lo que le llega y → adónde va. Pulsa una para verla. Para unirla a otra idea, arrastra desde uno de los puntos de su borde.', render: () => <Relations n={n} /> });
+  if (!isGroup) f.push({ id: 'role', emoji: '🧩', title: '¿Qué es esto?', sub: 'Inicio, meta, idea, nota…', testId: 'section-role', badge: TYPE_LABEL[n.type],
+    intro: 'Cambiarlo cambia las cuentas: de un inicio sale todo y en una meta se cuenta lo que llega.', render: () => <RoleField n={n} /> });
+  if (!isMeta && !isGroup) f.push({ id: 'confidence', emoji: '🤔', title: '¿Es un dato o a ojo?', sub: 'Para saber qué tienes que comprobar.', testId: 'section-confidence', badge: n.metadata.confidence === 'hypothesis' ? 'a ojo' : n.metadata.confidence === 'verified' ? 'comprobado' : null, tone: n.metadata.confidence === 'hypothesis' ? 'cond' : null,
+    intro: '¿Esto lo sabes seguro o lo pones a ojo? Si es a ojo, márcalo: el Marcador te avisará de que ese resultado hay que cogerlo con pinzas.', render: () => <ConfidenceField n={n} /> });
+  f.push({ id: 'style', emoji: '🎨', title: 'Cómo se ve', sub: 'Color, forma, texto centrado, foto…', testId: 'section-style',
+    intro: 'Para que se vea a tu gusto y lo distingas de un vistazo. No cambia las cuentas.', render: () => <StyleSection n={n} /> });
+  f.push({ id: 'comments', emoji: '💬', title: 'Apuntar algo', sub: 'Dudas o cosas que tienes que mirar.', testId: 'section-comments', badge: annCount ? `${annCount}` : null,
+    intro: 'Apunta aquí dudas o cosas pendientes. No salen en la burbuja; para eso está la explicación.', render: () => <Annotations ownerType="node" ownerId={n.id} /> });
+  if (!isGroup) f.push({ id: 'files', emoji: '📎', title: 'Guardar un archivo', sub: 'Un presupuesto, una foto, un PDF…', testId: 'section-files', badge: n.metadata.attachmentIds.length ? `${n.metadata.attachmentIds.length}` : null,
+    intro: 'Guarda aquí un documento que tenga que ver con esta idea, para tenerlo a mano.', render: () => <Attachments n={n} /> });
+  f.push({ id: 'more', emoji: '🧰', title: 'Más cosas', sub: 'Etiquetas, bloquearla, capas…', testId: 'section-more',
+    intro: 'Lo que se usa menos: etiquetas para encontrarla, bloquearla para no moverla sin querer o esconder lo que cuelga de ella.', render: () => <Advanced n={n} /> });
+  return f;
+}
+
+const TONE: Record<string, string> = {
+  loss: 'bg-[color-mix(in_srgb,var(--loss)_12%,transparent)] text-loss',
+  gain: 'bg-[color-mix(in_srgb,var(--gain)_13%,transparent)] text-gain',
+  cond: 'bg-[color-mix(in_srgb,var(--condition)_15%,transparent)] text-cond',
+};
+
+/** Las opciones como botones a la vista; al pulsar una, se abre solo esa. */
+export function FeatureMenu({ features, open, onOpen, cols = 2 }: { features: NodeFeature[]; open: string | null; onOpen: (id: string | null) => void; cols?: 2 | 3 }) {
+  const f = open ? features.find((x) => x.id === open) : null;
+  if (f) {
+    return (
+      <div className="space-y-2.5" data-testid={f.testId}>
+        <div className="flex items-center gap-2">
+          <Button size="xs" variant="subtle" onClick={() => onOpen(null)} data-testid="feature-back">← Volver</Button>
+          <Ico e={f.emoji} size={16} />
+          <span className="min-w-0 flex-1 truncate text-[13.5px] font-semibold text-ink">{f.title}</span>
+        </div>
+        <p className="rounded-lg bg-surface-2/70 px-2.5 py-2 text-[12px] leading-snug text-ink-2">{f.intro}</p>
+        {f.render()}
+      </div>
+    );
+  }
+  return (
+    <div className={cx('grid gap-1.5', cols === 3 ? 'grid-cols-3' : 'grid-cols-2')}>
+      {features.map((x) => (
+        <button key={x.id} type="button" onClick={() => onOpen(x.id)} data-testid={`tile-${x.id}`} title={x.intro}
+          className="flex items-start gap-1.5 rounded-xl border border-line bg-surface px-2 py-1.5 text-left transition-colors hover:border-accent hover:bg-accent-soft/40">
+          <Ico e={x.emoji} size={16} className="mt-[1px]" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-semibold leading-tight text-ink">{x.title}</span>
+            <span className="mt-0.5 block text-[10.5px] leading-snug text-ink-3">{x.sub}</span>
+            {x.badge && <span className={cx('mt-1 inline-block rounded-full px-1.5 py-px text-[10.5px] font-medium', x.tone ? TONE[x.tone] : 'bg-surface-2 text-ink-2')}>{x.badge}</span>}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function NodeInspector({ id }: { id: string }) {
   const { doc } = useInspector();
+  const [open, setOpen] = useState<string | null>(null);
   const n = doc.nodes[id];
-  const depth = doc.project.settings.depth;
   if (!n) return null;
   const isMeta = ['note', 'label', 'comment'].includes(n.type);
   const isGroup = n.type === 'group' || n.type === 'container';
-  const behaviorsCount = n.behaviorIds.length;
-  const mitigCount = Object.values(doc.edges).filter((e) => e.targetNodeId === n.id && e.type === 'causal' && e.behavior.influence.mode === 'compensate').length;
-  const annCount = Object.values(doc.annotations).filter((a) => a.ownerId === n.id).length;
   if (n.aliasOf && doc.nodes[n.aliasOf]) {
     return (
       <div className="space-y-3 p-4">
         <div className="flex items-center gap-2 text-[12px] text-ink-2"><Link2 className="size-4 text-accent" />Clon de «{doc.nodes[n.aliasOf].title}»</div>
-        <p className="text-[12px] leading-snug text-ink-3">Un clon es la misma idea puesta en otro sitio del mapa, como una foto suya: si cambias la original, cambia también esta, y en la cuenta solo se cuenta una vez.</p>
+        <p className="text-[12px] leading-snug text-ink-3">Un clon es la misma idea puesta en otro sitio del mapa, como una foto suya: si cambias la original, cambia también esta, y en las cuentas solo se cuenta una vez.</p>
         <Button size="sm" variant="outline" onClick={() => useUI.getState().setSelection([n.aliasOf!])}>Ir a la original</Button>
         <Button size="sm" variant="ghost" onClick={() => A.apply((d) => op.updateNode(d, n.id, { aliasOf: null, title: d.nodes[n.aliasOf!].title }))}>Separarla (que sea una idea distinta)</Button>
       </div>
     );
   }
-  const level = levelOf(depth);
-  if (level < 3) return <KidNodeInspector id={n.id} />;
+  if (levelOf(doc.project.settings.depth) < 3) return <KidNodeInspector id={n.id} />;
   const papel = n.metadata.custom?.papel && n.metadata.custom.papel in PAPEL ? PAPEL[n.metadata.custom.papel as Papel] : null;
   const head = papel ? { emoji: papel.emoji, name: papel.name, hint: papel.hint } : { emoji: TYPE_INFO[n.type].emoji, name: TYPE_LABEL[n.type], hint: TYPE_INFO[n.type].hint };
+  const muted = isMuted(n);
   return (
     <div data-testid="node-inspector">
       <div className="flex items-start gap-2.5 border-b border-line px-4 py-3">
-        <span className="text-[22px] leading-none" aria-hidden>{head.emoji}</span>
+        <Ico e={head.emoji} size={22} />
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5 font-display text-[16px] font-medium text-ink">{head.name}{n.locked && <Lock className="size-3.5 text-ink-3" aria-label="Bloqueada" />}</span>
           <span className="block text-[12px] leading-snug text-ink-3">{head.hint}</span>
         </span>
+        {(muted || canMute(doc, n)) && <IconButton size="xs" label={muted ? '🔊 Volver a activar' : '🔇 Silenciar: mira qué pasa sin ella'} onClick={() => toggleMute(n.id)} data-testid="inspector-mute"><span className="text-[13px] leading-none">{muted ? '🔇' : '🔊'}</span></IconButton>}
         <IconButton size="xs" label="Borrar" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
       </div>
       <div className="space-y-3 border-b border-line px-4 py-3">
-        <Identity n={n} />
         <DiscoveryBlock n={n} />
-        {!isMeta && !isGroup && <SimSummary n={n} />}
+        {!isMeta && !isGroup && (
+          <div className="space-y-2 rounded-xl bg-surface-2/70 p-3" data-testid="node-summary">
+            <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink"><Ico e="🔎" size={14} />Cómo va ahora</div>
+            <NodeLive n={n} />
+            <TraceButtons n={n} />
+          </div>
+        )}
       </div>
-      {!isMeta && !isGroup && depth !== 'basic' && (
-        <>
-          <Section emoji="💪" title="Cuánto empuja o frena" hint="Si esta idea ayuda (+) o frena (−) a otras, y cuánto." icon={<Gauge />} defaultOpen={false} testId="section-weights"><Weights n={n} /></Section>
-          <Section emoji="⚙️" title="Qué hace" hint="Lo que hace con lo que le llega: colarlo, guardarlo, multiplicarlo…" icon={<Workflow />} count={behaviorsCount} defaultOpen={behaviorsCount > 0} testId="section-behaviors"><BehaviorList nodeId={n.id} /></Section>
-          <Section emoji="⏰" title="Cuándo funciona" hint="Si solo funciona a veces; por ejemplo, desde la ronda 4." icon={<Diamond />} count={n.activationConditionId ? 1 : 0} defaultOpen={false} testId="section-conditions">
-            <ConditionsList ownerType="node" ownerId={n.id} ids={n.activationConditionId ? [n.activationConditionId] : []} ownerNode={n.id} emptyText="Ahora funciona siempre. Añade una condición si solo debe funcionar a veces." />
-          </Section>
-          <Section emoji="🩹" title="Remedios" hint="Cosas que le quitan fuerza cuando frena." icon={<ShieldCheck />} count={mitigCount} defaultOpen={false} testId="section-mitigators"><Mitigators n={n} /></Section>
-          <Section emoji="✨" title="Qué sale de aquí" hint="Cuánto sale y cómo es (sobre todo en los inicios)." icon={<Sliders />} defaultOpen={n.type === 'input'} testId="section-dimensions"><DimensionValues n={n} /></Section>
-          <Section emoji="🔀" title="Cómo reparte y cómo junta" hint="Qué hace si le llegan cosas de varios sitios o si salen hacia varios." icon={<Waypoints />} defaultOpen={false}><Routing n={n} /></Section>
-        </>
-      )}
-      <Section emoji="🔗" title="Con quién está unida" hint="Las líneas que le llegan (←) y las que salen (→)." icon={<Activity />} defaultOpen={false}><Relations n={n} /></Section>
-      <Section emoji="🎨" title="Cómo se ve" hint="Forma, color, letra, dibujito o foto." icon={<Paintbrush />} defaultOpen={false}><StyleSection n={n} /></Section>
-      <Section emoji="💬" title="Comentarios" hint="Notas para ti: dudas, ideas, pruebas." icon={<MessageSquare />} count={annCount} defaultOpen={annCount > 0} testId="section-comments"><Annotations ownerType="node" ownerId={n.id} /></Section>
-      <Section emoji="📎" title="Archivos" hint="Documentos que quieras guardar con esta idea." icon={<FileUp />} count={n.metadata.attachmentIds.length} defaultOpen={false}><Attachments n={n} /></Section>
-      <Section emoji="🧰" title="Más opciones" hint="Bloquear, capas y cosas para expertos." icon={<Boxes />} defaultOpen={false}><Advanced n={n} /></Section>
+      <div className="space-y-2 px-4 py-3">
+        {!open && <p className="text-[12.5px] font-semibold text-ink">¿Qué quieres hacer con ella?</p>}
+        <FeatureMenu features={nodeFeatures(doc, n)} open={open} onOpen={setOpen} />
+      </div>
     </div>
   );
 }

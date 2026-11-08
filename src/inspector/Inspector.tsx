@@ -14,6 +14,7 @@ import { NodeInspector } from './NodeInspector';
 import { EdgeInspector } from './EdgeInspector';
 import type { FlowDimensionDef, MapNode } from '../core/model/schema';
 import { newId } from '../core/model/factory';
+import { Ico } from '../ui/ico';
 
 function MultiInspector({ ids }: { ids: string[] }) {
   const doc = useProject((s) => s.doc)!;
@@ -66,7 +67,7 @@ function MultiInspector({ ids }: { ids: string[] }) {
         <Menu.Root>
           <Menu.Trigger asChild><Button size="sm" variant="outline"><Plus className="size-3.5" />Darles a todas algo que hacer</Button></Menu.Trigger>
           <Menu.Content>
-            {BEHAVIOR_ORDER.map((t) => <Menu.Item key={t} icon={<span aria-hidden>{BEHAVIOR_KID[t].emoji}</span>} onSelect={() => A.apply((d) => ids.reduce((acc, id) => op.addBehavior(acc, id, t).doc, d))}>{BEHAVIOR_KID[t].name}</Menu.Item>)}
+            {BEHAVIOR_ORDER.map((t) => <Menu.Item key={t} icon={<Ico e={BEHAVIOR_KID[t].emoji} size={15} />} onSelect={() => A.apply((d) => ids.reduce((acc, id) => op.addBehavior(acc, id, t).doc, d))}>{BEHAVIOR_KID[t].name}</Menu.Item>)}
           </Menu.Content>
         </Menu.Root>
       </Section>
@@ -142,7 +143,7 @@ function ProjectPanel() {
         <p className="rounded-lg bg-surface-2/70 px-3 py-2 text-[12px] leading-snug text-ink-2">👉 Pulsa una idea o una línea para ver lo suyo. Doble clic en un hueco vacío para poner una idea nueva.</p>
       </div>
       <Section emoji="⏱️" title="Cuánto tiempo pruebo" hint="Cuántas vueltas da tu mapa cuando lo pruebas.">
-        <Field label="¿Cuántas rondas?" help="Una ronda es un trozo de tiempo: una semana, un mes… lo que tú quieras. Más rondas = ver más lejos.">
+        <Field label="¿Cuántas vueltas?" help="Una vuelta es un trozo de tiempo: una semana, un mes… lo que tú quieras. Más vueltas = ver más lejos.">
           <NumberInput value={doc.project.settings.simulation.iterations} min={1} max={500} onChange={(v) => set({ simulation: { iterations: Math.round(v) } })} data-testid="iterations-input" />
         </Field>
       </Section>
@@ -179,12 +180,6 @@ export function Inspector() {
   return (
     <InspectorContext.Provider value={{ doc, eff, scenarioIsBase: !scenario || scenario.isBase }}>
       <aside className="flex w-[340px] shrink-0 flex-col border-l border-line bg-surface mdf-slide-r" aria-label="Detalles" data-testid="inspector">
-        {scenario && !scenario.isBase && (
-          <div className="flex items-center gap-2 border-b border-line bg-accent-soft px-4 py-1.5 text-[11.5px] text-accent-text" data-testid="scenario-banner">
-            <span className="size-2 rounded-full" style={{ background: scenario.color }} />
-            🧪 Estás cambiando el «¿y si…?» «{scenario.name}». Tu mapa de verdad no cambia.
-          </div>
-        )}
         <div className="min-h-0 flex-1 overflow-y-auto">{body}</div>
       </aside>
     </InspectorContext.Provider>

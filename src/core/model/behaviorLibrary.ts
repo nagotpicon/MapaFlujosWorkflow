@@ -45,15 +45,15 @@ const pct = (key: string, label: string, def: number, help?: string): ParamSpec 
 export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
   generator: {
     type: 'generator', label: 'Generador', verb: 'Genera', family: 'source', phase: 'generate', icon: 'Sparkles',
-    description: 'Produce flujo nuevo en cada ronda con las dimensiones definidas en el nodo.',
+    description: 'Produce flujo nuevo en cada vuelta con las dimensiones definidas en el nodo.',
     params: [
-      { key: 'amount', label: '¿Cuántos crea en cada ronda?', kind: 'number', default: 100, min: 0, step: 1, help: 'Si la idea ya dice cuántos en «Qué sale de aquí», manda eso.' },
+      { key: 'amount', label: '¿Cuántos crea en cada vuelta?', kind: 'number', default: 100, min: 0, step: 1, help: 'Si la idea ya dice cuántos en «Qué sale de aquí», manda eso.' },
       { key: 'mode', label: '¿Cuándo crea?', kind: 'select', default: 'continuous', options: [
-        { value: 'continuous', label: 'En todas las rondas' }, { value: 'once', label: 'Solo una vez, al principio' },
+        { value: 'continuous', label: 'En todas las vueltas' }, { value: 'once', label: 'Solo una vez, al principio' },
       ] },
-      { key: 'startIteration', label: 'Empieza en la ronda', kind: 'number', default: 1, min: 1, step: 1, advanced: true },
-      { key: 'endIteration', label: 'Para en la ronda (0 = nunca para)', kind: 'number', default: 0, min: 0, step: 1, advanced: true },
-      { key: 'growth', label: 'Cada ronda crea un poco más', kind: 'percent', default: 0, min: -1, max: 1, step: 0.01, advanced: true, help: '10 % = cada ronda, un 10 % más. Negativo = cada vez menos.' },
+      { key: 'startIteration', label: 'Empieza en la vuelta', kind: 'number', default: 1, min: 1, step: 1, advanced: true },
+      { key: 'endIteration', label: 'Para en la vuelta (0 = nunca para)', kind: 'number', default: 0, min: 0, step: 1, advanced: true },
+      { key: 'growth', label: 'Cada vuelta crea un poco más', kind: 'percent', default: 0, min: -1, max: 1, step: 0.01, advanced: true, help: '10 % = cada vuelta, un 10 % más. Negativo = cada vez menos.' },
     ],
     defaultDimensions: ['quantity'],
   },
@@ -127,11 +127,11 @@ export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
   },
   restrictor: {
     type: 'restrictor', label: 'Restrictor', verb: 'Limita', family: 'loss', phase: 'capacity', icon: 'Minimize2',
-    description: 'Limita la capacidad de paso por ronda. El exceso se pierde, se encola o se desborda a otra ruta.',
+    description: 'Limita la capacidad de paso por vuelta. El exceso se pierde, se encola o se desborda a otra ruta.',
     params: [
-      { key: 'capacity', label: '¿Cuántos caben en cada ronda?', kind: 'number', default: 50, min: 0, step: 1, help: 'Como las sillas de una clase: si llegan más, no caben.' },
+      { key: 'capacity', label: '¿Cuántos caben en cada vuelta?', kind: 'number', default: 50, min: 0, step: 1, help: 'Como las sillas de una clase: si llegan más, no caben.' },
       { key: 'excess', label: '¿Qué pasa con los que no caben?', kind: 'select', default: 'queue', options: [
-        { value: 'queue', label: 'Esperan a la ronda siguiente' }, { value: 'lose', label: 'Se pierden' },
+        { value: 'queue', label: 'Esperan a la vuelta siguiente' }, { value: 'lose', label: 'Se pierden' },
         { value: 'overflow', label: 'Van por la línea de «lo que no cabe»' },
       ] },
     ],
@@ -149,7 +149,7 @@ export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
     params: [
       pct('ratio', 'Qué parte guarda', 1, '100 % = lo guarda todo.'),
       { key: 'maxStock', label: '¿Cuánto cabe en la hucha? (0 = sin límite)', kind: 'number', default: 0, min: 0 },
-      { ...pct('leak', 'Se escapa de la hucha en cada ronda', 0), advanced: true },
+      { ...pct('leak', 'Se escapa de la hucha en cada vuelta', 0), advanced: true },
       { key: 'initialStock', label: 'Lo que ya hay al empezar', kind: 'number', default: 0, min: 0, advanced: true },
     ],
     defaultDimensions: ['quantity'],
@@ -201,14 +201,14 @@ export const BEHAVIOR_LIBRARY: Record<BehaviorType, BehaviorSpec> = {
 
 /** Nombre, dibujo y explicación de cada comportamiento para cualquiera (también un niño de 8 años). */
 export const BEHAVIOR_KID: Record<BehaviorType, { name: string; emoji: string; hint: string }> = {
-  generator: { name: 'Fábrica', emoji: '✨', hint: 'Crea cosas nuevas en cada ronda, como un grifo que echa agua.' },
+  generator: { name: 'Fábrica', emoji: '✨', hint: 'Crea cosas nuevas en cada vuelta, como un grifo que echa agua.' },
   consumer: { name: 'Se come una parte', emoji: '🍽️', hint: 'Usa o gasta una parte de lo que le llega.' },
   filter: { name: 'Colador', emoji: '🧺', hint: 'Solo deja pasar una parte. Lo demás se queda fuera.' },
   transformer: { name: 'Cambia cómo es', emoji: '🔄', hint: 'Cambia algo de lo que pasa: mejor calidad, más peso…' },
   multiplier: { name: 'Multiplica', emoji: '✖️', hint: 'Lo que llega sale más grande: el doble, la mitad más…' },
   reducer: { name: 'Se escapa algo', emoji: '💧', hint: 'Por el camino se pierde un poco.' },
   accelerator: { name: 'Más rápido', emoji: '⚡', hint: 'Hace que vaya más rápido (o más lento).' },
-  restrictor: { name: 'Límite', emoji: '🚧', hint: 'Solo caben unos cuantos en cada ronda; los demás esperan o se pierden.' },
+  restrictor: { name: 'Límite', emoji: '🚧', hint: 'Solo caben unos cuantos en cada vuelta; los demás esperan o se pierden.' },
   diverter: { name: 'Desvío', emoji: '↪️', hint: 'Manda una parte por otro camino.' },
   accumulator: { name: 'Hucha', emoji: '🐷', hint: 'Lo va guardando para más adelante.' },
   releaser: { name: 'Suelta lo guardado', emoji: '🎁', hint: 'Saca lo que había en la hucha.' },

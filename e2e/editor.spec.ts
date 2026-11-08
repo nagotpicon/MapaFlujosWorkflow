@@ -132,7 +132,7 @@ test.describe('Editor de mapas (plan de pruebas 1–14)', () => {
     await page.keyboard.press(`${mod}+k`);
     await page.getByRole('textbox', { name: 'Buscar' }).fill('aguja');
     await page.getByRole('option', { name: /Aguja en el pajar/ }).click();
-    await expect(page.getByTestId('node-inspector')).toBeVisible();
+    await expect(page.getByTestId('action-bar')).toBeVisible();
     await node(page, 'Aguja en el pajar').click({ button: 'right' });
     await expect(page.getByTestId('context-menu')).toBeVisible();
     await page.getByRole('menuitem', { name: /Añadir idea unida/ }).click();

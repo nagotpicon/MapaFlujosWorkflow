@@ -69,13 +69,13 @@ export function MonitorPanel() {
       <div className="mx-auto max-w-[1400px] space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-[12px] text-ink-2">
           <span className="size-2 rounded-full" style={{ background: scenario?.color }} />Mirando <b className="text-ink">{scenario?.name}</b>
-          <span className="text-ink-3">· {N} rondas</span>
+          <span className="text-ink-3">· {N} vueltas</span>
           {(k.hypotheses + k.approximations) > 0 && <Badge tone="cond"><TriangleAlert className="size-3" />{k.hypotheses + k.approximations} cosas supuestas: tómalo como orientación</Badge>}
           {busy && <Loader2 className="size-3.5 animate-spin text-ink-3" />}
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-          <Tile label="Llega a la meta" value={fmt(k.totalResult)} sub={`${unit} en total · última ronda ${fmt(k.lastResult)}`} testId="tile-result" />
+          <Tile label="Llega a la meta" value={fmt(k.totalResult)} sub={`${unit} en total · última vuelta ${fmt(k.lastResult)}`} testId="tile-result" />
           <Tile label="Sobrevive" value={pct(survival)} sub="de lo que sale del inicio" tone={survival < 0.2 ? 'text-loss' : survival > 0.5 ? 'text-gain' : undefined} testId="tile-survival" />
           <Tile label="Aprovechas" value={pct(k.efficiency)} sub="de todo lo que se mueve" />
           <Tile label="Se pierde" value={pct(k.lostPct)} sub="por el camino" tone={k.lostPct > 0.5 ? 'text-loss' : undefined} />
@@ -117,7 +117,7 @@ export function MonitorPanel() {
                       <div className="flex flex-1 gap-[2px]">
                         {data.heat.nodes[id].map((h, i) => (
                           <div key={i} className="h-5 flex-1 rounded-[4px]" style={{ background: HEAT_VAR[h.state], opacity: h.state === 'idle' ? 1 : 0.35 + Math.abs(h.temperature) * 0.65 }}
-                            title={`Ronda ${i + 1} · ${HEAT_LABEL[h.state]}${h.causes.length ? `: ${h.causes.join(' · ')}` : ''}`} />
+                            title={`Vuelta ${i + 1} · ${HEAT_LABEL[h.state]}${h.causes.length ? `: ${h.causes.join(' · ')}` : ''}`} />
                         ))}
                       </div>
                       <span className="w-24 text-right text-[10.5px] text-ink-3">{HEAT_LABEL[data.heat.nodeAvg[id].state]}</span>
@@ -126,7 +126,7 @@ export function MonitorPanel() {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-ink-2">
                   {(['cold', 'rhythm', 'warm', 'overheated'] as HeatState[]).map((s) => <span key={s} className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-sm" style={{ background: HEAT_VAR[s] }} />{HEAT_LABEL[s]}</span>)}
-                  <span className="text-ink-3">· cada columna es una ronda</span>
+                  <span className="text-ink-3">· cada columna es una vuelta</span>
                 </div>
               </div>
             )}
@@ -156,7 +156,7 @@ export function MonitorPanel() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-          <Card title="Cómo va ronda a ronda">
+          <Card title="Cómo va vuelta a vuelta">
             <LineChart height={170} unit={unit} series={[
               { id: 'r', label: 'Resultado', color: 'var(--gain)', values: m.series.result },
               { id: 'g', label: 'Generado', color: 'var(--flow)', values: m.series.generated, dashed: true },

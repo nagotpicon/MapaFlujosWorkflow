@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openDemo, selectNode, waitSaved } from './helpers';
+import { openDemo, openFeature, selectNode, waitSaved } from './helpers';
 
 test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, recargar e independencia', async ({ page }) => {
   await openDemo(page);
@@ -13,8 +13,8 @@ test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, rec
   await expect(page.getByTestId('scenario-banner')).toBeVisible();
   // 2. cambiar una variable (filtro de clasificación) solo en este escenario
   await selectNode(page, 'Clasificación de llamadas');
+  await openFeature(page, 'behaviors');
   const card = page.getByTestId('behavior-card').first();
-  await card.getByRole('button', { name: /Colador|Filtro/ }).click();
   const pass = card.locator('[data-param="passRatio"]');
   await pass.fill('90');
   await pass.press('Enter');
@@ -39,6 +39,7 @@ test('escenarios: clonar, cambiar una variable, ejecutar, comparar, guardar, rec
   await page.getByRole('menuitem', { name: /^Situación inicial/ }).first().click();
   await expect(page.getByTestId('kpi-total')).toHaveText(totalBase);
   await selectNode(page, 'Clasificación de llamadas');
+  await openFeature(page, 'behaviors');
   await expect(page.getByTestId('behavior-card').first()).toContainText('Deja pasar 65%');
 });
 

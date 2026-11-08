@@ -2,6 +2,7 @@
 import { forwardRef, useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Tooltip as RTooltip, Popover as RPopover, DropdownMenu as RMenu, Dialog as RDialog, Switch as RSwitch } from 'radix-ui';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { Ico, IcoText, icoChildren, stripEmoji } from './ico';
 
 export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(' ');
@@ -21,19 +22,21 @@ interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const VARIANT: Record<Variant, string> = {
   ghost: 'text-ink-2 hover:bg-surface-2 hover:text-ink',
   subtle: 'bg-surface-2 text-ink hover:bg-surface-3',
-  solid: 'bg-ink text-bg hover:opacity-85 shadow-sm',
+  solid: 'bg-ink text-bg hover:opacity-85 shadow-sm mdf-on-dark',
   outline: 'border border-line text-ink hover:bg-surface-2',
-  danger: 'text-loss hover:bg-[color-mix(in_srgb,var(--loss)_10%,transparent)]',
+  danger: 'text-loss hover:bg-[color-mix(in_srgb,var(--loss)_10%,transparent)] mdf-tinted',
 };
 const SIZE = { xs: 'h-6 px-1.5 text-[11px] gap-1 rounded-md', sm: 'h-8 px-2.5 text-[12.5px] gap-1.5 rounded-lg', md: 'h-9 px-3.5 text-[13px] gap-2 rounded-xl' };
 const SQUARE = { xs: 'size-6 rounded-md', sm: 'size-8 rounded-lg', md: 'size-9 rounded-xl' };
 
-export const Button = forwardRef<HTMLButtonElement, BtnProps>(function Button({ variant = 'ghost', size = 'sm', active, square, className, ...rest }, ref) {
+export const Button = forwardRef<HTMLButtonElement, BtnProps>(function Button({ variant = 'ghost', size = 'sm', active, square, className, children, ...rest }, ref) {
   return (
     <button
       ref={ref}
       type="button"
       {...rest}
+      // los emojis de los textos se dibujan como iconos de un trazo
+      children={icoChildren(children, size === 'xs' ? 13 : 15)}
       className={cx(
         'inline-flex items-center justify-center font-medium select-none transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap',
         square ? `${SQUARE[size]} shrink-0 [&>svg]:shrink-0` : SIZE[size], VARIANT[variant], active && 'bg-accent-soft text-accent-text hover:bg-accent-soft', className,
@@ -45,8 +48,8 @@ export const Button = forwardRef<HTMLButtonElement, BtnProps>(function Button({ 
 interface IconBtnProps extends BtnProps { label: string; shortcut?: string; side?: 'top' | 'bottom' | 'left' | 'right' }
 export const IconButton = forwardRef<HTMLButtonElement, IconBtnProps>(function IconButton({ label, shortcut, side = 'bottom', className, children, size = 'sm', ...rest }, ref) {
   return (
-    <Tip label={label} shortcut={shortcut} side={side}>
-      <Button ref={ref} aria-label={label} size={size} square className={className} {...rest}>
+    <Tip label={stripEmoji(label)} shortcut={shortcut} side={side}>
+      <Button ref={ref} aria-label={stripEmoji(label)} size={size} square className={className} {...rest}>
         {children}
       </Button>
     </Tip>
@@ -65,7 +68,7 @@ export function Tip({ label, shortcut, side = 'bottom', children }: { label: Rea
       <RTooltip.Trigger asChild>{children}</RTooltip.Trigger>
       <RTooltip.Portal>
         <RTooltip.Content side={side} sideOffset={6} className="z-[80] rounded-md bg-ink px-2 py-1 text-[11px] font-medium text-bg shadow-lg mdf-fade-in flex items-center gap-2 max-w-64">
-          <span>{label}</span>
+          <span>{typeof label === 'string' ? stripEmoji(label) : label}</span>
           {shortcut && <Kbd inverted>{shortcut}</Kbd>}
         </RTooltip.Content>
       </RTooltip.Portal>
@@ -112,7 +115,7 @@ export const Menu = {
     <RMenu.Item disabled={disabled} onSelect={onSelect}
       className={cx('flex min-h-8 cursor-default items-center gap-2 rounded-lg px-2 py-1 text-[13px] outline-none data-[highlighted]:bg-surface-2 data-[disabled]:opacity-40', danger ? 'text-loss' : 'text-ink')}>
       <span className="w-4 text-ink-3 [&>svg]:size-4">{icon}</span>
-      <span className="flex-1">{children}</span>
+      <span className="flex-1">{icoChildren(children)}</span>
       {shortcut && <span className="text-[11px] text-ink-3">{shortcut}</span>}
     </RMenu.Item>
   ),
@@ -165,7 +168,7 @@ export function Field({ label, hint, help, children, inline }: { label: ReactNod
   return (
     <label className={cx(inline ? 'flex items-center justify-between gap-3' : 'flex flex-col gap-1')}>
       <span className="block">
-        <span className="block text-[12px] font-medium text-ink-2">{label}{hint && <span className="ml-1 font-normal text-ink-3">· {hint}</span>}</span>
+        <span className="block text-[12px] font-medium text-ink-2">{typeof label === 'string' ? <IcoText text={label} size={14} /> : label}{hint && <span className="ml-1 font-normal text-ink-3">· {hint}</span>}</span>
         {help && <span className="mt-0.5 block text-[11.5px] font-normal leading-snug text-ink-3">{help}</span>}
       </span>
       {/* en dos columnas, la casilla baja al fondo para que queden a la misma altura */}
@@ -226,7 +229,7 @@ export function Select<T extends string>({ value, onChange, options, className, 
   return (
     <div className={cx('relative', className)}>
       <select aria-label={label} value={value} onChange={(e) => onChange(e.target.value as T)} className={cx(inputCls, 'appearance-none pr-6 cursor-pointer')}>
-        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        {options.map((o) => <option key={o.value} value={o.value}>{stripEmoji(o.label)}</option>)}
       </select>
       <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-3" />
     </div>
@@ -249,7 +252,7 @@ export function Segmented<T extends string>({ value, onChange, options, size = '
         <button key={o.value} type="button" role="radio" aria-checked={value === o.value} title={o.title} onClick={() => onChange(o.value)}
           className={cx('rounded-md font-medium transition-all', size === 'xs' ? 'h-5 px-1.5 text-[10.5px]' : 'h-6 px-2 text-[11.5px]',
             value === o.value ? 'bg-surface text-ink shadow-sm' : 'text-ink-3 hover:text-ink-2')}>
-          {o.label}
+          {typeof o.label === 'string' ? <IcoText text={o.label} size={12} /> : o.label}
         </button>
       ))}
     </div>
@@ -265,7 +268,7 @@ export function Section({ title, icon, emoji, hint, children, defaultOpen = true
       <div className="flex items-center gap-1 px-4">
         <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={cx('flex flex-1 gap-2 text-left', hint ? 'items-start py-3' : 'items-center py-2.5')}>
           <ChevronRight className={cx('size-3.5 shrink-0 text-ink-3 transition-transform', open && 'rotate-90', hint ? 'mt-[3px]' : null)} />
-          {emoji ? <span className="shrink-0 text-[16px] leading-none" aria-hidden>{emoji}</span> : icon && <span className="text-ink-3 [&>svg]:size-3.5">{icon}</span>}
+          {emoji ? <Ico e={emoji} size={17} className={hint ? 'mt-[1px]' : undefined} /> : icon && <span className="text-ink-3 [&>svg]:size-3.5">{icon}</span>}
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-2">
               <span className={cx('font-semibold', hint ? 'text-[13.5px] text-ink' : 'text-[12.5px] text-ink-2')}>{title}</span>
@@ -291,7 +294,7 @@ export function Badge({ children, tone = 'neutral', className }: { children: Rea
     transform: 'bg-[color-mix(in_srgb,var(--transform)_14%,transparent)] text-transform',
     accent: 'bg-accent-soft text-accent-text',
   }[tone];
-  return <span className={cx('inline-flex items-center gap-1 rounded-md px-1.5 py-px text-[10.5px] font-medium', t, className)}>{children}</span>;
+  return <span className={cx('inline-flex items-center gap-1 rounded-md px-1.5 py-px text-[10.5px] font-medium', t, className)}>{icoChildren(children, 12)}</span>;
 }
 
 export function Empty({ icon, title, children }: { icon?: ReactNode; title: ReactNode; children?: ReactNode }) {

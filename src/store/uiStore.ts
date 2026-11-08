@@ -30,6 +30,8 @@ interface UIState {
   animate: boolean;
   sizes: Record<string, { width: number; height: number }>;
   editingNodeId: string | null;
+  /** lo que está abierto en la tarjeta de la idea elegida (en el lienzo): 'influence', 'behaviors'… */
+  actionFeature: { id: string; feature: string } | null;
   toast: { id: number; text: string; tone: 'info' | 'success' | 'error' } | null;
   setSelection: (nodes: string[], edges?: string[]) => void;
   set: (patch: Partial<UIState>) => void;
@@ -50,7 +52,8 @@ export const useUI = create<UIState>((set) => ({
   connectType: 'flow',
   view: readLS<ViewMode>('mdf.view', 'flow'),
   theme: readLS<ThemePref>('mdf.theme.v2', 'light'),
-  inspectorOpen: true,
+  // la columna de la derecha solo se abre si la pides: lo de cada idea está a mano, en el lienzo
+  inspectorOpen: false,
   bottomOpen: readLS('mdf.bottomOpen', true),
   bottomTab: 'simulation',
   overlay: null,
@@ -64,6 +67,7 @@ export const useUI = create<UIState>((set) => ({
   animate: readLS('mdf.animate', !prefersReducedMotion),
   sizes: {},
   editingNodeId: null,
+  actionFeature: null,
   toast: null,
   setSelection: (nodes, edges = []) => set({ selection: { nodes, edges } }),
   set: (patch) => set(patch),

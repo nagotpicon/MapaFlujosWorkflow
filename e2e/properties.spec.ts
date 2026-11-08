@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { connectNodes, createBubble, newProject, node, openDemo, selectNode, waitSaved } from './helpers';
+import { connectNodes, createBubble, newProject, node, openDemo, openFeature, selectNode, waitSaved } from './helpers';
 
 test.describe('Propiedades y motor desde la interfaz', () => {
   test('entrada 100 → filtro 65 % → salida recibe 65; peso, polaridad, condición, mitigador y persistencia', async ({ page }) => {
@@ -18,11 +18,11 @@ test.describe('Propiedades y motor desde la interfaz', () => {
 
     // comportamiento: filtro del 65 %
     await selectNode(page, 'Filtro útil');
-    await page.getByTestId('section-behaviors').getByRole('button', { name: /Qué hace/ }).click();
+    await openFeature(page, 'behaviors');
     await page.getByTestId('add-behavior').click();
     await page.getByTestId('behavior-option-filter').click();
+    // la que acabas de poner se abre sola
     const card = page.getByTestId('behavior-card').first();
-    await card.getByRole('button', { name: /Colador|Filtro/ }).click();
     const pass = card.locator('[data-param="passRatio"]');
     await pass.fill('65');
     await pass.press('Enter');
@@ -31,22 +31,26 @@ test.describe('Propiedades y motor desde la interfaz', () => {
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^65/);
 
     // peso / polaridad (influencia negativa)
-    await page.getByTestId('section-weights').getByRole('button', { name: /Cuánto empuja o frena/ }).click();
-    await page.getByRole('radiogroup', { name: /Empuja o frena/ }).getByRole('radio', { name: 'De -5 a +5' }).click();
-    await expect(page.getByTestId('scale-Influencia')).toHaveText('0');
+    await openFeature(page, 'influence');
+    const slider = page.getByTestId('influence-slider');
+    await slider.focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.getByTestId('scale-Influencia')).toContainText('−1');
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByTestId('scale-Influencia')).toContainText('Ni ayuda ni estorba');
     // condición de activación
-    await page.getByTestId('section-conditions').getByRole('button', { name: /Cuándo funciona/ }).click();
+    await openFeature(page, 'conditions');
     await page.getByTestId('section-conditions').getByTestId('add-condition').click();
     await expect(page.getByTestId('condition-block')).toBeVisible();
     // mitigador
-    await page.getByTestId('section-mitigators').getByRole('button', { name: /Remedios/ }).click();
+    await openFeature(page, 'remedies');
     await page.getByTestId('add-mitigator').click();
     await expect(page.getByTestId('mitigator-row')).toHaveCount(1);
     // modificar su efecto
     const amt = page.getByTestId('mitigator-row').locator('[data-param="compensation-amount"]');
     await amt.fill('2');
     await amt.press('Enter');
-    await expect(node(page, 'Medida compensatoria')).toBeVisible();
+    await expect(node(page, 'Mi remedio')).toBeVisible();
     // efecto neto: 2 puntos sobre fondo de escala 5 = 40 % compensado → 65 + 35 × 0,4 = 79
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^79/);
 
@@ -54,9 +58,10 @@ test.describe('Propiedades y motor desde la interfaz', () => {
     await waitSaved(page);
     await page.reload();
     await selectNode(page, 'Filtro útil');
+    await openFeature(page, 'behaviors');
     await expect(page.getByTestId('behavior-card')).toContainText('Deja pasar 65%');
     await expect(node(page, 'Útiles').getByTestId('node-flow')).toHaveText(/^79/);
-    await page.getByTestId('section-mitigators').getByRole('button', { name: /Remedios/ }).click();
+    await openFeature(page, 'remedies');
     await expect(page.getByTestId('mitigator-row').locator('[data-param="compensation-amount"]')).toHaveValue('2');
   });
 

@@ -31,8 +31,8 @@ export const SHORTCUTS: ShortcutDef[] = [
   { id: 'view5', label: 'Vista Película', default: '5', group: 'Vistas' },
   { id: 'heat', label: 'Termómetro', default: 'H', group: 'Vistas' },
   { id: 'play', label: 'Probar / pausar', default: 'Space', group: 'Probar' },
-  { id: 'nextIt', label: 'Ronda siguiente', default: '.', group: 'Probar' },
-  { id: 'prevIt', label: 'Ronda anterior', default: ',', group: 'Probar' },
+  { id: 'nextIt', label: 'Vuelta siguiente', default: '.', group: 'Probar' },
+  { id: 'prevIt', label: 'Vuelta anterior', default: ',', group: 'Probar' },
   { id: 'save', label: 'Guardar versión ahora', default: 'Mod+S', group: 'Mapa' },
 ];
 

@@ -222,6 +222,8 @@ export function createNode(projectId: string, type: NodeType, init: NodeInit = {
       icon: null,
       image: null,
       borderStyle: type === 'group' ? 'dashed' : 'solid',
+      // las notas se leen mejor a la izquierda; lo demás, centrado
+      textAlign: type === 'note' || type === 'comment' ? 'left' : 'center',
       ...init.visualStyle,
     },
     tags: init.tags ?? [],

@@ -25,6 +25,8 @@ export const node = (page: Page, title: string) => page.locator(`.react-flow__no
 
 /** Crea una burbuja con doble clic en el lienzo y le pone título. */
 export async function createBubble(page: Page, title: string, x: number, y: number) {
+  // la tarjeta de la idea elegida tapa parte del lienzo: se suelta la selección antes
+  await page.keyboard.press('Escape');
   await page.locator('.react-flow__pane').dblclick({ position: { x, y } });
   const input = page.getByTestId('node-title-input');
   await expect(input).toBeVisible();
@@ -35,6 +37,7 @@ export async function createBubble(page: Page, title: string, x: number, y: numb
 
 /** Arrastra desde el punto derecho de un nodo hasta el izquierdo de otro. */
 export async function connectNodes(page: Page, from: string, to: string, fromSide = 'right', toSide = 'left') {
+  await page.keyboard.press('Escape');
   const a = node(page, from);
   const b = node(page, to);
   await a.hover();
@@ -59,4 +62,13 @@ export async function selectNode(page: Page, title: string, additive = false) {
 
 export async function waitSaved(page: Page) {
   await expect(page.getByTestId('save-state')).toHaveAttribute('data-state', 'saved', { timeout: 10_000 });
+}
+
+/** Abre una opción de la tarjeta de la idea elegida (en el lienzo). */
+export async function openFeature(page: Page, feature: string) {
+  const bar = page.getByTestId('action-bar');
+  if (await bar.getByTestId('feature-back').count()) await bar.getByTestId('feature-back').click();
+  const tile = bar.getByTestId(`tile-${feature}`);
+  if (!(await tile.count())) await bar.getByTestId('act-more').click();
+  await bar.getByTestId(`tile-${feature}`).click();
 }

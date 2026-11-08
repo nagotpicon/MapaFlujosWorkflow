@@ -22,6 +22,8 @@
   --border-strong: #d3cfc2;
   --text: #141413;
   --text-2: #4b4a45;
+  /* iconos de un solo trazo, color lápiz */
+  --pencil: #3d3b37;
   --text-3: #73716a;
   --accent: #d97757;
   --accent-soft: #f8ebe4;
@@ -75,6 +77,7 @@
   --border-strong: #55534d;
   --text: #f5f4ee;
   --text-2: #cbc8be;
+  --pencil: #dedad0;
   --text-3: #9e9b91;
   --accent: #d97757;
   --accent-soft: #432f27;
@@ -267,3 +270,8 @@ input[type="range"].mdf-range::-moz-range-thumb { width: 12px; height: 12px; bor
 @keyframes mdf-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .mdf-rise { animation: mdf-rise 320ms cubic-bezier(.2,.8,.2,1); }
 @media (prefers-reduced-motion: reduce) { .mdf-rise { animation: none; } }
+
+/* iconos de línea (un trazo, color lápiz oscuro) */
+.mdf-ico { color: var(--pencil); }
+/* sobre fondo oscuro o en botones de color, el icono va del color del texto */
+.mdf-on-dark .mdf-ico, .mdf-tinted .mdf-ico, .text-loss .mdf-ico, .text-gain .mdf-ico, .text-accent-text .mdf-ico { color: currentColor; }

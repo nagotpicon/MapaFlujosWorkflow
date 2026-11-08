@@ -9,6 +9,7 @@ import { Tip, cx } from '../ui/primitives';
 import { nuevo } from '../kid/kidActions';
 import * as A from './actions';
 import type { Level } from './levels';
+import { Ico } from '../ui/ico';
 
 function DockButton({ emoji, label, hint, shortcut, active, onClick, testId }: { emoji: ReactNode; label: string; hint: string; shortcut?: string; active?: boolean; onClick: () => void; testId: string }) {
   return (
@@ -16,7 +17,7 @@ function DockButton({ emoji, label, hint, shortcut, active, onClick, testId }: {
       <button type="button" onClick={onClick} aria-pressed={active} data-testid={testId}
         className={cx('flex h-11 items-center gap-1.5 rounded-xl px-3 text-[13.5px] font-medium transition-all duration-150',
           active ? 'bg-surface text-accent-text shadow-sm ring-1 ring-accent/40' : 'text-wood-text hover:bg-surface/70 hover:text-ink')}>
-        <span className="text-[17px] leading-none" aria-hidden>{emoji}</span><span>{label}</span>
+        {typeof emoji === 'string' ? <Ico e={emoji} size={17} /> : emoji}<span>{label}</span>
       </button>
     </Tip>
   );

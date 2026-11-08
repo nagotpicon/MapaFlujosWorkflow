@@ -33,7 +33,7 @@ export function buildInsuranceDemo(): ProjectDoc {
     b.node(type, title, { position: { x, y }, metadata: { ...demoMeta } as never, ...extra });
 
   // ── Ruta principal ──
-  const llamadas = N('input', 'Llamadas recibidas', 0, 260, { layerIds: [lFlow.id], visualStyle: { icon: 'PhoneIncoming' } as never, description: 'Entrada del sistema: llamadas entrantes por ronda (semana).' });
+  const llamadas = N('input', 'Llamadas recibidas', 0, 260, { layerIds: [lFlow.id], visualStyle: { icon: 'PhoneIncoming' } as never, description: 'Entrada del sistema: llamadas entrantes por vuelta (semana).' });
   doc.nodes[llamadas].dimensionValues = {
     quantity: { value: 100, mode: 'numeric', unit: 'llamadas', confidence: 'hypothesis', source: 'Valor demostrativo', range: { low: 80, high: 120 } },
     quality: { value: 2, mode: 'qualitative', unit: '', confidence: 'hypothesis', source: 'Valor demostrativo', range: null },

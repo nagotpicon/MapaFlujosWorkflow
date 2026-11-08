@@ -10,6 +10,7 @@ import { cx } from '../ui/primitives';
 import { nextQuestion } from './guide';
 import { responder } from './kidActions';
 import { useKid } from './kidStore';
+import { Ico, IcoText } from '../ui/ico';
 
 export function Guide({ level }: { level: 1 | 2 }) {
   const doc = useProject((s) => s.doc);
@@ -47,8 +48,8 @@ export function Guide({ level }: { level: 1 | 2 }) {
         <div className="flex items-start gap-3">
           <span className={cx('flex size-10 shrink-0 items-center justify-center rounded-full text-[20px]', q.tone === 'win' ? 'bg-[color-mix(in_srgb,var(--gain)_16%,transparent)]' : 'bg-accent-soft')} aria-hidden>🧭</span>
           <div className="min-w-0 flex-1">
-            <p className="font-display text-[18px] leading-snug text-ink" data-testid="guide-text">{q.text}</p>
-            <p className="mt-1 text-[13px] leading-snug text-ink-3" data-testid="guide-why"><span aria-hidden>💬 </span>{q.why}</p>
+            <p className="font-display text-[18px] leading-snug text-ink" data-testid="guide-text"><IcoText text={q.text} size={17} /></p>
+            <p className="mt-1 text-[13px] leading-snug text-ink-3" data-testid="guide-why"><Ico e="💬" size={13} className="mr-1 align-[-0.15em]" />{q.why}</p>
           </div>
           <button type="button" onClick={() => setOpen(false)} aria-label="Esconder la Brújula" data-testid="guide-hide" className="rounded-full p-1.5 text-ink-3 hover:bg-surface-2 hover:text-ink"><X className="size-4" /></button>
         </div>
@@ -67,8 +68,8 @@ export function Guide({ level }: { level: 1 | 2 }) {
             {q.choices?.map((c) => (
               <button key={c.value} type="button" onClick={() => responder(q, { choice: c.value })} data-testid={`guide-choice-${c.value}`}
                 className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-line bg-surface px-3.5 py-1.5 text-left text-[14px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent-soft/40">
-                {c.emoji && <span className="text-[17px]" aria-hidden>{c.emoji}</span>}
-                <span className="flex flex-col leading-tight"><span className="line-clamp-2">{c.label}</span>{c.hint && <span className="text-[11.5px] font-normal text-ink-3">{c.hint}</span>}</span>
+                {c.emoji && <Ico e={c.emoji} size={16} />}
+                <span className="flex flex-col leading-tight"><span className="line-clamp-2"><IcoText text={c.label} size={14} /></span>{c.hint && <span className="text-[11.5px] font-normal text-ink-3">{c.hint}</span>}</span>
               </button>
             ))}
             {q.skip && (

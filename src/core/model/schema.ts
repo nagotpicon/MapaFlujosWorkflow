@@ -195,6 +195,8 @@ export const VisualStyleSchema = z.object({
   icon: z.string().nullable().default(null),
   image: z.string().nullable().default(null),
   borderStyle: z.enum(['solid', 'dashed', 'dotted', 'none']).default('solid'),
+  /** dibujito y texto centrados (por defecto) o a la izquierda */
+  textAlign: z.enum(['center', 'left']).default('center'),
 });
 
 export const WeightSchema = z.object({

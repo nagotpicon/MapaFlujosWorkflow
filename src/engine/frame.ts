@@ -4,9 +4,9 @@
  * pérdidas, comportamientos con condición) antes de simular, de modo que todo
  * efecto queda registrado y es explicable.
  *
- *  · Columnas = tiempo. Columna 1 = ronda 1.
+ *  · Columnas = tiempo. Columna 1 = vuelta 1.
  *    - Una entrada empieza a generar en su columna.
- *    - Entre dos elementos conectados, cada columna de separación = 1 ronda de retardo.
+ *    - Entre dos elementos conectados, cada columna de separación = 1 vuelta de retardo.
  *    - Si el destino está ANTES que su origen (inversión temporal) se aplica una
  *      pérdida por columna (prisas / contradicción) y se avisa.
  *    - Fecha límite: lo que ocurre o llega después se penaliza o se corta.
@@ -93,7 +93,7 @@ export function applyFrame(doc: ProjectDoc): FrameResult {
       const t = doc.nodes[e.targetNodeId].title;
       if (gap > 0) {
         edges[e.id] = { ...e, delay: e.delay + gap };
-        notes.push(`«${s}» → «${t}»: ${gap} ${unit}(s) de separación = ${gap} ronda(s) de retardo`);
+        notes.push(`«${s}» → «${t}»: ${gap} ${unit}(s) de separación = ${gap} vuelta(s) de retardo`);
       } else if (gap < 0 && !e.behavior.isFeedback && e.behavior.transport !== 'replicate') {
         const extra = 1 - Math.pow(1 - f.time.inversionPenalty, -gap);
         const loss = 1 - (1 - e.behavior.loss) * (1 - extra);

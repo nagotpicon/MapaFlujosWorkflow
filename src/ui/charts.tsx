@@ -8,7 +8,7 @@ import { fmt } from './primitives';
 
 export interface Series { id: string; label: string; color: string; values: number[]; dashed?: boolean }
 
-export function LineChart({ series, height = 160, xLabel = 'Ronda', band, unit = '', testId }: {
+export function LineChart({ series, height = 160, xLabel = 'Vuelta', band, unit = '', testId }: {
   series: Series[]; height?: number; xLabel?: string; band?: { low: number[]; high: number[]; color: string }; unit?: string; testId?: string;
 }) {
   const ref = useRef<SVGSVGElement>(null);

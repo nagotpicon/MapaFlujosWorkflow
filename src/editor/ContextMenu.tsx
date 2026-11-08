@@ -90,7 +90,7 @@ export function ContextMenu({ state, onClose }: { state: MenuState; onClose: () 
         <Item icon={<Trash2 />} onClick={run(A.deleteSelection)} shortcut="Supr" danger>Borrar</Item>
       </>)}
       {state.kind === 'edge' && edge && (<>
-        <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.reverseEdge(d, edge.id)))}>Darle la vuelta</Item>
+        <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.reverseEdge(d, edge.id)))}>Cambiar el sentido</Item>
         {pro && <Item icon={<ArrowLeftRight />} onClick={run(() => A.apply((d) => op.updateEdge(d, edge.id, { direction: edge.direction === 'both' ? 'forward' : 'both' })))}>{edge.direction === 'both' ? 'Que vaya en un solo sentido' : 'Que vaya en los dos sentidos'}</Item>}
         {pro && <Item icon={<CopyPlus />} onClick={run(() => A.apply((d) => op.duplicateEdge(d, edge.id).doc))}>Duplicar unión</Item>}
         <Item icon={<MessageSquarePlus />} onClick={run(A.addCommentToSelection)}>Añadir comentario</Item>

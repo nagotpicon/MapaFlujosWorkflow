@@ -78,8 +78,8 @@ export function buildVerdict(doc: ProjectDoc, m: MonitorData, scenarioName: stri
     loops = k.trendPct != null && k.trendPct > 0.05
       ? `Tienes una rueda que se alimenta sola: el resultado vuelve al principio y va sumando (${cp(k.trendPct)} mejor al final que al principio).`
       : k.trendPct != null && k.trendPct < -0.05
-        ? `Hay circuitos de vuelta, pero ahora mismo el sistema se va frenando (${cp(k.trendPct)}). Algo se come lo que vuelve.`
-        : 'Hay circuitos de vuelta, pero el sistema se queda estable: no se dispara ni se hunde.';
+        ? `Hay círculos que se alimentan solos, pero ahora mismo el sistema se va frenando (${cp(k.trendPct)}). Algo se come lo que vuelve.`
+        : 'Hay círculos que se alimentan solos, pero el sistema se queda estable: no se dispara ni se hunde.';
   }
 
   const facts = [

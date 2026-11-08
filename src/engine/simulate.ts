@@ -1,8 +1,8 @@
 /**
- * MOTOR DE SIMULACIÓN — discreto por rondas, determinista y explicable.
+ * MOTOR DE SIMULACIÓN — discreto por vueltas, determinista y explicable.
  *
  * Pipeline por nodo (en orden topológico; las dependencias de retorno usan el
- * estado de la ronda anterior):
+ * estado de la vuelta anterior):
  *   1. Recoger entradas (llegadas inmediatas + retardadas, capacidad de puertos)
  *   8. Resolver convergencias (regla del nodo) e inhibiciones
  *   2. Evaluar condiciones (activación del nodo y de cada comportamiento)
@@ -36,6 +36,7 @@ import type {
   Approximation, DimMap, EdgeIterState, EventKind, IterationResult, Ledger, NodeIterState, Packet,
   RunMetrics, SimEvent, SimulationResult,
 } from './types';
+import { applyMutes } from './mute';
 
 export interface SimulateOptions {
   scenarioId?: string | null;
@@ -99,7 +100,8 @@ export function simulate(inputDoc: ProjectDoc, options: SimulateOptions = {}): S
   const t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
   const scenarioId = options.scenarioId ?? inputDoc.project.activeScenarioId ?? null;
   const framed = applyFrame(options.preEffective ? inputDoc : effectiveDoc(inputDoc, scenarioId));
-  const doc = framed.doc;
+  // 🔇 las ideas silenciadas se calculan como si no estuvieran
+  const doc = applyMutes(framed.doc);
   const iterations = Math.max(1, Math.min(500, options.iterations ?? doc.project.settings.simulation.iterations));
   const model = compileModel(doc);
   const runner = new Runner(model, iterations);
@@ -139,7 +141,7 @@ class Runner {
   isExt: (d: string) => boolean;
   wmax: number;
 
-  // estado entre rondas
+  // estado entre vueltas
   stocks = new Map<string, Packet>();
   queues = new Map<string, Packet>();
   scheduled = new Map<number, Delivery[]>();
@@ -148,7 +150,7 @@ class Runner {
   pulseFired = new Set<string>();
   prev: Record<string, NodeIterState> = {};
 
-  // estado de la ronda en curso
+  // estado de la vuelta en curso
   t = 0;
   cur: Record<string, NodeIterState> = {};
   edgeStates: Record<string, EdgeIterState> = {};
@@ -341,7 +343,7 @@ class Runner {
       const diff = inSide - outSide;
       const tol = 1e-6 * Math.max(1, inSide);
       L.unexplained[d] = Math.abs(diff) < tol ? 0 : diff;
-      if (L.unexplained[d] !== 0) this.warn(`unexplained:${d}`, `Conservación: ${diff.toFixed(6)} ${this.dimName(d)} sin explicar en la ronda ${t}`);
+      if (L.unexplained[d] !== 0) this.warn(`unexplained:${d}`, `Conservación: ${diff.toFixed(6)} ${this.dimName(d)} sin explicar en la vuelta ${t}`);
     }
 
     const outs = this.m.outputIds.length ? this.m.outputIds : this.m.simNodeIds;
@@ -938,7 +940,7 @@ class Runner {
     if (mode === 'queue') {
       this.queues.set(node.id, excess);
       this.bookPacket('accumulated', excess, st);
-      this.ev('queue', 7, `«${node.title}» encola ${qty(excess).toFixed(2)} u. para la siguiente ronda`, { nodeId: node.id, amount: qty(excess), mechanism: 'restrictor (cola)' });
+      this.ev('queue', 7, `«${node.title}» encola ${qty(excess).toFixed(2)} u. para la siguiente vuelta`, { nodeId: node.id, amount: qty(excess), mechanism: 'restrictor (cola)' });
     } else if (mode === 'overflow') {
       overflow.push(excess);
     } else {
@@ -1173,7 +1175,7 @@ class Runner {
         es.blocked = true;
         es.lost += assigned;
         this.bookPacket('lost', p, st);
-        this.ev('circuit', 10, `Circuito «${circuit.name}» inactivo en esta ronda: el retorno no circula`, { edgeId: se.id, amount: assigned, mechanism: 'circuito' });
+        this.ev('circuit', 10, `Circuito «${circuit.name}» inactivo en esta vuelta: el retorno no circula`, { edgeId: se.id, amount: assigned, mechanism: 'circuito' });
         return;
       }
       factor *= (circuit.returnPercent / 100) * circuit.intensity;
@@ -1268,7 +1270,7 @@ class Runner {
       weight: e.behavior.weight, convergenceWeight: e.behavior.convergenceWeight,
     };
     if (at > this.t) {
-      this.ev(isBack ? 'feedback' : 'delay', 10, `«${this.title(se.from)}» → «${this.title(se.to)}»: ${qty(p).toFixed(2)} u. llegarán en la ronda ${at}${isBack ? ' (retroalimentación)' : ''}`, { edgeId: se.id, amount: qty(p), mechanism: isBack ? 'retroalimentación' : 'retardo' });
+      this.ev(isBack ? 'feedback' : 'delay', 10, `«${this.title(se.from)}» → «${this.title(se.to)}»: ${qty(p).toFixed(2)} u. llegarán en la vuelta ${at}${isBack ? ' (retroalimentación)' : ''}`, { edgeId: se.id, amount: qty(p), mechanism: isBack ? 'retroalimentación' : 'retardo' });
     }
     this.schedule(d, at);
     // persistencia del circuito: el efecto se repite atenuado
@@ -1313,7 +1315,7 @@ class Runner {
           if (!this.scheduledInhibitions.has(at)) this.scheduledInhibitions.set(at, []);
           this.scheduledInhibitions.get(at)!.push(inh);
         }
-        this.ev('inhibit', 10, `«${node.title}» inhibe a «${this.title(se.to)}» en ${amount.toFixed(2)} u. (ronda ${at})`, { edgeId: se.id, nodeId: node.id, amount, mechanism: 'retroalimentación equilibradora' });
+        this.ev('inhibit', 10, `«${node.title}» inhibe a «${this.title(se.to)}» en ${amount.toFixed(2)} u. (vuelta ${at})`, { edgeId: se.id, nodeId: node.id, amount, mechanism: 'retroalimentación equilibradora' });
         continue;
       }
       // réplica generativa: no consume el flujo de origen

@@ -19,6 +19,7 @@ import { Legend } from './Legend';
 import { CanvasControls } from './CanvasControls';
 import { setRF } from '../app/io';
 import type { NodeType } from '../core/model/schema';
+import { ActionBar, EdgeBar } from './ActionBar';
 
 const TOOL_NODE: Partial<Record<string, NodeType>> = {
   bubble: 'bubble', input: 'input', output: 'output', note: 'note', label: 'label', comment: 'comment', container: 'container', group: 'group',
@@ -155,7 +156,6 @@ export function Canvas({ resolvedTheme, level = 3 }: { resolvedTheme: 'light' | 
 
   const onEdgeDoubleClick = useCallback((_: React.MouseEvent, e: Edge) => {
     useUI.getState().setSelection([], [e.id]);
-    useUI.setState({ inspectorOpen: true });
     setTimeout(() => document.querySelector<HTMLInputElement>('[data-edge-label-input]')?.focus(), 60);
   }, []);
 
@@ -209,6 +209,9 @@ export function Canvas({ resolvedTheme, level = 3 }: { resolvedTheme: 'light' | 
               return d ? `var(--n-${d.visualStyle.color}-ac)` : 'var(--concept)';
             }}
             nodeStrokeWidth={0} nodeBorderRadius={6} maskColor="color-mix(in srgb, var(--canvas) 70%, transparent)" style={{ width: 168, height: 112 }} />}
+          {/* la tarjeta de la idea elegida: todo a mano, en el sitio */}
+          <ActionBar />
+          <EdgeBar />
         </ReactFlow>
         <CanvasControls />
         {level === 3 && <Legend />}
@@ -223,10 +226,21 @@ function SimCursorBadge() {
   const result = useSim((s) => s.result);
   const cursor = useSim((s) => s.cursor);
   const view = useUI((s) => s.view);
-  if (!result || view === 'mental') return null;
+  const scenario = useProject((s) => (s.doc?.project.activeScenarioId ? s.doc.scenarios[s.doc.project.activeScenarioId] : undefined));
   return (
-    <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded-full border border-line bg-surface/90 px-3 py-1 text-[11px] font-medium text-ink-2 shadow-sm backdrop-blur" data-testid="iteration-badge">
-      Ronda <span className="tabular text-ink">{cursor + 1}</span> / {result.iterationCount}
+    <div className="pointer-events-none absolute left-1/2 top-3 flex -translate-x-1/2 flex-col items-center gap-1.5">
+      {result && view !== 'mental' && (
+        <div className="rounded-full border border-line bg-surface/90 px-3 py-1 text-[11px] font-medium text-ink-2 shadow-sm backdrop-blur" data-testid="iteration-badge"
+          title="Una vuelta es un trozo de tiempo (una semana, un mes…). El mapa da todas las vueltas y va sumando.">
+          Vuelta <span className="tabular text-ink">{cursor + 1}</span> / {result.iterationCount} <span className="text-ink-3">· cada vuelta, una semana, un mes…</span>
+        </div>
+      )}
+      {scenario && !scenario.isBase && (
+        <div className="flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--accent)_40%,transparent)] bg-accent-soft px-3 py-1 text-[11.5px] text-accent-text shadow-sm" data-testid="scenario-banner">
+          <span className="size-2 rounded-full" style={{ background: scenario.color }} />
+          Estás probando «{scenario.name}»: lo que cambies se queda en esta prueba. Tu mapa de verdad no cambia.
+        </div>
+      )}
     </div>
   );
 }

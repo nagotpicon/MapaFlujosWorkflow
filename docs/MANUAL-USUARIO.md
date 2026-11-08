@@ -51,7 +51,7 @@ Guía completa para personas. Explica, en orden, todo lo que puedes hacer con la
 Mapa de Flujos es dos cosas a la vez:
 
 - **Un editor de mapas mentales.** Escribes ideas, las unes, las agrupas y las ordenas con total libertad.
-- **Un simulador.** Si quieres, esas ideas cobran vida. Por las uniones circula un **flujo** (por ejemplo: clientes, llamadas, dinero, horas…). Cada idea puede filtrarlo, multiplicarlo, frenarlo, guardarlo o repartirlo. La aplicación calcula, ronda a ronda, cuánto llega a tu meta, dónde se pierde y por qué.
+- **Un simulador.** Si quieres, esas ideas cobran vida. Por las uniones circula un **flujo** (por ejemplo: clientes, llamadas, dinero, horas…). Cada idea puede filtrarlo, multiplicarlo, frenarlo, guardarlo o repartirlo. La aplicación calcula, vuelta a vuelta, cuánto llega a tu meta, dónde se pierde y por qué.
 
 Puedes usarla solo como mapa mental, solo como simulador o combinando ambas cosas. Nada te obliga a rellenar números.
 
@@ -63,7 +63,7 @@ Puedes usarla solo como mapa mental, solo como simulador o combinando ambas cosa
 | **Inicio** | De donde sale todo: genera flujo («llamadas recibidas», «flyers repartidos»…). |
 | **Meta** | Lo que quieres conseguir: donde termina el flujo y se mide el resultado («ventas», «alumnos que pagan»…). |
 | **Unión** | Una línea entre dos ideas. Puede mover flujo (**Pasa**) o solo expresar una relación. |
-| **Ronda** | Un «paso de tiempo» al probar (una semana, un mes… tú decides qué representa). |
+| **Vuelta** | Un «paso de tiempo» al probar (una semana, un mes… tú decides qué representa). |
 | **«¿Y si…?»** | Una variante del mismo mapa con algunos valores cambiados («¿y si contrato a alguien?»). |
 
 ### Nombres sencillos que verás en pantalla
@@ -81,7 +81,7 @@ La aplicación usa palabras sencillas. En algunos apartados técnicos de este ma
 | Idea | Burbuja |
 | Unir / unión | Conexión |
 | Pasa · Influye · Info · Idea (tipos de unión) | Flujo · Causal · Informativa · Conceptual |
-| Probar · Ronda | Simular · Iteración |
+| Probar · Vuelta | Simular · Iteración |
 | ¿Y si…? | Escenario |
 | Marcador | Monitor |
 | Ayúdame a pensar | Explorador |
@@ -154,7 +154,7 @@ La aplicación está hecha para que cualquiera, también un niño de 8 años, la
 |---|---|---|
 | **1 · Pensar** | Tu idea, la Brújula y una bandeja con 💡 Idea, 🔗 Unir y 🧹 Ordenar. | Soltar lo que tienes en la cabeza, sin orden. |
 | **2 · Camino** | Además: el **camino** (🌱 Hoy → 👣 pasos → 🎯 lo que quiero), las 🪨 **piedras**, las 🤝 **ayudas**, el **medidor** de arriba y **Lo que he descubierto**. | Ver cómo llegar de cómo está la cosa hoy a lo que quieres, qué te frena y qué te ayuda. |
-| **3 · Experto** | Todas las herramientas (secciones 5 a 27). | Afinar mucho: rondas, comportamientos, condiciones, «¿Y si…?», cuadrícula… |
+| **3 · Experto** | Todas las herramientas (secciones 5 a 27). | Afinar mucho: vueltas, comportamientos, condiciones, «¿Y si…?», cuadrícula… |
 
 - El selector de nivel está arriba, en una bandeja de madera. El nivel se **guarda con cada mapa**.
 - **No hace falta cambiar de nivel a mano**: cuando le dices a la Brújula lo que quieres conseguir o lo que te preocupa, pasa sola a **2 · Camino** y te avisa («🎯 ¡Ya sabes a dónde quieres llegar! Ahora vamos a ver el camino.»).
@@ -299,41 +299,38 @@ Tu mapa en pocas líneas, para tenerlo a mano:
 
 ### 4.8 La barra superior
 
-| Elemento | Nivel | Función |
+Cada botón dice debajo, en pequeño, **para qué te sirve**. Los iconos son de un solo trazo, color lápiz.
+
+| Elemento | Nivel | Para qué te sirve |
 |---|---|---|
 | **Logotipo** | todos | Abre **Mis mapas**. |
 | **Nombre del mapa** | todos | Clic para cambiarlo. Enter confirma y Escape cancela. En los ejemplos aparece «Ejemplo». |
 | **Punto de guardado** | todos | Verde: guardado. Parpadea: guardando. Rojo: no se ha podido guardar (pasa el ratón para ver el motivo). |
-| **Selector de nivel** | todos | 1 · Pensar · 2 · Camino · 3 · Experto. |
+| **Selector de nivel** | todos | **1 · Pensar** (solo ideas) · **2 · Camino** (de hoy a tu meta) · **3 · Experto** (todas las herramientas). |
 | **«¿Y si…?»** | 3 | Pruebas sin estropear el original (sección 18). |
-| **Vista** | 3 | Ideas · Recorrido · Fuerzas · Piezas · Película (sección 8). Teclas **1** a **5**. |
-| **Ayúdame a pensar** (✦) | todos | Modos de trabajo con más preguntas: entrevista, plan, ACLARATOR y COPYWRITER (sección 23). |
-| **Lo que he descubierto** (🔍) | 1 y 2 | Sección 4.6. |
-| **Dímelo claro** | 3 | Lo que sale de tu mapa, sin rodeos (sección 22). |
-| **Marcador** | 3 | Qué te ayuda, qué te frena y qué arreglaría primero (sección 21). |
-| **Manual** (📖) | todos | Abre este manual en otra pestaña. |
-| **Cuadrícula del tiempo** (#) | 3 | Sección 19. |
-| **Termómetro** | 3 | Qué se agobia y qué va tranquilo. Tecla **H** (sección 20). |
+| **Ayúdame a pensar** · *te hago preguntas* | todos | Modos de trabajo con más preguntas: entrevista, plan, ACLARATOR y COPYWRITER (sección 23). |
+| **Lo que he descubierto** · *lo que veo en tu mapa* | 1 y 2 | Sección 4.6. |
+| **Manual** · *cómo se usa* | todos | Abre este manual en otra pestaña. |
 | **Deshacer / Rehacer** | todos | Ctrl+Z / Ctrl+⇧+Z (también Ctrl+Y). |
 | **Buscar** | 3 | Ideas y comandos. Ctrl+K (también funciona en los niveles 1 y 2). |
 | **Versiones guardadas** | 3 | Sección 24 (en los niveles 1 y 2, en Más opciones). |
 | **Guardar o abrir archivos** | 3 | JSON, PNG, SVG, PDF, importar, pegar, copia de seguridad y restaurar (en los niveles 1 y 2, en Más opciones). |
 | **Sol / Luna** | todos | Claro, Oscuro o Como mi ordenador. |
-| **Panel de abajo · Detalles** | 3 | Muestran u ocultan el panel de abajo y el panel de detalles. |
+| **Panel de abajo · Columna de detalles** | 3 | Muestran u ocultan el panel de abajo y la columna de detalles (que ahora va cerrada: todo está en la tarjeta de cada idea, sección 9). |
 | **Más opciones (···)** | todos | Mis mapas…, Mapa nuevo, Duplicar este mapa, Ver un ejemplo, Ejemplo para expertos, Guardar o abrir archivos (niveles 1 y 2), Guardar versión ahora (Ctrl+S), Versiones guardadas…, Ajustes del mapa, Ayuda y atajos, Manual de usuario, Manual para IA (prompts). |
 
-> En pantallas estrechas algunos botones muestran solo el icono. Pasa el ratón por encima para ver su nombre y su atajo.
+**Segunda fila (nivel 3).** A la izquierda, **Cómo verlo:** las cinco vistas, cada una con su para qué (sección 8): **Ideas** · *pensar sin números*, **Recorrido** · *cuánto pasa*, **Fuerzas** · *qué se gana y pierde*, **Piezas** · *qué ayuda y frena* y **Película** · *verlo moverse* (teclas **1** a **5**). A la derecha: **Ayúdame a pensar** · *te hago preguntas*, **Dímelo claro** · *el resumen* (sección 22), **Marcador** · *qué te frena* (sección 21), **Tiempo** · *semanas y plazos* (la cuadrícula del tiempo, sección 19), **Termómetro** · *dónde se atasca* (tecla **H**, sección 20) y **Manual** · *cómo se usa*.
 
 ### 4.9 El nivel 3 · Experto
 
 Al pulsar **3 · Experto** desaparecen la Brújula, la bandeja y el medidor, y aparecen:
 
 - la **barra lateral de herramientas** (sección 4.10);
-- el **panel de abajo** con seis pestañas: **Probar, Resultados, Pistas, ¿Y si…?, Rondas y Qué ha pasado** (sección 17), cuya altura cambias arrastrando su borde de arriba;
+- el **panel de abajo** con seis pestañas: **Probar, Resultados, Pistas, ¿Y si…?, Vueltas y Qué ha pasado** (sección 17), cuya altura cambias arrastrando su borde de arriba;
 - los **detalles completos** a la derecha, siempre a la vista (sección 9);
 - la **Leyenda** abajo a la derecha y todo lo demás de las secciones 5 a 27.
 
-Todo lo que hiciste en el modo fácil sigue ahí: Hoy es un **Inicio** que genera 10 por ronda, los pasos están unidos con uniones **Pasa**, cada piedra es una idea con influencia negativa (−1, −3 o −5) unida con **Influye** al paso que frena, y cada ayuda es un **Remedio** que la compensa (1, 2 o 4 puntos).
+Todo lo que hiciste en el modo fácil sigue ahí: Hoy es un **Inicio** que genera 10 por vuelta, los pasos están unidos con uniones **Pasa**, cada piedra es una idea con influencia negativa (−1, −3 o −5) unida con **Influye** al paso que frena, y cada ayuda es un **Remedio** que la compensa (1, 2 o 4 puntos).
 
 ### 4.10 Barra lateral de herramientas (nivel 3)
 
@@ -383,14 +380,14 @@ Al pulsar una herramienta activa vuelves a **Mover y elegir**. **Escape** tambi�
 | Tipo (en pantalla) | Nombre clásico | Para qué sirve | ¿Cuenta al probar? |
 |---|---|---|---|
 | **Idea** | Burbuja | Una idea o un paso. Puede tener «Qué hace». | Sí, si está unida con uniones **Pasa** o tiene «Qué hace». |
-| **Inicio** | Entrada | De aquí sale todo: genera flujo en cada ronda. | Sí: es un origen. |
+| **Inicio** | Entrada | De aquí sale todo: genera flujo en cada vuelta. | Sí: es un origen. |
 | **Meta** | Salida | Lo que quieres conseguir: aquí se cuenta el resultado. | Sí: es donde se mide. |
 | **Nota** | Nota | Texto adhesivo de apoyo. | No. |
 | **Texto suelto** | Etiqueta | Un rótulo suelto. | No. |
 | **Grupo** | Grupo | Junta elementos y se puede plegar. | No calcula por sí mismo. |
 | **Zona** | Contenedor | Marca una parte del mapa (un área, un equipo…). | No calcula por sí mismo. |
 
-En el nivel 2 cambias el papel en **Detalles → ¿Qué es esto?** (sección 4.5). En el nivel 3, el tipo en **Detalles → Tipo**. Si conviertes una idea en inicio, empieza a generar 100 por ronda; puedes cambiar la cantidad.
+En el nivel 2 cambias el papel en **Detalles → ¿Qué es esto?** (sección 4.5). En el nivel 3, el tipo en **Detalles → Tipo**. Si conviertes una idea en inicio, empieza a generar 100 por vuelta; puedes cambiar la cantidad.
 
 ### 5.3 Escribir el texto
 
@@ -455,7 +452,7 @@ Puedes cambiar el tipo después en **Detalles → 🧩 ¿Qué tipo de línea es?
 
 ### 6.3 Menú del clic derecho sobre una unión
 
-- **Darle la vuelta**
+- **Cambiar el sentido**
 - **Que vaya en los dos sentidos** / **Que vaya en un solo sentido** (nivel 3)
 - **Duplicar unión** (nivel 3)
 - **Añadir comentario**
@@ -465,14 +462,14 @@ Puedes cambiar el tipo después en **Detalles → 🧩 ¿Qué tipo de línea es?
 
 Haz clic sobre la línea para elegirla.
 
-**Niveles 1 y 2.** Arriba pone **🔗 Línea**, con **Quitar la línea** (y **Darle la vuelta** si solo dice que tienen que ver). Debajo: «Une A con B», qué significa y **¿Quieres escribir algo en la línea?** (sección 4.5).
+**Niveles 1 y 2.** Arriba pone **🔗 Línea**, con **Quitar la línea** (y **Cambiar el sentido** si solo dice que tienen que ver). Debajo: «Une A con B», qué significa y **¿Quieres escribir algo en la línea?** (sección 4.5).
 
-**Nivel 3.** Arriba pone **🔗 Línea** con las dos ideas que une (origen → destino), **Darle la vuelta** y **Borrar esta unión**. Cada apartado lleva debajo de su título una frase que dice para qué sirve. Después:
+**Nivel 3.** Arriba pone **🔗 Línea** con las dos ideas que une (origen → destino), **Cambiar el sentido** y **Borrar esta unión**. Cada apartado lleva debajo de su título una frase que dice para qué sirve. Después:
 
 - **🧩 ¿Qué tipo de línea es?**: Pasa, Influye, Info o Idea, con una frase que explica cada uno.
 - **✏️ Texto sobre la línea**: lo que pone encima de la línea.
 - **➡️ ¿Hacia dónde va?**: **→ Una flecha** (de una idea a la otra), **⇄ Dos flechas** (hacia los dos lados) o **— Sin flechas** (solo las une).
-- **🔎 En esta ronda** (al probar, en las líneas Pasa): **📦 Le toca llevar**, **📬 Llegan al otro lado**, **🕳️ Se pierden por el camino**, **✨ Se crean** y **⏳ Llega en la ronda**; y avisos como **⛔ cortada**, **🚧 llena**, **🔁 vuelta** o **🔻 resta**. En las líneas Influye se ve **💪 Cuánto cambia a la otra** o, si es un remedio, **🩹 Cuánta fuerza le quita al freno**.
+- **🔎 En esta vuelta** (al probar, en las líneas Pasa): **📦 Le toca llevar**, **📬 Llegan al otro lado**, **🕳️ Se pierden por el camino**, **✨ Se crean** y **⏳ Llega en la vuelta**; y avisos como **⛔ cortada**, **🚧 llena**, **🔁 cierra el círculo** o **🔻 resta**. En las líneas Influye se ve **💪 Cuánto cambia a la otra** o, si es un remedio, **🩹 Cuánta fuerza le quita al freno**.
 
 **🚚 Qué pasa por esta línea** (solo líneas Pasa):
 - **¿Qué hace la línea?**:
@@ -480,21 +477,21 @@ Haz clic sobre la línea para elegirla.
   - **Crea más al otro lado (como un eco)**: no mueve nada; crea en el destino una cantidad parecida a la que pasa (técnico: réplica o retroalimentación). En **¿Qué hace el eco?** eliges **+ Suma (hace crecer)** o **− Resta (frena)**.
 - **¿Para qué es esta línea?**: **Es el camino normal**, **Lleva lo que el colador no deja pasar**, **Lleva lo que no cabe (por el límite)** o **Lleva lo del desvío**.
 - **Se pierde por el camino** (%): 10 % = de cada 100, llegan 90.
-- **Cuántos caben por ronda**: lo máximo que puede pasar en cada ronda. Vacío = sin límite.
-- **Rondas que tarda en llegar**.
+- **Cuántos caben por vuelta**: lo máximo que puede pasar en cada vuelta. Vacío = sin límite.
+- **Vueltas que tarda en llegar**.
 - **Multiplica lo que pasa**: 1 = igual; 2 = el doble.
 - **Cuánto lo frena** (%): lo hace ir más despacio.
 - **Más rápido o más lento** (×): 1 = normal.
 - **Fuerza de la línea**: cuánta «energía» lleva (cambia el potencial de lo que pasa).
 - **Orden al repartir**, **Peso al repartir** y **Parte fija al repartir**: cuánto le toca a esta línea cuando la idea de origen reparte entre varias salidas (sección 15).
 - **Peso al juntarse**: cuánto cuenta esta llegada cuando el destino mezcla varias.
-- **🔁 Es la vuelta de un círculo (llega en la ronda siguiente)**: convierte la línea en la vuelta de un bucle (sección 16).
+- **🔁 Cierra un círculo (lo que pasa llega en la vuelta siguiente)**: convierte la línea en la que cierra un bucle (sección 16).
 - **¿Qué viaja por aquí?**: pulsa cada cosa que se mide para quitarla o ponerla (la cantidad viaja siempre).
 
 **💪 Cómo influye** (solo líneas Influye):
 - **¿Qué hace?**:
   - **Empuja o frena a la otra**: cambia algo del destino. Eliges **¿En qué sentido?** (**+ Igual**: si una sube, la otra sube; o **− Al revés**), **¿Qué le cambia?** (la cantidad, la calidad… o su fuerza) y **¿Cuánto, como mucho?** (lo que cambia cuando el origen empuja con toda su fuerza, 5).
-  - **Es un remedio: le quita fuerza a un freno**: la idea de origen hace que el destino frene menos. Eliges **¿Cuánto lo arregla?** (Una parte, Del todo, Solo si pasa algo o Solo un tiempo), **¿En qué lo cuento?** (Puntos de 0 a 5 o Porcentaje), **¿Cuánto le quita?** y, si es por un tiempo, **Desde la ronda** y **Hasta la ronda**. Por ejemplo, 2 puntos a un freno de −5 lo dejan en −3.
+  - **Es un remedio: le quita fuerza a un freno**: la idea de origen hace que el destino frene menos. Eliges **¿Cuánto lo arregla?** (Una parte, Del todo, Solo si pasa algo o Solo un tiempo), **¿En qué lo cuento?** (Puntos de 0 a 5 o Porcentaje), **¿Cuánto le quita?** y, si es por un tiempo, **Desde la vuelta** y **Hasta la vuelta**. Por ejemplo, 2 puntos a un freno de −5 lo dejan en −3.
 - **Fuerza de la línea**: 1 = normal; 2 = el doble de fuerte.
 
 **⏰ Cuándo deja pasar** (líneas Pasa e Influye): la línea solo funciona si se cumplen estas condiciones (sección 12). Sin condiciones pone «Siempre deja pasar.»
@@ -572,7 +569,7 @@ Las vistas cambian **cómo se ve** el mapa, nunca sus datos. Teclas **1** a **5*
 | **2 · Recorrido** (Flujo) | Dirección, grosor y cantidad. | Más gorda = pasa más · Más clara = peor calidad · Puntitos = velocidad · Brillo = potencial · Cortada (roja discontinua) · No pasa nada. |
 | **3 · Fuerzas** (Energía) | Impulsos, pérdidas y fricciones. | Empuja / gana (verde) · Pierde / frena (rojo) · Pasa tal cual (azul). |
 | **4 · Piezas** (Sistema) | Dependencias, condiciones y bucles. | + empuja · − frena · ⊕ remedio · ◆ solo si… |
-| **5 · Película** (Simulación) | Movimiento ronda a ronda y estados. | Igual que Recorrido, con animación por ronda. |
+| **5 · Película** (Simulación) | Movimiento vuelta a vuelta y estados. | Igual que Recorrido, con animación por vuelta. |
 
 La **Leyenda** está abajo a la derecha (nivel 3): haz clic en su título para abrirla o cerrarla. Con el termómetro encendido añade: Frío: le falta · A buen ritmo · Caliente · Agobiado (sección 20). Al pasar el ratón, cada línea muestra una × para quitarla de la leyenda (se recupera en **Ajustes del mapa**).
 
@@ -582,14 +579,41 @@ Si pulsas **Probar** (o Reproducir) estando en la vista Ideas, la aplicación ca
 
 ## 9. Detalles (el panel de la derecha)
 
-En el nivel 3 el panel **Detalles** está siempre a la vista (botón **Mostrar detalles / Ocultar detalles** de la barra superior). En los niveles 1 y 2 solo aparece cuando eliges algo, y es sencillo (sección 4.5).
+**Lo de cada idea ya no está en una columna: está a mano, en el lienzo.** Pulsa una idea y a su lado aparece **su tarjeta** (en todos los niveles). Pulsa una línea y aparece la tarjeta de la línea. La tarjeta se coloca sola donde menos tape (a la derecha, a la izquierda, debajo o encima), se cierra con la **×** o con **Escape**, y se aparta mientras eliges una herramienta para poner algo nuevo. La columna de la derecha va cerrada; si la quieres, ábrela con **Abrir la columna de detalles** (barra superior, nivel 3): enseña lo mismo con los mismos botones.
+
+### 9.0 La tarjeta de la idea (el núcleo creativo)
+
+Arriba pone qué es (con su icono: 🌱 Inicio, 💡 Idea, 🎯 Meta, 🪨 Piedra…) y su nombre. Debajo:
+
+1. **Cómo va ahora**, en una o dos frases que cambian al momento cuando tocas algo: «De aquí salen 100 en cada vuelta», «Le llegan 100 y siguen 65: aquí se quedan 35», «A «Conversación comercial» le quita el 12 %», «Tus remedios le quitan el 40 % de su fuerza para frenar», «Ojo: aquí se pierde el 30 %»… En el modo fácil: «Te quita 3 de cada 10 empujones», «Aquí llegan 7 de cada 10».
+2. **👉 Lo siguiente** (nivel 3): las 1 a 3 preguntas con más sentido según cómo va tu mapa, con los botones o la casilla para contestar ahí mismo. Por ejemplo:
+   - una idea suelta: **¿Qué es esto?** → *Lo que pongo en marcha* · *Un paso del camino* · *Lo que quiero conseguir* · *Algo que me frena*;
+   - un inicio: **¿Cuántos salen de aquí en cada vuelta?** y **¿Qué pasa después?** → *Un paso nuevo* · *Unir con «tu meta»* · *Poner la meta*;
+   - un paso del camino: **¿Qué le pasa a lo que llega aquí?** → *No todo sigue* (colador) · *No caben todos* (límite) · *Se escapa algo* · *Se multiplica* · *Se guarda*; lo que eliges se abre ya listo para ajustarlo;
+   - un colador: **¿Adónde van los que no pasan?** → *Se pierden, está bien así* · *Llevarlos a otra idea* (y lo mismo con lo que no cabe en un límite o con un desvío);
+   - algo que frena o ayuda sin decir a quién: **¿A quién estorba?** (o ayuda), con las ideas para elegir; y si frena: **¿Haces algo para que frene menos?** → *Poner un remedio*;
+   - una meta: **¿Qué te impide llegar a más?** → *Algo que me frena* · *Algo que me ayuda*.
+3. **➕ Añadir al lado**: crea lo que va unido a esta idea, ya colocado y listo para escribir. Nivel 3: **Lo que viene después**, **Algo que la frena** (y ves al momento cuánto le quita) y **Algo que la ayuda**. Modo fácil: **Mi primer paso**, **El paso siguiente**, **Algo que me frena aquí**, **Algo que me ayuda con esto**, **Otra idea unida**.
+4. **✏️ Cambiar esta idea** (nivel 3): botones grandes, cada uno con lo que hace y para qué; al pulsar uno se abre solo eso, con **← Volver**. A la vista: **Nombre y explicación**, **¿Cuánto sale de aquí?** (en los inicios), **¿Qué le pasa a lo que llega?**, **¿Ayuda o estorba a otra?**, **¿Qué haces contra esto?** (si frena o pierde), **¿Funciona siempre?** y **¿Cómo junta y reparte?** (si le llegan o salen varias líneas). Con **Ver todo lo demás** salen **¿Con quién está unida?**, **¿Qué es esto?**, **¿Es un dato o a ojo?**, **Cómo se ve**, **Apuntar algo**, **Guardar un archivo** y **Más cosas**. En el modo fácil, en su lugar va **Cómo es** (sección 4.5).
+5. **🔇 Silenciar: mira qué pasa sin ella** (en las piedras, las ayudas y todo lo que cambia el resultado) y **Borrar**.
+
+**Silenciar (🔇).** La idea se calcula como si no estuviera, sin borrar nada: no frena ni ayuda, no hace nada con lo que le llega, sus líneas «Influye» y sus remedios no cuentan y, si es un inicio, no pone nada en marcha. Al momento te digo cuánto cambia: «Sin «Me da vergüenza enseñarlos»: llegan 10 de cada 10 (antes 7)» o, en el nivel 3, «a la meta llegan 280 (antes 321)». La idea se queda en el mapa, en gris y con un 🔇 en la esquina; pulsa ese 🔇 (o **🔊 Volver a activar**) para que vuelva a contar.
+
+**Las puertas: lo que abres te trae lo que hay detrás.** Si eliges algo que depende de otra cosa, esa otra cosa aparece ahí mismo, lista para ajustar:
+- una línea que **lleva lo que el colador no deja pasar** (o lo que no cabe, o el desvío) enseña el 🧺 Colador (o el 🚧 Límite, o el ↪️ Desvío) de la idea de donde sale; si no lo tiene, un botón se lo pone;
+- una línea **Influye** enseña la barra **¿Ayuda o estorba?** de la idea que influye (sin fuerza, la línea no hace nada);
+- un **remedio** enseña la cuenta con el freno de verdad: «Ahora frena −3: con este remedio se queda en −1»;
+- una **condición** que mira otra idea dice cuánto tiene ahora («Ahora mismo: 100») y trae un botón **Ir a «…»**;
+- un reparto **según la fuerza de otra idea** enseña la barra de esa idea.
+
+**Chips en las burbujas (nivel 3).** Dentro de cada burbuja, debajo del nombre y de la explicación, unos chips con icono y palabras dicen lo que pasa ahí: «crea 100», «pasa el 65 %», «caben 50», «frena −3», «ayuda +2», «con remedio», «a veces», «65 pasan», «21 llegan», «lleno», «corta el paso»… Pulsa un chip y se abre ahí mismo, en la tarjeta, lo que hay que tocar.
 
 ### 9.1 Sin nada elegido: el mapa (nivel 3)
 
 Arriba pone **🗺️ Tu mapa**: «No has elegido nada, así que aquí ves cosas de todo el mapa».
 
 - **¿Cómo se llama?** y **¿De qué va?**, y un recordatorio: «👉 Pulsa una idea o una línea para ver lo suyo. Doble clic en un hueco vacío para poner una idea nueva».
-- **⏱️ Cuánto tiempo pruebo → ¿Cuántas rondas?**: una ronda es un trozo de tiempo (una semana, un mes…). Más rondas = ver más lejos.
+- **⏱️ Cuánto tiempo pruebo → ¿Cuántas vueltas?**: una vuelta es un trozo de tiempo (una semana, un mes…). Más vueltas = ver más lejos.
 - **🔁 Bucles**: los círculos del mapa, con cuánto vuelve («vuelve 15 %»). Sin bucles: «Aún no hay. Elige varias ideas en orden (con Mayús) y pulsa «🔁 Hacer un bucle»…».
 - **📏 Qué se mide**: lo que viaja por el mapa (sección 14), con **Medir otra cosa** para añadir lo tuyo.
 - **🧰 Ajustes → Abrir los ajustes…**: escalas, colores, leyenda y atajos (sección 25).
@@ -603,66 +627,56 @@ Arriba pone **👥 N ideas elegidas** («Lo que cambies aquí les pasa a todas a
 
 ### 9.3 Una idea elegida (nivel 3)
 
-Arriba aparecen su dibujito y su nombre (💡 Idea, 🌱 Inicio, 🎯 Meta… o su papel del camino, como 🪨 Piedra), una frase que explica para qué sirve, un candado si está bloqueada y el botón **Borrar**. Cada apartado lleva debajo de su título una frase que dice para qué sirve. Después:
+En la tarjeta (y en la columna, si la abres) los botones son estos. Cada uno dice qué hace y para qué; dentro, lo que te cuenta como un colega y lo que puedes tocar:
 
-1. **Lo básico**:
-   - **📝 Lo que pone**, **✏️ ¿Quieres explicar algo más?** y **🧩 ¿Qué es?** (Idea, Inicio, Meta, Nota, Texto suelto, Grupo o Zona). Cambiarlo cambia la cuenta: un Inicio crea cosas y una Meta las recoge.
-   - **🏷️ De qué tipo es** (para agrupar, por ejemplo «colegio» o «dinero») y **🔖 Etiquetas** («+ etiqueta y Enter»).
-   - **🤔 ¿Cuánto estás seguro de esto?**: Me lo imagino, Más o menos, Lo he visto o Comprobado.
-2. **🔎 Qué está pasando aquí** (el resumen), contado en frases: **⚙️ Hace: …** (lo que hace, por ejemplo «🧺 Colador (deja pasar 65 %)») o «Aquí no cambia nada: lo que le llega, sale igual»; **🪨 Frena** o **💪 Empuja a lo que tiene unido con «Influye»: −3 (frena bastante; va de −5 a +5)**; y **⏰ Solo funciona a veces**, si tiene condición. Al probar, en la **ronda N**: **✨ Crea**, **📥 Le llegan**, **📤 Salen** (o **🎯 Llegan a la meta**), **🕳️ Se pierden aquí**, **🍽️ Se gastan aquí**, **🐷 Guardadas en su hucha**, **⏳ Esperando turno**, **🩹 Sus remedios le quitan el N % de su fuerza para frenar**, **💪 Su fuerza ahora, con todo**, **🧪 Cómo es lo que sale**, **💤 Ahora está apagada** y **🌡️ Termómetro**. Si la idea no está en el camino (una piedra o una ayuda), lo dice: «No está en el camino: es una idea que empuja o frena a otras, y no necesita que le llegue nada». Debajo, los botones **¿A qué afecta?**, **¿De dónde le viene?** y **Centrarme en esto**.
-3. **💪 Cuánto empuja o frena** (sección 10).
-4. **⚙️ Qué hace** (sección 11).
-5. **⏰ Cuándo funciona** (sección 12).
-6. **🩹 Remedios** (sección 13).
-7. **✨ Qué sale de aquí** (sección 14). Se abre sola en los inicios.
-8. **🔀 Cómo reparte y cómo junta** (sección 15).
-9. **🔗 Con quién está unida**: las líneas que le llegan (←) y las que salen (→), con su tipo (pasa, influye, info, idea). Pulsa una para elegirla. Si no tiene ninguna: «Aún no está unida a nada».
-10. **🎨 Cómo se ve**:
+1. **✏️ Nombre y explicación**: **📝 Nombre** (lo que pone en grande) y **✏️ Explicación**, que **sale dentro de la burbuja**, debajo del nombre y en pequeño.
+2. **✨ ¿Cuánto sale de aquí?** (en los inicios y en las ideas con ✨ Fábrica): **¿Cuántos salen de aquí en cada vuelta?**, **¿Es un dato o a ojo?** y **¿De dónde lo sacas?**. Lo demás que se puede medir (calidad, rapidez…) va en **Para expertos** (sección 14).
+3. **⚙️ ¿Qué le pasa a lo que llega?** (sección 11).
+4. **💪 ¿Ayuda o estorba a otra?** (sección 10).
+5. **🩹 ¿Qué haces contra esto?** (sección 13). Solo sale si la idea frena o si en ella se pierde algo.
+6. **⏰ ¿Funciona siempre?** (sección 12).
+7. **🔀 ¿Cómo junta y reparte?** (sección 15). Solo sale si le llegan o salen varias líneas, o si tiene condición.
+8. **🔗 ¿Con quién está unida?**: las líneas que le llegan (←) y las que salen (→), con su tipo (pasa, influye, info, idea). Pulsa una para ir a ella. Si no tiene ninguna: «Aún no está unida a nada».
+9. **🧩 ¿Qué es esto?**: Idea, Inicio, Meta, Nota, Texto suelto, Grupo o Zona, con lo que es cada una. Cambiarlo cambia las cuentas.
+10. **🤔 ¿Es un dato o a ojo?**: **A ojo**, **Más o menos**, **Lo he visto** o **Comprobado**. Si es a ojo, el Marcador avisa de que ese resultado hay que cogerlo con pinzas.
+11. **🎨 Cómo se ve**:
+    - **↔️ ¿Dónde va el texto?**: **Centrado** (por defecto: el icono y el texto, centrados) o **A la izquierda**.
     - **🔷 Forma**: Redondeado, Píldora, Recto, Círculo, Rombo o Hex.
     - **🎨 Color**: Papel, Cielo, Oliva, Arcilla, Madera, Lavanda, Agua o Rosa, y **Otro color de fondo** («quitar» lo devuelve al de su color).
     - **Borde (la raya de fuera)**: Continuo, Discontinuo, Punteado o Sin borde.
     - **Tipo de letra**: Normal, De libro o De máquina. **Tamaño y grosor de la letra**: un número y Normal, Medio o Fuerte.
     - **Dibujito**: una lista amplia o «Ninguno».
     - **Poner una foto** o **Quitar la foto**, y **Volver a su tamaño** (si le cambiaste el tamaño a mano).
-11. **💬 Comentarios** (sección 7.7).
-12. **📎 Archivos**: **Guardar un archivo aquí** (hasta 20 MB). Cada archivo se puede **Descargar** o **Quitar este archivo**.
-13. **🧰 Más opciones**:
+12. **💬 Apuntar algo** (sección 7.7).
+13. **📎 Guardar un archivo**: **Guardar un archivo aquí** (hasta 20 MB). Cada archivo se puede **Descargar** o **Quitar este archivo**.
+14. **🧰 Más cosas**:
+    - **🏷️ Grupo** y **🔖 Etiquetas**, para encontrarla luego.
     - **🔒 Bloqueada (para no moverla sin querer)** y **🙈 Esconder lo que cuelga de ella**.
     - **🗂️ Capas** (pulsa una capa para meter o sacar la idea).
     - **🔌 Puertas de entrada y salida** (para expertos), con nombre y lo que cabe en cada una.
     - **🔗 Enlaces y apuntes** y el **Código interno**, con la fecha de creación.
 
+En la columna, además, arriba están **🔎 Cómo va ahora** (las frases de la tarjeta) y tres botones para entender el mapa desde esa idea: **🔦 ¿Qué cambia si la toco?** (ilumina lo que cambiaría), **🔍 ¿De qué depende?** (ilumina lo que llega hasta ella) y **🎯 Ver solo esto** (apaga lo demás; Escape para salir).
+
 Las notas, los textos sueltos, los grupos y las zonas muestran solo los apartados que les sirven.
 
 **Bloque de descubrimiento.** Las ideas que mete «Ayúdame a pensar» muestran arriba de dónde vienen («Te lo propuso la IA», «Te lo propuso una plantilla» o «Lo descubriste tú») y su estado (sin confirmar, ¡confirmado! o descartado). Pregunta «¿Es verdad?» con los botones **✅ Sí, es así**, **🤔 No estoy seguro** y **🗑️ Quitar** (sección 23.6).
 
-**Marca de «¿Y si…?».** Si un valor está cambiado en el «¿Y si…?» activo, aparece una marca junto a su nombre: «Cambiado solo en «…». Pulsa para volver al valor del original». Arriba del panel se ve «🧪 Estás cambiando el «¿y si…?» «…». Tu mapa de verdad no cambia».
+**Marca de «¿Y si…?».** Si un valor está cambiado en el «¿Y si…?» activo, aparece una marca junto a su nombre: «Cambiado solo en «…». Pulsa para volver al valor del original». Arriba del lienzo se ve «Estás probando «…»: lo que cambies se queda en esta prueba. Tu mapa de verdad no cambia».
 
 ---
 
 ## 10. Peso, influencia e impacto
 
-Apartado **💪 Cuánto empuja o frena** de Detalles (nivel 3): «Si esta idea ayuda (+) o frena (−) a otras, y cuánto». Son tres cosas distintas:
+Botón **💪 ¿Ayuda o estorba a otra?** de la tarjeta (nivel 3): «Si esto te pone las cosas más fáciles o más difíciles, díselo aquí».
 
-| En pantalla | Nombre clásico | Qué es | ¿Lo usa el motor? |
-|---|---|---|---|
-| **💪 Empuja o frena** | Influencia | Cuánto cambia a otras: más (+) empuja y menos (−) frena. Solo hace efecto en lo que tenga unido con una línea **Influye**. | **Sí.** |
-| **⭐ Lo importante que es para ti** | Importancia | Solo para ti, para ordenar. | No. |
-| **🎯 Lo que esperas que pase** | Impacto esperado | Tu apuesta sobre cuánto cambiará el resultado. | No. El de verdad lo calcula el Marcador. |
+- **La barra**: de **😣 Estorba** (−5) a **Ayuda 😀** (+5). En el centro, 0: ni ayuda ni estorba. Debajo lo dice en palabras: «Estorba bastante (−3)».
+- **¿A quién?** Solo cuenta en las ideas que tenga unidas con una línea **Influye**. Si aún no tiene ninguna, la tarjeta te avisa («Ojo: así todavía no cuenta») y te deja elegir a quién y pulsar **Unir**: la línea la hago yo. Si ya la tiene, te dice a quién ayuda o estorba.
+- **Para expertos: ¿su fuerza cambia con lo que le llega?** **Siempre igual**, **De lo que le llega** (crece con lo que le llega, hasta **¿Con cuánto llega a toda su fuerza?**; por ejemplo, un rumor empuja más cuanta más gente lo oye) o **De lo que tiene guardado**.
 
-Cada uno se puede decir de cuatro maneras:
+En el JSON la fuerza es `weight.influence`. Los campos `weight.importance` (lo importante que es para ti) y `weight.impact` (lo que esperas que pase) se guardan y se pueden importar, pero no cambian ninguna cuenta y no salen en pantalla.
 
-- **Nada**: sin valor.
-- **De -5 a +5** (técnico: ponderada): un número en la escala ponderada. Se mueve con una barra y se ve, por ejemplo, «−3» en rojo.
-- **Con palabras** (técnico: cualitativa): un nivel de una escala con palabras, por ejemplo Muy bajo, Bajo, Medio, Alto, Muy alto. El resultado se marca como **aproximación**.
-- **Número libre** (técnico: numérica): cualquier número.
-
-**¿De qué depende su fuerza?** (solo en «Empuja o frena»):
-- **Siempre la misma**: el valor que pongas.
-- **De lo que le llega**: crece con lo que le llega, hasta **Con cuánto llega a toda su fuerza**. Por ejemplo, un rumor empuja más cuanta más gente lo oye.
-- **De lo que tiene guardado**: depende de lo que guarda en su hucha.
-
-**Ejemplo.** «Fricción tecnológica» con −3, unida con una línea **Influye** a «Conversación comercial», frena esa conversación. Con +3 la empujaría.
+**Ejemplo.** «Fricción tecnológica» con −3, unida con una línea **Influye** a «Conversación comercial», le quita a la conversación una parte de lo que pasa por ella (la tarjeta te dice cuánto: «A «Conversación comercial» le quita el 15 %»). Con +3 se la sumaría.
 
 ---
 
@@ -671,22 +685,22 @@ Cada uno se puede decir de cuatro maneras:
 Un comportamiento es **lo que hace una idea con lo que le llega**: colarlo, guardarlo, multiplicarlo… Sin comportamientos, la idea deja pasar todo igual (o solo es una idea suelta).
 
 - **Niveles 1 y 2:** no hace falta: las 🪨 piedras y las 🤝 ayudas hacen ese trabajo de forma sencilla (sección 4.1).
-- **Nivel 3:** en **Detalles → ⚙️ Qué hace**, pulsa **Añadir lo que hace** y elige entre los 14, agrupados en Crear, Cambiar, Empujar, Frenar o perder, Repartir, Guardar y Vigilar y mandar. Cada uno lleva su dibujito y una frase que lo explica.
+- **Nivel 3:** en la tarjeta de la idea, **⚙️ ¿Qué le pasa a lo que llega?** (o **👉 Lo siguiente** → *No todo sigue*, *No caben todos*…), pulsa **Añadir lo que hace** y elige entre los 14, agrupados en Crear, Cambiar, Empujar, Frenar o perder, Repartir, Guardar y Vigilar y mandar. Cada uno lleva su dibujito y una frase que lo explica.
 
 ### 11.1 Los 14 comportamientos
 
 | En pantalla | Nombre clásico | Qué hace | Lo que puedes cambiar |
 |---|---|---|---|
-| **✨ Fábrica** | Generador | Crea cosas nuevas en cada ronda, como un grifo que echa agua. | ¿Cuántos crea en cada ronda? (si la idea ya lo dice en «Qué sale de aquí», manda eso) · ¿Cuándo crea? (En todas las rondas o Solo una vez, al principio) · Empieza en la ronda, Para en la ronda (0 = nunca para) y Cada ronda crea un poco más (nivel 3). |
+| **✨ Fábrica** | Generador | Crea cosas nuevas en cada vuelta, como un grifo que echa agua. | ¿Cuántos crea en cada vuelta? (si la idea ya lo dice en «Qué sale de aquí», manda eso) · ¿Cuándo crea? (En todas las vueltas o Solo una vez, al principio) · Empieza en la vuelta, Para en la vuelta (0 = nunca para) y Cada vuelta crea un poco más (nivel 3). |
 | **🍽️ Se come una parte** | Consumidor | Usa o gasta una parte de lo que le llega. Cuenta como **gastado**, no como perdido. | ¿Cómo se lo come? (Una parte en % o Un número fijo) · Qué parte se come / Cuántos se come. |
 | **🧺 Colador** | Filtro | Solo deja pasar una parte. Lo demás se queda fuera (o va por la línea de «lo que el colador no deja pasar»). | ¿Cómo decide qué pasa? (Pasa una parte en % o Pasa lo que cumple una regla) · ¿Qué parte pasa? · o ¿Qué mira?, ¿Cómo compara? y ¿Con qué número?. |
 | **🔄 Cambia cómo es** | Transformador | Cambia algo de lo que pasa: mejor calidad, más peso… | ¿Qué cambio hace? (Multiplicarlo, Sumarle, Ponerle un valor fijo o Convertir una cosa en otra) · ¿Por cuánto? / ¿Cuánto? · Convierte esto… …en esto y Qué parte convierte. |
 | **✖️ Multiplica** | Multiplicador | Lo que llega sale más grande. Lo que crece cuenta como **creado**. | ¿Por cuánto multiplica? (2 = el doble; 1,5 = la mitad más). |
 | **💧 Se escapa algo** | Reductor | Por el camino se pierde un poco. Cuenta como **perdido**. | ¿Cómo se escapa? (Una parte en % o Un número fijo) · Qué parte se escapa / Cuántos se escapan. |
 | **⚡ Más rápido** | Acelerador | Hace que vaya más rápido (o más lento). | ¿Cuánto más rápido? (más de 1 = más rápido; menos de 1 = más lento). |
-| **🚧 Límite** | Restrictor | Solo caben unos cuantos en cada ronda; los demás esperan o se pierden. | ¿Cuántos caben en cada ronda? · ¿Qué pasa con los que no caben? (Esperan a la ronda siguiente, Se pierden o Van por la línea de «lo que no cabe»). |
+| **🚧 Límite** | Restrictor | Solo caben unos cuantos en cada vuelta; los demás esperan o se pierden. | ¿Cuántos caben en cada vuelta? · ¿Qué pasa con los que no caben? (Esperan a la vuelta siguiente, Se pierden o Van por la línea de «lo que no cabe»). |
 | **↪️ Desvío** | Desviador | Manda una parte por otro camino (una línea marcada como «Lleva lo del desvío»). | Qué parte va por el desvío. |
-| **🐷 Hucha** | Acumulador | Lo va guardando para más adelante. | Qué parte guarda · ¿Cuánto cabe en la hucha? (0 = sin límite) · Lo que ya hay al empezar y Se escapa de la hucha en cada ronda (nivel 3). |
+| **🐷 Hucha** | Acumulador | Lo va guardando para más adelante. | Qué parte guarda · ¿Cuánto cabe en la hucha? (0 = sin límite) · Lo que ya hay al empezar y Se escapa de la hucha en cada vuelta (nivel 3). |
 | **🎁 Suelta lo guardado** | Liberador | Saca lo que había en la hucha. | ¿Cuánto suelta? (Una parte en %, Un número fijo o Todo) · Qué parte suelta / Cuántos suelta. |
 | **🩹 Remedio** | Compensador | Les quita fuerza a los frenos a los que está unido con una línea de remedio. | ¿Qué tal funciona? (100 % = tal cual; 50 % = solo la mitad). |
 | **👀 Chivato** | Detector | Mira lo que pasa sin tocar nada y avisa al llegar a un número. | ¿Qué mira? (Lo que le llega, Lo que sale u Otra cosa) · ¿Cuál? · Avisa al llegar a (0 = no avisa). |
@@ -736,11 +750,11 @@ Las condiciones encienden o apagan cosas según lo que va pasando al probar. Se 
 - una **idea** (**⏰ Cuándo funciona**; sin condiciones: «Ahora funciona siempre»);
 - un **comportamiento** (**⏰ ¿Solo a veces?**);
 - una **línea** (**⏰ Cuándo deja pasar**; sin condiciones: «Siempre deja pasar.»);
-- un **bucle** (en su apartado **Bucle**; sin condición: «Vuelve en cada ronda.»).
+- un **bucle** (en su apartado **Bucle**; sin condición: «Vuelve en cada vuelta.»).
 
 ### 12.1 Construir una condición
 
-Pulsa **Añadir condición**. Arriba de la caja se lee la condición entera como una frase, por ejemplo: «**Funciona cuando** lo que le llega a «Clasificación de llamadas» es más de 0 y además desde la ronda 2».
+Pulsa **Añadir condición**. Arriba de la caja se lee la condición entera como una frase, por ejemplo: «**Funciona cuando** lo que le llega a «Clasificación de llamadas» es más de 0 y además desde la vuelta 2».
 
 En cada regla eliges **¿Qué tiene que pasar?**:
 
@@ -749,7 +763,7 @@ En cada regla eliges **¿Qué tiene que pasar?**:
 | **🔢 Que un número sea más o menos que…** | Comparación | «En *Almacén*, miro lo que tiene guardado, y que ≥ desde 50». |
 | **📈 Que algo pase de una raya** | Umbral | «Lo que sale de *Ventas* pasa de 30» (o **no llega a**). |
 | **↔️ Que algo esté entre dos números** | Rango | «La calidad de *Leads* está entre 0,4 y 0,8» (o **está fuera de**). |
-| **🗓️ Que llegue cierta ronda** | Ronda / tiempo | «La ronda es ≥ desde 4» (a partir de la semana 4). |
+| **🗓️ Que llegue cierta vuelta** | Vuelta / tiempo | «La vuelta es ≥ desde 4» (a partir de la semana 4). |
 | **💡 Que otra idea esté encendida** | Depende de otro activo | «Solo si *Campaña* está encendida». |
 
 Las reglas que miran una idea se leen así: **En** [la idea] · **miro** [lo que le llega, lo que sale, lo que llega a la meta, lo que tiene guardado, lo que pierde, su fuerza u otra cosa (calidad…)] · **y que** [> más de, ≥ desde, < menos de, ≤ hasta, = justo o ≠ distinto de] [un número].
@@ -760,10 +774,10 @@ Para juntar varias, pulsa **Otra regla** o **Grupo de reglas** y elige **Tienen 
 
 - **Cuando se cumple…**: **✅ Se enciende** o **💤 Se apaga**.
 - **¿Cada cuánto lo miro?**:
-  - **En cada ronda**: se mira siempre.
+  - **En cada vuelta**: se mira siempre.
   - **En cuanto pase, se queda así**: en cuanto se cumple, se queda encendida.
   - **Solo una vez**: actúa solo la primera vez.
-- **Tiene que pasar seguido durante N rondas**: tiene que cumplirse N rondas seguidas antes de encenderse.
+- **Tiene que pasar seguido durante N vueltas**: tiene que cumplirse N vueltas seguidas antes de encenderse.
 
 ### 12.3 Elemento inactivo
 
@@ -780,7 +794,7 @@ Sirven para decir **«tengo un problema y algo que lo arregla un poco»**. Un re
    - **🩹 Poner un remedio nuevo**: crea una idea verde «Medida compensatoria», ya unida, para que le cambies el nombre.
    - **¿Ya tienes en el mapa algo que lo arregle?**: elígelo y pulsa **Usarla**; se une con una línea de remedio.
 3. Cada remedio sale en una tarjeta con su nombre (púlsalo para ir a él) y se lee como una frase:
-   - **¿Cuánto lo arregla?**: Una parte, Del todo, Solo si pasa algo (añade debajo cuándo funciona) o Solo un tiempo (**Desde la ronda … hasta la …**; ∞ = sin final).
+   - **¿Cuánto lo arregla?**: Una parte, Del todo, Solo si pasa algo (añade debajo cuándo funciona) o Solo un tiempo (**Desde la vuelta … hasta la …**; ∞ = sin final).
    - **Le quita [N] [puntos o % de fuerza] al freno**.
    - Debajo, la cuenta hecha con tus números: «Ahora frena −3: con este remedio se queda en −1» o «… deja de frenar del todo».
    - La papelera, **Quitar este remedio**, lo desune.
@@ -800,7 +814,7 @@ Por el mapa no viaja solo una cantidad: cada cosa que viaja tiene varias **dimen
 
 | Dimensión | Qué mide (así lo explica la app) | Cómo se juntan |
 |---|---|---|
-| **Cantidad** | Cuántas cosas salen en cada ronda. | Se **suman** (y se reparten al dividir). |
+| **Cantidad** | Cuántas cosas salen en cada vuelta. | Se **suman** (y se reparten al dividir). |
 | **Calidad** | Cómo de buenas son: de 0 (nada) a 1 (perfectas). | Se hace la **media**, contando cuántas hay de cada. |
 | **Velocidad** | Lo rápido que van: 1 es normal y 2, el doble de rápido. | Media. |
 | **Potencial** | Lo que pueden llegar a dar: de 0 a 1. | Media. |
@@ -867,7 +881,7 @@ Un **bucle** es un círculo: A → B → C → vuelve a A. Ejemplo: «más venta
 
 ### 16.1 Por qué no se cuelga
 
-El motor calcula ronda a ronda. **Lo que vuelve por la línea de vuelta se usa en la ronda siguiente**, así que un círculo nunca se calcula sin fin dentro de la misma ronda. El motor detecta solo qué línea cierra cada círculo. También puedes elegirla tú con **🔁 Es la vuelta de un círculo (llega en la ronda siguiente)** en los detalles de la línea.
+El motor calcula vuelta a vuelta. **Lo que vuelve por la línea que cierra el círculo se usa en la vuelta siguiente**, así que un círculo nunca se calcula sin fin dentro de la misma vuelta. El motor detecta solo qué línea cierra cada círculo. También puedes elegirla tú con **🔁 Cierra un círculo (lo que pasa llega en la vuelta siguiente)** en los detalles de la línea.
 
 ### 16.2 Crear un bucle (nivel 3)
 
@@ -876,23 +890,23 @@ El motor calcula ronda a ronda. **Lo que vuelve por la línea de vuelta se usa e
 
 ### 16.3 Ajustes del bucle
 
-Están en los detalles de la línea de vuelta, apartado **🔁 Bucle** («Si esta línea cierra un círculo, como el boca a boca»):
+Están en los detalles de la línea que cierra el círculo, apartado **🔁 Bucle** («Si esta línea cierra un círculo, como el boca a boca»):
 
 | En pantalla | Nombre clásico | Qué hace |
 |---|---|---|
 | **Nombre del bucle** · **Borrar el bucle** | Nombre · Borrar | Ponerle nombre o quitarlo (las líneas se quedan). |
 | **¿Qué tipo de círculo es?** | Tipo de bucle | **Que lo averigüe solo**, **📈 Crece y crece** (reforzador), **⚖️ Se frena solo** (equilibrador) o **🔀 Un poco de los dos** (mixto). |
 | **Qué parte vuelve** | % de retorno | 100 % = vuelve todo. |
-| **Fuerza de la vuelta** | Intensidad | 1 = normal. |
-| **Rondas que tarda** | Retardo | Cuántas rondas tarda en volver. |
-| **Cada cuántas rondas** | Frecuencia | Actúa cada N rondas. |
-| **Cuántas rondas dura** | Persistencia | Cuántas rondas dura su efecto. |
+| **Fuerza del regreso** | Intensidad | 1 = normal. |
+| **Vueltas que tarda** | Retardo | Cuántas vueltas tarda en volver. |
+| **Cada cuántas vueltas** | Frecuencia | Actúa cada N vueltas. |
+| **Cuántas vueltas dura** | Persistencia | Cuántas vueltas dura su efecto. |
 | **Hasta dónde crece** | Saturación | Un tope suave: cerca de él, crece menos. |
 | **Como mucho** / **Como poco** | Límite máximo / mínimo | Topes duros. |
 | **Encendido** | Activo | Enciende o apaga el bucle. |
-| **Añadir «solo si…»** | Condición del bucle | Solo actúa si se cumple. Sin condición: «Vuelve en cada ronda.» |
+| **Añadir «solo si…»** | Condición del bucle | Solo actúa si se cumple. Sin condición: «Vuelve en cada vuelta.» |
 
-Si quieres que la vuelta **cree** en vez de mover (por ejemplo, cada venta trae 0,2 llamadas nuevas), en la línea elige **¿Qué hace la línea?: Crea más al otro lado (como un eco)** y en **¿Qué hace el eco?**: **+ Suma (hace crecer)** o **− Resta (frena)**.
+Si quieres que lo que vuelve **cree** en vez de mover (por ejemplo, cada venta trae 0,2 llamadas nuevas), en la línea elige **¿Qué hace la línea?: Crea más al otro lado (como un eco)** y en **¿Qué hace el eco?**: **+ Suma (hace crecer)** o **− Resta (frena)**.
 
 Los bucles que encuentra el motor aparecen en **Resultados → Bucles detectados**, clasificados como **reforzadores** (todo suma), **equilibradores** (algo frena) o **mixtos**. Haz clic en uno para verlo en el mapa.
 
@@ -900,7 +914,7 @@ Los bucles que encuentra el motor aparecen en **Resultados → Bucles detectados
 
 ## 17. Simular (Probar)
 
-Probar es poner el mapa en marcha: en cada **ronda** (una semana, un mes… lo que tú decidas) sale algo del inicio, recorre las uniones **Pasa** y se ve cuánto llega a la meta.
+Probar es poner el mapa en marcha: en cada **vuelta** (una semana, un mes… lo que tú decidas) sale algo del inicio, recorre las uniones **Pasa** y se ve cuánto llega a la meta.
 
 ### 17.1 Pestaña Probar (panel de abajo, nivel 3)
 
@@ -908,26 +922,26 @@ En el modo fácil no hace falta: el medidor se calcula solo (sección 4.4). En e
 
 | Control | Función |
 |---|---|
-| ▶ **Reproducir / Pausa** (Espacio) | Anima ronda a ronda. En pausa, el botón dice **Reanudar**. |
+| ▶ **Reproducir / Pausa** (Espacio) | Anima vuelta a vuelta. En pausa, el botón dice **Reanudar**. |
 | ■ **Detener** | Para y vuelve al principio. |
 | ↺ **Reiniciar** | Recalcula desde el estado inicial. |
-| ⏮ / ⏭ **Ronda anterior / Ronda siguiente** | Teclas **,** y **.** |
+| ⏮ / ⏭ **Vuelta anterior / Vuelta siguiente** | Teclas **,** y **.** |
 | 👣 **Paso a paso (elemento a elemento)** | Avanza idea a idea. Muestra «Paso N/M: «…»» y lo que pasó en ella (o «Sin cambios en este elemento.»). |
-| 💾 **Guardar esta ejecución** | Guarda el resultado en «Ejecuciones guardadas» (pestaña Rondas). |
+| 💾 **Guardar esta ejecución** | Guarda el resultado en «Ejecuciones guardadas» (pestaña Vueltas). |
 | **Velocidad** | Lenta, Normal o Rápida. **Solo cambia la animación**: el resultado es siempre el mismo. |
-| **Rondas** | Cuántas rondas se prueban. |
+| **Vueltas** | Cuántas vueltas se prueban. |
 | **En vivo** | Encendido: recalcula al instante cada vez que cambias algo. Apagado: pulsa **Calcular**. |
-| **Barra de rondas** | Arrástrala para ir a cualquier ronda. Al lado, un minigráfico del resultado. |
-| **Indicadores** | **Ronda** (N/M), **Entra**, **Moviéndose** (por las uniones), **Llega a la meta** (en esta ronda) y **Total en la meta** («aprovechas el …%»). |
+| **Barra de vueltas** | Arrástrala para ir a cualquier vuelta. Al lado, un minigráfico del resultado. |
+| **Indicadores** | **Vuelta** (N/M), **Entra**, **Moviéndose** (por las uniones), **Llega a la meta** (en esta vuelta) y **Total en la meta** («aprovechas el …%»). |
 | **Las cuentas cuadran** | Confirma que no aparecen ni desaparecen unidades sin explicar. |
 | **N cosas supuestas** | Aviso: el resultado usa interpretaciones cualitativas o hipótesis. |
 
 ### 17.2 Resultados
 
-- **Resultado por ronda**: gráfico de Resultado, Generado y Perdido.
-- **Metas**: el **Total** y la **Última** ronda de cada meta, con sus dimensiones. Sin metas verás «Añade una meta para medir resultados.».
+- **Resultado por vuelta**: gráfico de Resultado, Generado y Perdido.
+- **Metas**: el **Total** y la **Última** vuelta de cada meta, con sus dimensiones. Sin metas verás «Añade una meta para medir resultados.».
 - **Bucles detectados**: los bucles que ha encontrado el motor. Clic para verlos en el mapa.
-- **Libro de conservación · ronda N**: Generado, En tránsito (inicio), Resultado / terminal, Perdido, Consumido, Acumulado, Liberado, Deduplicado, En tránsito (fin) y Sin explicar. Es la prueba de que las cuentas cuadran.
+- **Libro de conservación · vuelta N**: Generado, En tránsito (inicio), Resultado / terminal, Perdido, Consumido, Acumulado, Liberado, Deduplicado, En tránsito (fin) y Sin explicar. Es la prueba de que las cuentas cuadran.
 - **Supuestos, aproximaciones y avisos**: qué partes del resultado se basan en hipótesis, escalas con palabras o efectos de la cuadrícula del tiempo.
 
 ### 17.3 Pistas (diagnóstico)
@@ -947,13 +961,13 @@ En el modo fácil no hace falta: el medidor se calcula solo (sección 4.4). En e
 
 Haz clic en una pista para ver la **Regla**, los **Datos** y los **Supuestos**, y el botón **Localizar en el mapa**. Si todo va bien: «Nada destacable · El sistema fluye sin pérdidas ni saturaciones relevantes.».
 
-### 17.4 Rondas
+### 17.4 Vueltas
 
-Una tabla con una fila por ronda: Ronda, Generado, Resultado, Perdido, En stock/cola y En tránsito. Haz clic en una fila para saltar a esa ronda. Al lado están las **Ejecuciones guardadas** (se guardan con el disquete de la pestaña Probar).
+Una tabla con una fila por vuelta: Vuelta, Generado, Resultado, Perdido, En stock/cola y En tránsito. Haz clic en una fila para saltar a esa vuelta. Al lado están las **Ejecuciones guardadas** (se guardan con el disquete de la pestaña Probar).
 
 ### 17.5 Qué ha pasado (eventos)
 
-El registro de todo lo que ocurrió, agrupado por fase: Entradas, Condiciones, Activación, Filtros, Transformación, Bifurcación, Capacidad, Convergencia, Acumuladores, Retroalimentación, Estado y Registro. Ejemplos: «"Llamadas recibidas" genera 260.00 u.», «"Interés real" filtra: pasan 65.00 de 100.00 (65%)», «"Agenda" encola 12.00 u. para la siguiente ronda». Marca **Solo la selección** para ver solo lo de la idea elegida.
+El registro de todo lo que ocurrió, agrupado por fase: Entradas, Condiciones, Activación, Filtros, Transformación, Bifurcación, Capacidad, Convergencia, Acumuladores, Retroalimentación, Estado y Registro. Ejemplos: «"Llamadas recibidas" genera 260.00 u.», «"Interés real" filtra: pasan 65.00 de 100.00 (65%)», «"Agenda" encola 12.00 u. para la siguiente vuelta». Marca **Solo la selección** para ver solo lo de la idea elegida.
 
 ### 17.6 Cómo leer el movimiento en el lienzo
 
@@ -965,7 +979,7 @@ En las vistas Recorrido y Película:
 - **Brillo** = potencial.
 - Línea **roja discontinua** = cortada.
 - **Punteada y tenue** = no pasa nada.
-- Cada idea muestra en una pastilla lo que pasa por ella en esta ronda.
+- Cada idea muestra en una pastilla lo que pasa por ella en esta vuelta.
 
 ---
 
@@ -1027,7 +1041,7 @@ Pulsa el botón **Cuadrícula del tiempo** (#) de la barra superior. Se abre **M
 2. **Ancho de columna** y **Alto de fila** (px).
 3. **Eje horizontal = tiempo** (interruptor **Tiempo**). Cada **columna** es un periodo y la **Unidad** se puede cambiar (por defecto «Semana»):
    - Un **inicio** empieza a generar en su columna.
-   - Entre dos ideas unidas, **cada columna de separación añade una ronda de retardo**.
+   - Entre dos ideas unidas, **cada columna de separación añade una vuelta de retardo**.
    - **Penalización por «prisas»** (por columna de inversión): si un efecto está colocado **antes** que su causa, pierde ese porcentaje por cada columna, y se avisa.
    - **Fecha límite (columna)** («sin límite» si está vacía): lo que llega después se trata según **Lo que llega tarde**:
      - **Se penaliza**: conserva el % de **Conserva lo que llega tarde**.
@@ -1043,7 +1057,7 @@ Todos estos efectos se convierten en retardos, pérdidas y comportamientos norma
 
 ## 20. Termómetro de calor
 
-Pulsa el **Termómetro** de la barra superior o la tecla **H** (nivel 3). Cada idea, y cada zona de la cuadrícula si está activa, se colorea según su «temperatura» en la ronda actual:
+Pulsa el **Termómetro** de la barra superior o la tecla **H** (nivel 3). Cada idea, y cada zona de la cuadrícula si está activa, se colorea según su «temperatura» en la vuelta actual:
 
 | Estado | Qué significa |
 |---|---|
@@ -1066,27 +1080,27 @@ Al pasar el ratón por la franja de color de una idea ves las causas (y también
 - «Va con prisas: está antes que lo que lo causa».
 - «Todo pasa bien, sin frenos».
 
-El **Marcador** incluye el termómetro completo, ronda a ronda (sección 21).
+El **Marcador** incluye el termómetro completo, vuelta a vuelta (sección 21).
 
 ---
 
 ## 21. Marcador
 
-Botón **Marcador** de la barra superior (niveles 2 y 3): «Qué te ayuda, qué te frena y qué arreglar primero». Se calcula siempre con el motor, para el «¿Y si…?» activo. Arriba pone «Mirando «…» · N rondas» y, si hay supuestos, «N cosas supuestas: tómalo como orientación».
+Botón **Marcador** de la barra superior (niveles 2 y 3): «Qué te ayuda, qué te frena y qué arreglar primero». Se calcula siempre con el motor, para el «¿Y si…?» activo. Arriba pone «Mirando «…» · N vueltas» y, si hay supuestos, «N cosas supuestas: tómalo como orientación».
 
 - **Seis indicadores**:
-  - **Llega a la meta**: el total y la última ronda.
+  - **Llega a la meta**: el total y la última vuelta.
   - **Sobrevive**: % de lo que sale del inicio que llega.
   - **Aprovechas**: % de todo lo que se mueve.
   - **Se pierde**: % que se pierde por el camino.
-  - **Va a…**: la segunda mitad de las rondas frente a la primera (sube o baja).
+  - **Va a…**: la segunda mitad de las vueltas frente a la primera (sube o baja).
   - **Atascos**: puntos saturados y cuántos bucles hay en marcha.
 - **Por dónde se va perdiendo**: el embudo del camino principal, con el «% que sigue vivo desde el inicio» en cada paso. Necesita un camino completo del inicio a la meta («Une el inicio con la meta, paso a paso.»).
-- **Termómetro: qué se agobia y cuándo**: filas = ideas; columnas = rondas.
+- **Termómetro: qué se agobia y cuándo**: filas = ideas; columnas = vueltas.
 - **Lo que más te frena**: «lo que ganarías si lo arreglas».
 - **Lo que más te ayuda**: «lo que perderías sin ello».
 - **Lo primero que arreglaría**: los puntos que conviene atender antes.
-- **Cómo va ronda a ronda**: gráfico de Resultado, Generado y Perdido.
+- **Cómo va vuelta a vuelta**: gráfico de Resultado, Generado y Perdido.
 - **Frenos que has encontrado**: cuántos hay (Propias, Externas, Del sistema, Sin clasificar) y cuántos tienen ya **decisión tomada**.
 - **Lo que cambia por la cuadrícula del tiempo**, si está activa.
 
@@ -1410,7 +1424,7 @@ Usa ↑ ↓ para moverte, Enter para ejecutar y Escape para cerrar. La búsqueda
 | Termómetro | H | 3 |
 | **Probar** | | |
 | Probar / pausar | Espacio | 2 y 3 |
-| Ronda siguiente · Ronda anterior | . · , | 2 y 3 |
+| Vuelta siguiente · Vuelta anterior | . · , | 2 y 3 |
 | **Mapa** | | |
 | Guardar versión ahora | Ctrl+S | todos |
 | **General** | | |
@@ -1617,10 +1631,10 @@ Solo si quieres ejecutarla sin internet o modificarla.
 | Término | Definición |
 |---|---|
 | **Idea (burbuja)** | Un elemento del mapa: una idea o un paso. |
-| **Inicio (entrada)** | De donde sale todo: genera flujo en cada ronda. |
+| **Inicio (entrada)** | De donde sale todo: genera flujo en cada vuelta. |
 | **Meta (salida)** | Lo que quieres conseguir: donde se cuenta el resultado. |
 | **Unión (conexión)** | Línea entre dos ideas. **Pasa** (flujo), **Influye** (causal), **Info** (informativa) o **Idea** (conceptual). |
-| **Ronda (iteración)** | Un paso de tiempo al probar (una semana, un mes…). |
+| **Vuelta (iteración)** | Un paso de tiempo al probar (una semana, un mes…). |
 | **Nivel** | Cuántas herramientas ves: 1 · Pensar, 2 · Camino, 3 · Experto. |
 | **Brújula** | La guía del modo fácil: una pregunta cada vez, con su porqué. |
 | **Empujones** | Las 10 «fuerzas» que salen de Hoy en cada vuelta. El medidor cuenta cuántas llegan a lo que quieres. |
@@ -1639,7 +1653,7 @@ Solo si quieres ejecutarla sin internet o modificarla.
 | **Freno (fricción)** | Algo que frena o hace perder flujo. Puede ser **propio**, **externo (del entorno)** o **del sistema**. |
 | **Influencia** | Cuánto empuja o frena una idea a otras, de −5 a +5 por defecto. |
 | **Cuadrícula del tiempo (marco espacial)** | Cuadrícula opcional donde la posición significa tiempo (columnas) y apoyo o fricción (filas). |
-| **Vuelta (retorno)** | Unión que cierra un círculo. Entrega en la ronda siguiente. |
+| **Línea que cierra el círculo (retorno)** | La línea que cierra un bucle. Lo que pasa por ella llega en la vuelta siguiente. |
 | **Termómetro** | Colorea cada idea por su «temperatura»: frío (le falta), a buen ritmo, caliente o agobiado. |
 | **Marcador (monitor)** | Panel con lo que te ayuda, lo que te frena y qué arreglar primero. |
 | **ACLARATOR** | Modo que aclara un proyecto bloque a bloque, en doble capa (interno y externo). |

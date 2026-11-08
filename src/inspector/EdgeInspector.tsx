@@ -12,6 +12,10 @@ import { DimSelect, KV, OverrideMark, ParamNumber, ParamSelect, useInspector, us
 import { useUI } from '../store/uiStore';
 import { levelOf } from '../app/levels';
 import { KidEdgeInspector } from '../kid/KidInspector';
+import { BehaviorCard } from './BehaviorEditor';
+import { MitigatorRow, Weights } from './NodeInspector';
+import { BEHAVIOR_KID } from '../core/model/behaviorLibrary';
+import { Ico } from '../ui/ico';
 
 const TYPES: { value: MapEdge['type']; label: string }[] = [
   { value: 'flow', label: 'Pasa' }, { value: 'causal', label: 'Influye' }, { value: 'informative', label: 'Info' }, { value: 'conceptual', label: 'Idea' },
@@ -38,16 +42,47 @@ function CircuitBlock({ e }: { e: MapEdge }) {
       <ParamSelect kind="circuit" id={id} path="loopType" label="¿Qué tipo de círculo es?" help="Uno que crece y crece, o uno que se frena solo." options={[{ value: 'auto', label: 'Que lo averigüe solo' }, { value: 'reinforcing', label: '📈 Crece y crece' }, { value: 'balancing', label: '⚖️ Se frena solo' }, { value: 'mixed', label: '🔀 Un poco de los dos' }]} />
       <div className="grid grid-cols-2 gap-2">
         <ParamNumber kind="circuit" id={id} path="returnPercent" label="Qué parte vuelve" help="100 % = vuelve todo." min={0} suffix="%" />
-        <ParamNumber kind="circuit" id={id} path="intensity" label="Fuerza de la vuelta" help="1 = normal." min={0} step={0.05} />
-        <ParamNumber kind="circuit" id={id} path="delay" label="Rondas que tarda" min={0} />
-        <ParamNumber kind="circuit" id={id} path="frequency" label="Cada cuántas rondas" min={1} />
-        <ParamNumber kind="circuit" id={id} path="persistence" label="Cuántas rondas dura" min={1} />
+        <ParamNumber kind="circuit" id={id} path="intensity" label="Fuerza del regreso" help="1 = normal." min={0} step={0.05} />
+        <ParamNumber kind="circuit" id={id} path="delay" label="Vueltas que tarda" min={0} />
+        <ParamNumber kind="circuit" id={id} path="frequency" label="Cada cuántas vueltas" min={1} />
+        <ParamNumber kind="circuit" id={id} path="persistence" label="Cuántas vueltas dura" min={1} />
         <ParamNumber kind="circuit" id={id} path="saturation" label="Hasta dónde crece" help="Un tope suave: cerca de él, crece menos." min={0} />
         <ParamNumber kind="circuit" id={id} path="maxLimit" label="Como mucho" min={0} />
         <ParamNumber kind="circuit" id={id} path="minLimit" label="Como poco" min={0} />
       </div>
       <Field label="Encendido" inline><Toggle label="Bucle activo" checked={c.enabled} onChange={(enabled) => A.apply((d) => op.setParam(d, 'circuit', id, 'enabled', enabled))} /></Field>
-      <ConditionsList ownerType="circuit" ownerId={id} ids={c.conditionId ? [c.conditionId] : []} ownerNode={e.sourceNodeId} emptyText="Vuelve en cada ronda." addLabel="Añadir «solo si…»" />
+      <ConditionsList ownerType="circuit" ownerId={id} ids={c.conditionId ? [c.conditionId] : []} ownerNode={e.sourceNodeId} emptyText="Vuelve en cada vuelta." addLabel="Añadir «solo si…»" />
+    </div>
+  );
+}
+
+/** Lo que hay detrás de una línea especial: el colador, el límite o el desvío de la idea de donde sale. */
+function SourceDoor({ nodeId, role }: { nodeId: string; role: 'reject' | 'overflow' | 'divert' }) {
+  const { doc } = useInspector();
+  const n = doc.nodes[nodeId];
+  if (!n) return null;
+  const type = role === 'reject' ? 'filter' : role === 'overflow' ? 'restrictor' : 'diverter';
+  const b = n.behaviorIds.map((x) => doc.behaviors[x]).find((x) => x?.behaviorType === type);
+  const kid = BEHAVIOR_KID[type];
+  const what = role === 'reject' ? 'cuántos no pasan' : role === 'overflow' ? 'cuántos no caben' : 'cuántos se desvían';
+  return (
+    <div className="space-y-1.5 rounded-lg border border-line p-2" data-testid="door-source">
+      {b ? (
+        <>
+          <p className="text-[12px] leading-snug text-ink-2">Lo que va por aquí lo decide el <b className="inline-flex items-center gap-1"><Ico e={kid.emoji} size={13} />{kid.name}</b> de «{n.title}»: ahí pones {what}. Cámbialo aquí mismo.</p>
+          <BehaviorCard b={b} ownerNode={nodeId} defaultOpen />
+          {type === 'restrictor' && b.parameters.excess !== 'overflow' && <p className="text-[11.5px] leading-snug text-cond">⚠️ Ojo: ahora los que no caben {b.parameters.excess === 'queue' ? 'esperan a la vuelta siguiente' : 'se pierden'}. Para que vayan por esta línea, en «¿Qué pasa con los que no caben?» elige «Van por la línea de «lo que no cabe»».</p>}
+        </>
+      ) : (
+        <>
+          <p className="text-[12px] leading-snug text-ink-2">⚠️ Para que vaya algo por aquí, «{n.title}» necesita un <b className="inline-flex items-center gap-1"><Ico e={kid.emoji} size={13} />{kid.name}</b>: es el que decide {what}.</p>
+          <Button size="sm" variant="solid" onClick={() => A.apply((d) => {
+            let out = op.addBehavior(d, nodeId, type).doc;
+            if (type === 'restrictor') { const nb = out.nodes[nodeId].behaviorIds.at(-1)!; out = op.updateBehavior(out, nb, { parameters: { ...out.behaviors[nb].parameters, excess: 'overflow' } }); }
+            return out;
+          })} data-testid="door-add-behavior">Poner un {kid.emoji} {kid.name} en «{n.title}»</Button>
+        </>
+      )}
     </div>
   );
 }
@@ -77,12 +112,12 @@ export function EdgeInspector({ id }: { id: string }) {
     <div data-testid="edge-inspector">
       <div className="space-y-3 border-b border-line px-4 py-3">
         <div className="flex items-start gap-2.5">
-          <span className="text-[22px] leading-none" aria-hidden>🔗</span>
+          <Ico e="🔗" size={22} />
           <span className="min-w-0 flex-1">
             <span className="block font-display text-[16px] font-medium text-ink">Línea</span>
             <span className="block truncate text-[12.5px] text-ink-2">{src} <span className="text-ink-3">{e.direction === 'both' ? '⇄' : e.direction === 'none' ? '—' : '→'}</span> {tgt}</span>
           </span>
-          <IconButton size="xs" label="Darle la vuelta" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
+          <IconButton size="xs" label="Cambiar el sentido" onClick={() => A.apply((d) => op.reverseEdge(d, id))}><ArrowLeftRight className="size-3.5" /></IconButton>
           <IconButton size="xs" label="Borrar esta unión" variant="danger" onClick={A.deleteSelection}><Trash2 className="size-3.5" /></IconButton>
         </div>
         <Field label="🧩 ¿Qué tipo de línea es?">
@@ -100,13 +135,13 @@ export function EdgeInspector({ id }: { id: string }) {
         </Field>
         {st && e.type === 'flow' && (
           <div className="space-y-1 rounded-xl bg-surface-2/70 p-2.5">
-            <div className="text-[12.5px] font-semibold text-ink">🔎 En esta ronda</div>
+            <div className="text-[12.5px] font-semibold text-ink">🔎 En esta vuelta</div>
             <KV k="📦 Le toca llevar" v={fmt(st.assigned)} />
             <KV k="📬 Llegan al otro lado" v={fmt(qty(st.delivered))} tone="text-flow" />
             {st.lost > 0 && <KV k="🕳️ Se pierden por el camino" v={`−${fmt(st.lost)}`} tone="text-loss" />}
             {st.generated > 0 && <KV k="✨ Se crean" v={`+${fmt(st.generated)}`} tone="text-gain" />}
-            {st.arrivesAt > 0 && <KV k="⏳ Llega en la ronda" v={st.arrivesAt} />}
-            <div className="flex flex-wrap gap-1">{st.blocked && <Badge tone="loss">⛔ cortada</Badge>}{st.saturated && <Badge tone="loss">🚧 llena</Badge>}{st.feedback && <Badge tone="gain">🔁 vuelta</Badge>}{st.inhibition && <Badge tone="loss">🔻 resta</Badge>}</div>
+            {st.arrivesAt > 0 && <KV k="⏳ Llega en la vuelta" v={st.arrivesAt} />}
+            <div className="flex flex-wrap gap-1">{st.blocked && <Badge tone="loss">⛔ cortada</Badge>}{st.saturated && <Badge tone="loss">🚧 llena</Badge>}{st.feedback && <Badge tone="gain">🔁 cierra el círculo</Badge>}{st.inhibition && <Badge tone="loss">🔻 resta</Badge>}</div>
           </div>
         )}
         {st && e.type === 'causal' && st.influenceFactor != null && <KV k={mode === 'compensate' ? '🩹 Cuánta fuerza le quita al freno' : '💪 Cuánto cambia a la otra'} v={mode === 'compensate' ? `${Math.round((st.compensationApplied ?? 0) * 100)} %` : targetDim === '__influence' ? `${st.influenceFactor > 0 ? '+' : ''}${fmt(st.influenceFactor)} puntos` : st.influenceFactor >= 1 ? `+${Math.round((st.influenceFactor - 1) * 100)} %` : `−${Math.round((1 - st.influenceFactor) * 100)} %`} />}
@@ -118,10 +153,11 @@ export function EdgeInspector({ id }: { id: string }) {
           {transport === 'transfer' && (
             <ParamSelect kind="edge" id={id} path="behavior.role" label="¿Para qué es esta línea?" help="Las líneas especiales recogen lo que un colador, un límite o un desvío no dejan seguir." options={[{ value: 'main', label: 'Es el camino normal' }, { value: 'reject', label: 'Lleva lo que el colador no deja pasar' }, { value: 'overflow', label: 'Lleva lo que no cabe (por el límite)' }, { value: 'divert', label: 'Lleva lo del desvío' }]} />
           )}
+          {transport === 'transfer' && (role === 'reject' || role === 'overflow' || role === 'divert') && <SourceDoor nodeId={e.sourceNodeId} role={role} />}
           <div className="grid grid-cols-2 gap-2">
             <ParamNumber kind="edge" id={id} path="behavior.loss" label="Se pierde por el camino" help="10 % = de cada 100, llegan 90." percent min={0} max={1} />
-            <ParamNumber kind="edge" id={id} path="capacity" label="Cuántos caben por ronda" help="Vacío = sin límite." min={0} />
-            <ParamNumber kind="edge" id={id} path="delay" label="Rondas que tarda en llegar" min={0} />
+            <ParamNumber kind="edge" id={id} path="capacity" label="Cuántos caben por vuelta" help="Vacío = sin límite." min={0} />
+            <ParamNumber kind="edge" id={id} path="delay" label="Vueltas que tarda en llegar" min={0} />
             <ParamNumber kind="edge" id={id} path="behavior.multiplier" label="Multiplica lo que pasa" help="1 = igual; 2 = el doble." step={0.05} min={0} />
             <ParamNumber kind="edge" id={id} path="resistance" label="Cuánto lo frena" help="Lo hace ir más despacio." percent min={0} max={1} />
             <ParamNumber kind="edge" id={id} path="behavior.speed" label="Más rápido o más lento" help="1 = normal." step={0.05} min={0} suffix="×" />
@@ -136,7 +172,7 @@ export function EdgeInspector({ id }: { id: string }) {
               <Segmented size="xs" label="Polaridad del retorno" value={polarity} onChange={setPolarity} options={[{ value: 'positive', label: '+ Suma (hace crecer)' }, { value: 'negative', label: '− Resta (frena)' }]} />
             </Field>
           )}
-          <Field label="🔁 Es la vuelta de un círculo (llega en la ronda siguiente)" inline><Toggle label="Vuelta" checked={feedback} onChange={setFeedback} /></Field>
+          <Field label="🔁 Cierra un círculo (lo que pasa llega en la vuelta siguiente)" inline><Toggle label="Cierra un círculo" checked={feedback} onChange={setFeedback} /></Field>
           {depth === 'expert' && (
             <Field label="¿Qué viaja por aquí?" help="Pulsa para quitar o poner (la cantidad viaja siempre).">
               <div className="flex flex-wrap gap-1">
@@ -163,6 +199,12 @@ export function EdgeInspector({ id }: { id: string }) {
           <ParamSelect kind="edge" id={id} path="behavior.influence.mode" label="¿Qué hace?" options={[{ value: 'modulate', label: 'Empuja o frena a la otra' }, { value: 'compensate', label: 'Es un remedio: le quita fuerza a un freno' }]} />
           {mode === 'modulate' ? (
             <>
+              {doc.nodes[e.sourceNodeId] && (
+                <div className="space-y-1.5 rounded-lg border border-line p-2" data-testid="door-influence">
+                  <p className="text-[12px] leading-snug text-ink-2">Esta línea lleva la fuerza de <b>«{doc.nodes[e.sourceNodeId].title}»</b>. Sin fuerza no hace nada: muévela aquí mismo.</p>
+                  <Weights n={doc.nodes[e.sourceNodeId]} />
+                </div>
+              )}
               <Field label={<span className="inline-flex items-center gap-1">¿En qué sentido? <OverrideMark {...oPol} /></span>}>
                 <Segmented size="xs" label="Polaridad" value={polarity} onChange={setPolarity} options={[{ value: 'positive', label: '+ Igual (si una sube, la otra sube)' }, { value: 'negative', label: '− Al revés' }]} />
               </Field>
@@ -174,15 +216,18 @@ export function EdgeInspector({ id }: { id: string }) {
             </>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2">
+              <div data-testid="door-remedy"><MitigatorRow edgeId={id} /></div>
+              <details className="text-[12px]"><summary className="cursor-pointer text-ink-3">Para expertos: lo mismo, con todos los números</summary>
+              <div className="mt-2 grid grid-cols-2 gap-2">
                 <ParamSelect kind="edge" id={id} path="behavior.influence.compensationType" label="¿Cuánto lo arregla?" options={[{ value: 'partial', label: 'Una parte' }, { value: 'total', label: 'Del todo' }, { value: 'conditional', label: 'Solo si pasa algo' }, { value: 'temporal', label: 'Solo un tiempo' }]} />
                 <ParamSelect kind="edge" id={id} path="behavior.influence.compensationUnit" label="¿En qué lo cuento?" options={[{ value: 'points', label: 'Puntos (de 0 a 5)' }, { value: 'percent', label: 'Porcentaje' }]} />
                 <ParamNumber kind="edge" id={id} path="behavior.influence.amount" label="¿Cuánto le quita?" help="Por ejemplo, 2 puntos a un freno de −5 lo deja en −3." min={0} />
               </div>
+              </details>
               {ee.behavior.influence.compensationType === 'temporal' && (
                 <div className="grid grid-cols-2 gap-2">
-                  <ParamNumber kind="edge" id={id} path="behavior.influence.fromIteration" label="Desde la ronda" min={1} />
-                  <ParamNumber kind="edge" id={id} path="behavior.influence.toIteration" label="Hasta la ronda" min={1} />
+                  <ParamNumber kind="edge" id={id} path="behavior.influence.fromIteration" label="Desde la vuelta" min={1} />
+                  <ParamNumber kind="edge" id={id} path="behavior.influence.toIteration" label="Hasta la vuelta" min={1} />
                 </div>
               )}
             </>

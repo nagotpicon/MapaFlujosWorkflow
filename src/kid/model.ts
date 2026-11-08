@@ -12,7 +12,7 @@
  * cuenta cuántos de cada 10 llegan a lo que quieres.
  *
  * Todo se monta sobre el motor de siempre, sin trucos:
- *   Hoy       → entrada (input) que genera 10 por ronda
+ *   Hoy       → entrada (input) que genera 10 por vuelta
  *   Paso      → burbuja en una cadena de uniones «Pasa» (flow)
  *   Meta      → salida (output)
  *   Piedra    → burbuja con influencia negativa (−1, −3 o −5) y una unión

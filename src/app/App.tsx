@@ -34,9 +34,8 @@ export function App() {
   const bottomOpen = useUI((s) => s.bottomOpen);
   const level = useLevel();
   const projectId = doc?.project.id;
-  const hasSelection = useUI((s) => s.selection.nodes.length + s.selection.edges.length > 0);
-  // en los niveles 1 y 2 los detalles solo aparecen cuando eliges algo
-  const showInspector = level === 3 ? inspectorOpen : hasSelection;
+  // lo de cada idea y cada línea está a mano en el lienzo (sus tarjetas); la columna solo se abre si la pides
+  const showInspector = inspectorOpen;
   useEffect(() => { if (projectId) syncViewToLevel(level); }, [level, projectId]);
   useShortcuts();
   useSimPlayback();

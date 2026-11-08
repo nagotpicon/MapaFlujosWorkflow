@@ -21,7 +21,7 @@ import { setView } from '../app/useShortcuts';
 
 const TABS: { id: BottomTab; label: string }[] = [
   { id: 'simulation', label: 'Probar' }, { id: 'results', label: 'Resultados' }, { id: 'diagnostics', label: 'Pistas' },
-  { id: 'scenarios', label: '¿Y si…?' }, { id: 'history', label: 'Rondas' }, { id: 'events', label: 'Qué ha pasado' },
+  { id: 'scenarios', label: '¿Y si…?' }, { id: 'history', label: 'Vueltas' }, { id: 'events', label: 'Qué ha pasado' },
 ];
 
 export function BottomPanel() {
@@ -118,8 +118,8 @@ function SimulationTab() {
           <IconButton label="Detener" side="top" onClick={stop} data-testid="sim-stop"><Square className="size-3.5" /></IconButton>
           <IconButton label="Reiniciar (recalcula desde el estado inicial)" side="top" onClick={reset} data-testid="sim-reset"><RotateCcw className="size-4" /></IconButton>
           <div className="mx-1 h-5 w-px bg-line" />
-          <IconButton label="Ronda anterior" side="top" disabled={cursor === 0} onClick={() => useSim.setState({ cursor: Math.max(0, cursor - 1), step: -1 })} data-testid="sim-prev"><ChevronsLeft className="size-4" /></IconButton>
-          <IconButton label="Ronda siguiente" side="top" disabled={!r || cursor >= r.iterationCount - 1} onClick={() => useSim.setState({ cursor: cursor + 1, step: -1 })} data-testid="sim-next"><ChevronsRight className="size-4" /></IconButton>
+          <IconButton label="Vuelta anterior" side="top" disabled={cursor === 0} onClick={() => useSim.setState({ cursor: Math.max(0, cursor - 1), step: -1 })} data-testid="sim-prev"><ChevronsLeft className="size-4" /></IconButton>
+          <IconButton label="Vuelta siguiente" side="top" disabled={!r || cursor >= r.iterationCount - 1} onClick={() => useSim.setState({ cursor: cursor + 1, step: -1 })} data-testid="sim-next"><ChevronsRight className="size-4" /></IconButton>
           <IconButton label="Paso a paso (elemento a elemento)" side="top" onClick={nextStep} active={step >= 0} data-testid="sim-step"><Footprints className="size-4" /></IconButton>
           <div className="mx-1 h-5 w-px bg-line" />
           <IconButton label="Guardar esta ejecución" side="top" onClick={() => { requestSimulation(getDoc(), { save: true, immediate: true }); useUI.getState().notify('Ejecución guardada en el historial', 'success'); }} data-testid="sim-save"><Save className="size-4" /></IconButton>
@@ -129,7 +129,7 @@ function SimulationTab() {
           <Segmented size="xs" label="Velocidad visual" value={speed} onChange={(v: SpeedKey) => useSim.setState({ speed: v })} options={(Object.keys(SPEEDS) as SpeedKey[]).map((k) => ({ value: k, label: k[0].toUpperCase() + k.slice(1) }))} />
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-3">
-          Rondas
+          Vueltas
           <NumberInput className="w-16" value={iterationsSetting} min={1} max={500} onChange={(v) => A.apply((d) => ({ ...d, project: { ...d.project, settings: { ...d.project.settings, simulation: { iterations: Math.round(v) } } } }))} data-testid="sim-iterations" />
           <Tip label="Experimentación manual: recalcula al instante cuando cambias un parámetro" side="top">
             <button type="button" onClick={() => useSim.setState({ live: !live })} className={cx('inline-flex items-center gap-1 rounded-md px-1.5 py-0.5', live ? 'bg-accent-soft text-accent-text' : 'bg-surface-2')} aria-pressed={live}>
@@ -142,10 +142,10 @@ function SimulationTab() {
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-end gap-6">
-          <Kpi label="Ronda" value={r ? `${cursor + 1}/${r.iterationCount}` : '—'} testId="kpi-iteration" />
+          <Kpi label="Vuelta" value={r ? `${cursor + 1}/${r.iterationCount}` : '—'} testId="kpi-iteration" />
           <Kpi label="Entra" value={fmt(generated)} sub={unit} />
           <Kpi label="Moviéndose" value={fmt(activeFlow)} sub="por las uniones" tone="text-flow" />
-          <Kpi label="Llega a la meta" value={fmt(result)} sub="en esta ronda" tone="text-gain" testId="kpi-result" />
+          <Kpi label="Llega a la meta" value={fmt(result)} sub="en esta vuelta" tone="text-gain" testId="kpi-result" />
           <Kpi label="Total en la meta" value={fmt(total)} sub={`aprovechas el ${pct(r?.metrics.efficiency)}`} testId="kpi-total" />
           {approx > 0 && (
             <Tip label="El resultado usa interpretaciones cualitativas o hipótesis. Ver Resultados.">
@@ -156,7 +156,7 @@ function SimulationTab() {
         </div>
         {r && (
           <div className="flex items-center gap-3">
-            <input type="range" className="mdf-range flex-1" min={0} max={r.iterationCount - 1} value={cursor} aria-label="Ronda" onChange={(e) => useSim.setState({ cursor: Number(e.target.value), step: -1 })} data-testid="sim-scrubber" />
+            <input type="range" className="mdf-range flex-1" min={0} max={r.iterationCount - 1} value={cursor} aria-label="Vuelta" onChange={(e) => useSim.setState({ cursor: Number(e.target.value), step: -1 })} data-testid="sim-scrubber" />
             <Sparkline values={r.metrics.resultSeries} cursor={cursor} color="var(--gain)" width={160} />
           </div>
         )}
@@ -188,7 +188,7 @@ function ResultsTab() {
   return (
     <div className="grid h-full grid-cols-1 gap-4 px-4 py-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
       <div>
-        <div className="mb-1 text-[11.5px] font-semibold text-ink-2">Resultado por ronda</div>
+        <div className="mb-1 text-[11.5px] font-semibold text-ink-2">Resultado por vuelta</div>
         <LineChart height={150} unit={doc.dimensions.quantity?.unit} series={[
           { id: 'res', label: 'Resultado', color: 'var(--gain)', values: r.metrics.resultSeries },
           { id: 'gen', label: 'Generado', color: 'var(--flow)', values: r.iterations.map((x) => x.ledger.generated[PRIMARY] ?? 0), dashed: true },
@@ -217,7 +217,7 @@ function ResultsTab() {
         )}
       </div>
       <div className="space-y-2">
-        <div className="text-[11.5px] font-semibold text-ink-2">Libro de conservación · ronda {cursor + 1}</div>
+        <div className="text-[11.5px] font-semibold text-ink-2">Libro de conservación · vuelta {cursor + 1}</div>
         <table className="w-full text-[12px]" data-testid="ledger">
           <tbody>{rows.map(([k, v, t]) => <tr key={k} className="border-b border-line/60"><td className="py-0.5 text-ink-3">{k}</td><td className={cx('py-0.5 text-right tabular font-medium', t || 'text-ink')}>{fmt(v)}</td></tr>)}</tbody>
         </table>
@@ -391,12 +391,12 @@ function HistoryTab() {
   const cursor = useSim((s) => s.cursor);
   const [runs, setRuns] = useState<SimulationRunSummary[]>([]);
   useEffect(() => { void repo.listRuns(doc.project.id).then(setRuns); }, [doc.project.id, r]);
-  if (!r) return <Empty title="Sin rondas todavía" />;
+  if (!r) return <Empty title="Sin vueltas todavía" />;
   return (
     <div className="grid gap-4 px-4 py-3 lg:grid-cols-[2fr_1fr]">
       <table className="w-full text-[12px]" data-testid="iterations-table">
         <thead className="text-left text-[10.5px] uppercase tracking-wider text-ink-3">
-          <tr><th className="py-1 font-medium">Ronda</th><th className="font-medium text-right">Generado</th><th className="font-medium text-right">Resultado</th><th className="font-medium text-right">Perdido</th><th className="font-medium text-right">En stock/cola</th><th className="font-medium text-right">En tránsito</th></tr>
+          <tr><th className="py-1 font-medium">Vuelta</th><th className="font-medium text-right">Generado</th><th className="font-medium text-right">Resultado</th><th className="font-medium text-right">Perdido</th><th className="font-medium text-right">En stock/cola</th><th className="font-medium text-right">En tránsito</th></tr>
         </thead>
         <tbody>
           {r.iterations.map((it, i) => {
@@ -441,7 +441,7 @@ function EventsTab() {
   return (
     <div className="px-4 py-2">
       <div className="mb-1 flex items-center gap-2 text-[11.5px] text-ink-3">
-        Ronda {cursor + 1} · {evs.length} cosas
+        Vuelta {cursor + 1} · {evs.length} cosas
         <label className="ml-auto inline-flex items-center gap-1"><input type="checkbox" checked={onlySel} onChange={(e) => setOnlySel(e.target.checked)} />Solo la selección</label>
       </div>
       <ol className="space-y-0.5 text-[12px]" data-testid="events-list">

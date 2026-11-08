@@ -15,7 +15,7 @@ import { buildKidDemo } from '../demo/kidDemo';
 import * as kid from '../kid/kidActions';
 
 /** Estilo de la idea del centro: más grande y en letra de libro. */
-export const ROOT_STYLE = { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid' } as const;
+export const ROOT_STYLE = { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid', textAlign: 'center' } as const;
 
 /** La idea del centro de un mapa nuevo. */
 export function rootIdea(d: ProjectDoc, title: string) {
@@ -92,7 +92,7 @@ export function createNodeAt(type: NodeType, position?: { x: number; y: number }
 }
 
 /** Crea una burbuja hija conectada (Tab) o hermana (Enter). */
-export function createConnectedNode(fromId: string, sibling = false) {
+export function createConnectedNode(fromId: string, sibling = false, type: 'bubble' | 'output' = 'bubble') {
   const doc = getDoc();
   if (!doc) return;
   if (kid.isEasy()) { kid.siguienteDe(fromId); return; }
@@ -107,7 +107,7 @@ export function createConnectedNode(fromId: string, sibling = false) {
     : { x: from.position.x + s.width + 120, y: from.position.y + (siblings - 0.5) * (s.height + 28) };
   let id = '';
   apply((d) => {
-    const r = op.addNode(d, 'bubble', { position: pos, parentId: from.parentId });
+    const r = op.addNode(d, type, { position: pos, parentId: from.parentId, ...(type === 'output' ? { title: 'Lo que quiero conseguir' } : {}) });
     id = r.id;
     let out = r.doc;
     if (sourceId) out = op.addEdge(out, sourceId, id, parentEdge?.type ?? ui().connectType).doc;
@@ -300,7 +300,8 @@ export function addCommentToSelection() {
   const owner = nodes[0] ? { type: 'node' as const, id: nodes[0] } : edges[0] ? { type: 'edge' as const, id: edges[0] } : null;
   if (!owner) { createNodeAt('comment'); return; }
   apply((d) => op.addAnnotation(d, owner.type, owner.id, 'Nuevo comentario').doc);
-  ui().set({ inspectorOpen: true });
+  if (owner.type === 'node') ui().set({ actionFeature: { id: owner.id, feature: 'comments' } });
+  else ui().set({ inspectorOpen: true });
   setTimeout(() => document.querySelector<HTMLTextAreaElement>('[data-annotation-new]')?.focus(), 60);
 }
 
@@ -314,3 +315,44 @@ export function setTheme(theme: 'light' | 'dark' | 'system') {
 
 export function undo() { useProject.getState().undo(); }
 export function redo() { useProject.getState().redo(); }
+
+/* ---------- crear cosas unidas a una idea, en un clic (desde la tarjeta del lienzo) ---------- */
+
+/** Un remedio para una idea que frena: una idea verde unida con una línea de remedio (o una que ya tengas). */
+export function addRemedy(targetId: string, sourceId: string | null = null): string | null {
+  const doc = getDoc();
+  const t = doc?.nodes[targetId];
+  if (!doc || !t) return null;
+  let id = sourceId ?? '';
+  apply((d) => {
+    let out = d;
+    if (!id) {
+      const r = op.addNode(out, 'bubble', { title: 'Mi remedio', position: { x: t.position.x - 40, y: t.position.y - 150 }, parentId: t.parentId, visualStyle: { color: 'emerald' } as never });
+      out = r.doc;
+      id = r.id;
+    }
+    return op.addEdge(out, id, targetId, 'causal', { behavior: { influence: { mode: 'compensate', compensationUnit: 'points', amount: 1 } as never }, visualStyle: { label: 'remedio', sourceAnchor: 'bottom', targetAnchor: 'top' } }).doc;
+  });
+  return id;
+}
+
+/** Algo que frena (−) o ayuda (+) a una idea: una idea nueva con su fuerza y su línea «Influye» ya puestas. */
+export function addInfluencer(targetId: string, sign: -1 | 1): string | null {
+  const doc = getDoc();
+  const t = doc?.nodes[targetId];
+  if (!doc || !t) return null;
+  let id = '';
+  apply((d) => {
+    const r = op.addNode(d, 'bubble', {
+      title: sign < 0 ? 'Algo que lo frena' : 'Algo que lo ayuda',
+      position: { x: t.position.x + (sign < 0 ? 60 : -160), y: t.position.y + 150 }, parentId: t.parentId,
+      weight: { importance: null, influence: { mode: 'weighted', value: 3 * sign, scaleId: null }, impact: null } as never,
+      visualStyle: { color: sign < 0 ? 'rose' : 'emerald' } as never,
+    });
+    id = r.id;
+    return op.addEdge(r.doc, id, targetId, 'causal', { behavior: { influence: { mode: 'modulate', targetDimension: 'quantity', sensitivity: 0.5 } as never }, visualStyle: { label: sign < 0 ? 'frena' : 'ayuda', sourceAnchor: 'top', targetAnchor: 'bottom' } }).doc;
+  });
+  ui().setSelection([id]);
+  ui().set({ editingNodeId: id });
+  return id;
+}

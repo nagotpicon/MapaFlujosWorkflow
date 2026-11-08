@@ -53,6 +53,7 @@ test('Creador de estrategias: texto espontáneo → contexto con fricciones est�
   await page.getByTestId('insert-proposal').click();
   await expect(page.locator('[data-node-title="Sin audiencia previa"]')).toBeVisible();
   // resolver una fricción desde el inspector
+  await page.keyboard.press('Escape');
   await page.locator('[data-node-title="Sin audiencia previa"]').click();
   await expect(page.getByTestId('discovery-block')).toBeVisible();
   await page.getByTestId('discovery-block').getByRole('radio', { name: 'Buscar otro camino' }).click();

@@ -218,7 +218,7 @@ export function answer(doc: ProjectDoc, question: Question, ans: Answer, ctx: Ct
       if (!text) return { doc: d, fx };
       const r = op.addNode(d, 'bubble', {
         title: text, position: { x: -150, y: -40 },
-        visualStyle: { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid' },
+        visualStyle: { shape: 'pill', color: 'rose', background: null, fontFamily: 'serif', fontSize: 19, fontWeight: 600, icon: null, image: null, borderStyle: 'solid', textAlign: 'center' },
       });
       return { doc: r.doc, fx: { select: r.id } };
     }

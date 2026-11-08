@@ -1,6 +1,6 @@
 /**
  * Motor de condiciones: AND, OR, NOT, comparaciones, rangos, umbrales,
- * activación por ronda y dependencias de otros elementos.
+ * activación por vuelta y dependencias de otros elementos.
  */
 import type { Condition, ConditionExpr, Operand } from '../core/model/schema';
 
@@ -101,7 +101,7 @@ export function exprDependencies(expr: ConditionExpr, out: Set<string> = new Set
 }
 
 const OP_WORD: Record<string, string> = { '>': 'es más de', '>=': 'es por lo menos', '<': 'es menos de', '<=': 'es como mucho', '==': 'es justo', '!=': 'no es' };
-const ROUND_WORD: Record<string, string> = { '>': 'después de la ronda', '>=': 'desde la ronda', '<': 'antes de la ronda', '<=': 'hasta la ronda', '==': 'en la ronda', '!=': 'en todas menos la ronda' };
+const ROUND_WORD: Record<string, string> = { '>': 'después de la vuelta', '>=': 'desde la vuelta', '<': 'antes de la vuelta', '<=': 'hasta la vuelta', '==': 'en la vuelta', '!=': 'en todas menos la vuelta' };
 const METRIC_LABEL: Record<string, string> = {
   in: 'lo que le llega a', out: 'lo que sale de', stock: 'lo que tiene guardado', influence: 'la fuerza de', lost: 'lo que pierde', result: 'lo que llega a la meta desde', dim: 'cómo es lo de', active: 'encendida',
 };
@@ -111,7 +111,7 @@ export function describeExpr(expr: ConditionExpr, nodeName: (id: string) => stri
   const od = (o: Operand | undefined): string => {
     if (!o) return '?';
     if (o.kind === 'const') return String(o.value);
-    if (o.kind === 'iteration') return 'la ronda';
+    if (o.kind === 'iteration') return 'la vuelta';
     if (o.kind === 'metric' && o.metric === 'active') return `«${nodeName(o.nodeId)}»`;
     return `${METRIC_LABEL[o.metric] ?? o.metric} «${nodeName(o.nodeId)}»${o.dimensionId && o.metric === 'dim' ? ` (${o.dimensionId})` : ''}`;
   };
@@ -121,7 +121,7 @@ export function describeExpr(expr: ConditionExpr, nodeName: (id: string) => stri
     case 'or': return expr.children.map((c) => describeExpr(c, nodeName)).join(' o ') || 'nunca';
     case 'not': return `que NO pase esto: ${expr.children[0] ? describeExpr(expr.children[0], nodeName) : '…'}`;
     case 'compare': return `${od(expr.operands[0])} ${OP_WORD[expr.operator ?? ''] ?? expr.operator} ${od(expr.operands[1])}`;
-    case 'iteration': return `${ROUND_WORD[expr.operator ?? ''] ?? `ronda ${expr.operator}`} ${od(expr.operands[0])}`;
+    case 'iteration': return `${ROUND_WORD[expr.operator ?? ''] ?? `vuelta ${expr.operator}`} ${od(expr.operands[0])}`;
     case 'range': return `${od(expr.operands[0])} ${expr.operator === 'outside' ? 'está fuera de' : 'está entre'} ${od(expr.operands[1])} y ${od(expr.operands[2])}`;
     case 'threshold': return `${od(expr.operands[0])} ${expr.operator === 'below' ? 'no llega a' : 'pasa de'} ${od(expr.operands[1])}`;
     case 'active': return `${od(expr.operands[0])} está encendida`;

@@ -18,7 +18,7 @@ function anchorsFor(ang: number): [Anchor, Anchor] {
   if (Math.abs(c) >= Math.abs(sn) * 0.9) return c > 0 ? ['right', 'left'] : ['left', 'right'];
   return sn > 0 ? ['bottom', 'top'] : ['top', 'bottom'];
 }
-const vs = (p: Partial<Style>): Style => ({ shape: 'rounded', color: 'slate', background: null, fontFamily: 'sans', fontSize: 14, fontWeight: 500, icon: null, image: null, borderStyle: 'solid', ...p });
+const vs = (p: Partial<Style>): Style => ({ shape: 'rounded', color: 'slate', background: null, fontFamily: 'sans', fontSize: 14, fontWeight: 500, icon: null, image: null, borderStyle: 'solid', textAlign: 'center', ...p });
 const short = (t: string, n = 72) => { const s = t.replace(/\s+/g, ' ').trim(); return s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s; };
 const cap = (t: string) => t.charAt(0) + t.slice(1).toLowerCase();
 

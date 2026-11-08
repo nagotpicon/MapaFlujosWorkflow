@@ -93,6 +93,7 @@ export function simulationFingerprint(doc: ProjectDoc, scenarioId: string | null
   const nodes = Object.values(doc.nodes).map((n) => [
     n.id, n.type, n.behaviorIds, n.portIds, n.weight, n.influenceSource, n.influenceReference, n.dimensionValues,
     n.activationConditionId, n.inactiveMode, n.convergence, n.split, n.mitigationCombination, n.aliasOf, n.createdAt,
+    n.metadata.custom?.mute ?? null,
   ]);
   const edges = Object.values(doc.edges).map((e) => [
     e.id, e.sourceNodeId, e.targetNodeId, e.sourcePortId, e.targetPortId, e.direction, e.type, e.behavior, e.conditions,

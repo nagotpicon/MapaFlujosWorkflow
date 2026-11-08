@@ -1,11 +1,14 @@
-/** Constructor visual de condiciones (Y / O / NO, comparaciones, rangos, umbrales, ronda, dependencias). Sin código. */
+/** Constructor visual de condiciones (Y / O / NO, comparaciones, rangos, umbrales, vuelta, dependencias). Sin código. */
 import { Plus, Trash2, Diamond } from 'lucide-react';
 import type { Condition, ConditionExpr, Operand } from '../core/model/schema';
 import { newId } from '../core/model/factory';
 import * as op from '../core/operations';
 import { describeExpr } from '../engine/conditions';
 import * as A from '../app/actions';
-import { Button, Field, IconButton, NumberInput, Segmented, Select, cx } from '../ui/primitives';
+import { Button, Field, IconButton, NumberInput, Segmented, Select, cx, fmt } from '../ui/primitives';
+import { useSim } from '../store/simStore';
+import { useUI } from '../store/uiStore';
+import { qty } from '../engine/packet';
 import { NodeSelect, useInspector, useParam, OverrideMark } from './fields';
 
 const METRICS: { value: Extract<Operand, { kind: 'metric' }>['metric']; label: string }[] = [
@@ -38,6 +41,30 @@ function MetricOperand({ o, onChange }: { o: Operand; onChange: (o: Operand) => 
         <Select label="¿Qué le miro?" className="min-w-0 flex-1" value={o.metric} onChange={(metric) => onChange({ ...o, metric })} options={METRICS} />
         {o.metric === 'dim' && <Select label="Dimensión" className="min-w-0 flex-1" value={o.dimensionId ?? 'quality'} onChange={(dimensionId) => onChange({ ...o, dimensionId })} options={Object.values(doc.dimensions).map((d) => ({ value: d.id, label: d.name }))} />}
       </div>
+      <LiveValue o={o} />
+    </div>
+  );
+}
+
+/** Lo que tiene ahora la idea que miras, y un botón para ir a ella: así no tienes que buscarla. */
+function LiveValue({ o }: { o: Extract<Operand, { kind: 'metric' }> }) {
+  const { doc } = useInspector();
+  const st = useSim((s) => s.result?.iterations[s.cursor]?.nodes[o.nodeId]);
+  const n = doc.nodes[o.nodeId];
+  if (!n) return null;
+  const v = !st ? null
+    : o.metric === 'in' ? qty(st.in)
+    : o.metric === 'out' ? Math.max(qty(st.out), qty(st.terminal))
+    : o.metric === 'result' ? qty(st.terminal)
+    : o.metric === 'stock' ? st.stock.quantity ?? 0
+    : o.metric === 'lost' ? st.lost.quantity ?? 0
+    : o.metric === 'influence' ? st.influence
+    : o.metric === 'dim' && o.dimensionId ? (st.out.int[o.dimensionId] ?? st.terminal.int[o.dimensionId] ?? null)
+    : null;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 pl-10 text-[11.5px] text-ink-3" data-testid="condition-live">
+      {v != null && <span>Ahora mismo: <b className="text-ink-2">{fmt(v)}</b>.</span>}
+      <button type="button" className="font-medium text-accent-text hover:underline" onClick={() => useUI.getState().setSelection([o.nodeId])}>Ir a «{n.title}»</button>
     </div>
   );
 }
@@ -62,8 +89,8 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
     <div className="space-y-1 rounded-lg bg-surface-2 p-1.5" data-testid="condition-clause">
       <div className="flex items-center gap-1">
         <Select label="¿Qué tiene que pasar?" className="flex-1" value={expr.conditionType} onChange={(t) => onChange(newClause(t as ClauseKind, ownerNode))}
-          options={[{ value: 'compare', label: '🔢 Que un número sea más o menos que…' }, { value: 'threshold', label: '📈 Que algo pase de una raya' }, { value: 'range', label: '↔️ Que algo esté entre dos números' }, { value: 'iteration', label: '🗓️ Que llegue cierta ronda' }, { value: 'active', label: '💡 Que otra idea esté encendida' }]} />
-        <IconButton size="xs" label="Darle la vuelta: que NO pase esto" onClick={() => onChange({ id: newId('cx'), conditionType: 'not', operator: null, operands: [], children: [expr] })}><span className="text-[10px] font-bold">NO</span></IconButton>
+          options={[{ value: 'compare', label: '🔢 Que un número sea más o menos que…' }, { value: 'threshold', label: '📈 Que algo pase de una raya' }, { value: 'range', label: '↔️ Que algo esté entre dos números' }, { value: 'iteration', label: '🗓️ Que llegue cierta vuelta' }, { value: 'active', label: '💡 Que otra idea esté encendida' }]} />
+        <IconButton size="xs" label="Al revés: que NO pase esto" onClick={() => onChange({ id: newId('cx'), conditionType: 'not', operator: null, operands: [], children: [expr] })}><span className="text-[10px] font-bold">NO</span></IconButton>
         <IconButton size="xs" label="Quitar esta regla" onClick={onRemove}><Trash2 className="size-3" /></IconButton>
       </div>
       {expr.conditionType === 'compare' && (<>
@@ -94,7 +121,7 @@ function Clause({ expr, onChange, onRemove, ownerNode, depth }: { expr: Conditio
       </>)}
       {expr.conditionType === 'iteration' && (
         <div className="flex items-center gap-1">
-          <span className="text-[11.5px] text-ink-2">La ronda es</span>
+          <span className="text-[11.5px] text-ink-2">La vuelta es</span>
           <Select label="Operador" className="w-28" value={expr.operator ?? '>='} onChange={(operator) => onChange({ ...expr, operator: operator as never })} options={OPS} />
           <NumberInput className="flex-1" value={constVal(expr.operands[0])} min={1} onChange={(v) => onChange({ ...expr, operands: [{ kind: 'const', value: Math.round(v) }] })} />
         </div>
@@ -152,12 +179,12 @@ export function ConditionBlock({ condition, ownerNode, onDelete }: { condition: 
         </Field>
         <Field label="¿Cada cuánto lo miro?">
           <Select label="¿Cada cuánto lo miro?" value={condition.activationRules.mode} onChange={(mode) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, mode } }))}
-            options={[{ value: 'always', label: 'En cada ronda' }, { value: 'latch', label: 'En cuanto pase, se queda así' }, { value: 'once', label: 'Solo una vez' }]} />
+            options={[{ value: 'always', label: 'En cada vuelta' }, { value: 'latch', label: 'En cuanto pase, se queda así' }, { value: 'once', label: 'Solo una vez' }]} />
         </Field>
       </div>
       <label className="flex items-center justify-between gap-2 text-[11px] text-ink-2">
         Tiene que pasar seguido durante
-        <span className="flex w-24 items-center gap-1"><NumberInput value={condition.activationRules.sustain} min={1} onChange={(v) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, sustain: Math.max(1, Math.round(v)) } }))} /> rondas</span>
+        <span className="flex w-24 items-center gap-1"><NumberInput value={condition.activationRules.sustain} min={1} onChange={(v) => A.apply((d) => op.updateCondition(d, condition.id, { activationRules: { ...condition.activationRules, sustain: Math.max(1, Math.round(v)) } }))} /> vueltas</span>
       </label>
     </div>
   );

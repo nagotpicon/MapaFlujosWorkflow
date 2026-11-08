@@ -1,6 +1,6 @@
 /**
  * TERMÓMETRO DE CALOR
- * Temperatura en [-1, 1] por elemento e ronda:
+ * Temperatura en [-1, 1] por elemento y vuelta:
  *   < -0.33  frío        (sin flujo / infrautilizado / bloqueado)
  *   ±0.33    ritmo       (utilización sana, sin fricción relevante)
  *   > 0.33   caliente    (presión, fricción, prisas)
@@ -22,13 +22,13 @@ export interface HeatReading {
 }
 
 export interface HeatMap {
-  /** nodeId -> lecturas por ronda */
+  /** nodeId -> lecturas por vuelta */
   nodes: Record<string, HeatReading[]>;
   /** media por nodo (ponderada por actividad) */
   nodeAvg: Record<string, HeatReading>;
-  /** zonas del marco: "col:row" -> lecturas por ronda (solo modo cuadrícula) */
+  /** zonas del marco: "col:row" -> lecturas por vuelta (solo modo cuadrícula) */
   zones: Record<string, { column: number; row: number; readings: HeatReading[]; avg: HeatReading }>;
-  /** temperatura global por ronda */
+  /** temperatura global por vuelta */
   global: number[];
 }
 
@@ -100,7 +100,7 @@ export function computeHeat(doc: ProjectDoc, r: SimulationResult): HeatMap {
       }
       if (thr + queue <= 1e-9) {
         const starving = (peak[id] ?? 0) > 1e-9;
-        readings.push({ temperature: starving ? -0.8 : 0, state: starving ? 'cold' : 'idle', utilization: cap ? 0 : null, causes: starving ? ['Sin flujo en esta ronda'] : [] });
+        readings.push({ temperature: starving ? -0.8 : 0, state: starving ? 'cold' : 'idle', utilization: cap ? 0 : null, causes: starving ? ['Sin flujo en esta vuelta'] : [] });
         prevQueue = queue;
         continue;
       }

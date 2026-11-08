@@ -49,7 +49,7 @@ test('modo fácil: la Brújula lleva de una idea a un camino con piedras, ayudas
   await expect(page.getByTestId('kid-meter-value')).toHaveText('7');
 
   // el mapa se ha dibujado solo, con su papel en cada idea
-  await expect(page.locator('[data-node-title="Me da vergüenza enseñarlos"] >> xpath=..').getByTestId('node-papel')).toHaveText('🪨');
+  await expect(page.locator('[data-node-title="Me da vergüenza enseñarlos"] >> xpath=..').getByTestId('node-papel')).toHaveAttribute('data-papel', 'piedra');
 
   // lo que he descubierto y mi plan, en palabras sencillas
   await page.getByTestId('kid-meter').click();

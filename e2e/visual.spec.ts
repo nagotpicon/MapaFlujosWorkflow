@@ -23,7 +23,7 @@ for (const scheme of ['light', 'dark'] as const) {
     // el mapa se centra con una animación: si el clic cae a mitad, se repite
     await expect(async () => {
       await page.locator('[data-node-title="Cierre"]').click();
-      await expect(page.getByTestId('node-inspector')).toBeVisible({ timeout: 1000 });
+      await expect(page.getByTestId('action-bar')).toBeVisible({ timeout: 1000 });
     }).toPass({ timeout: 15_000 });
     await page.screenshot({ path: `test-results/visual-${scheme}.png` });
     await ctx.close();

@@ -12,6 +12,7 @@ import { Button, cx } from '../ui/primitives';
 import { descubrimientos, miPlan } from './guide';
 import { preguntarOtraVez } from './kidActions';
 import { useKid } from './kidStore';
+import { Ico, IcoText } from '../ui/ico';
 
 const num = (v: number) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1).replace('.', ','));
 
@@ -48,9 +49,9 @@ export function DiscoverPanel() {
         {items.map((it) => (
           <li key={it.id} data-testid="discover-item" data-kind={it.id.split(':')[0]}
             className={cx('flex items-start gap-3 rounded-xl border px-4 py-3', it.tone === 'warn' ? 'border-[color-mix(in_srgb,var(--loss)_30%,transparent)] bg-[color-mix(in_srgb,var(--loss)_5%,transparent)]' : it.tone === 'good' ? 'border-[color-mix(in_srgb,var(--gain)_30%,transparent)] bg-[color-mix(in_srgb,var(--gain)_5%,transparent)]' : 'border-line')}>
-            <span className="text-[22px] leading-none" aria-hidden>{it.emoji}</span>
+            <Ico e={it.emoji} size={20} className="mt-[1px]" />
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-medium leading-snug text-ink">{it.text}</p>
+              <p className="text-[15px] font-medium leading-snug text-ink"><IcoText text={it.text} /></p>
               {it.detail && <p className="mt-0.5 text-[13px] leading-snug text-ink-3">{it.detail}</p>}
               {(it.focus || it.ask) && (
                 <div className="mt-2 flex flex-wrap gap-2">

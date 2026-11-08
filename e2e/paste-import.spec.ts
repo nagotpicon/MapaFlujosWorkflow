@@ -23,6 +23,7 @@ test('Pegar el JSON del manual para IA (con vallas ```json) crea el proyecto y s
   await page.getByTestId('io-menu').click();
   await expect(page.getByRole('menuitem', { name: 'Pegar proyecto (JSON)' })).toBeVisible();
   await page.keyboard.press('Escape');
+  await expect(page.getByRole('menuitem', { name: 'Pegar proyecto (JSON)' })).toBeHidden();
   // Segunda importación del mismo JSON: se importa como copia
   await page.getByTestId('io-menu').click();
   await page.getByRole('menuitem', { name: 'Pegar proyecto (JSON)' }).click();

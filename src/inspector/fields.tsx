@@ -9,6 +9,7 @@ import { findScale } from '../engine/scales';
 import * as A from '../app/actions';
 import { Field, NumberInput, Segmented, Select, Slider, Tip, cx } from '../ui/primitives';
 import { useProject } from '../store/projectStore';
+import { IcoText } from '../ui/ico';
 
 export interface InspectorCtx { doc: ProjectDoc; eff: ProjectDoc; scenarioIsBase: boolean }
 export const InspectorContext = createContext<InspectorCtx | null>(null);
@@ -126,7 +127,7 @@ export function ScaleValueEditor({ value, onChange, label, id, help, allowNull =
 export function KV({ k, v, tone }: { k: ReactNode; v: ReactNode; tone?: string }) {
   return (
     <div className="flex items-baseline justify-between gap-2 text-[12px]">
-      <span className="text-ink-3">{k}</span>
+      <span className="text-ink-3">{typeof k === 'string' ? <IcoText text={k} size={13} /> : k}</span>
       <span className={cx('tabular font-medium text-ink', tone)}>{v}</span>
     </div>
   );

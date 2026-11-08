@@ -36,7 +36,7 @@ export function HelpPanel() {
         <ul className="list-disc space-y-1 pl-4">
           <li><b className="text-ink">¿Y si…?</b>: prueba cambios (más tiempo, otro precio…) sin estropear tu mapa original, y compáralos.</li>
           <li><b className="text-ink">Frenos y remedios</b>: una idea puede frenar a otra; un remedio le quita fuerza al freno.</li>
-          <li><b className="text-ink">Bucles</b>: lo que vuelve al principio, como el boca a boca. Se calcula ronda a ronda, así nunca se atasca.</li>
+          <li><b className="text-ink">Bucles</b>: lo que vuelve al principio, como el boca a boca. Se calcula vuelta a vuelta, así nunca se atasca.</li>
           <li><b className="text-ink">Cuadrícula del tiempo</b>, <b className="text-ink">termómetro</b> (qué se agobia y qué va tranquilo) y <b className="text-ink">Marcador</b> con lo que más te ayuda y te frena.</li>
         </ul>
       </Section>
